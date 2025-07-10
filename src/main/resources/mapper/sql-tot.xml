@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.TotMapper">
+
+	<select id="selectTotChkAssetList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		with
+		t_tot as 
+		(
+			select 'Total'                                        as aset_clsf_nm
+			     , sum(case when b.chk_sep_cd = '1' then 1 end)   as chk_1
+			     , sum(case when b.chk_sep_cd = '2' then 1 end)   as chk_2
+			     , sum(case when b.chk_sep_cd = '3' then 1 end)   as chk_3
+			     , count(a.aset_id)                               as tot_cnt
+			     , case when count(a.aset_id) = 0 
+			            then 0 
+			            else 100 
+			       end                                            as tot_rt
+			  from chk_req_aset  a
+			     , chk_req       b
+			     , aset          c
+			     , aset_clsf     d
+			 where 1=1
+			   and a.chk_req_sno  = b.chk_req_sno
+			   and a.aset_id      = c.aset_id
+			   and c.aset_clsf_id = d.aset_clsf_id
+			   AND a.CMPL_YN      = 'Y'
+	    	<if test="searchType.equals('asetClsfNm')">
+	   	 	   AND d.aset_clsf_nm LIKE '%' || #{searchStr} || '%' 
+	   	 	</if>
+	   	 	<if test="searchType.equals('searchPeriod')">
+	   	 	   AND A.chk_dt between #{chkStrtDt} and #{chkEndDt}
+	   	 	</if>
+		)
+		, t_base as 
+		(
+			SELECT a.aset_clsf_nm                                 as aset_clsf_nm
+			     , sum(case when c.chk_sep_cd = '1' then 1 end)   as chk_1
+			     , sum(case when c.chk_sep_cd = '2' then 1 end)   as chk_2
+			     , sum(case when c.chk_sep_cd = '3' then 1 end)   as chk_3
+			     , count(c.aset_id)                               as tot_cnt
+			     , case when max(d.tot_cnt) != 0
+			            then cast( ( cast(count(c.aset_id) as numeric) / 
+			                         cast(  max(d.tot_cnt) as numeric) * 100) as numeric(5,2) ) 
+			       end              as tot_rt
+			  from aset_clsf a
+			          left outer join aset  b
+			                  on ( a.aset_clsf_id = b.aset_clsf_id )          
+			          left outer join (
+			          					  select a.aset_id, b.chk_sep_cd
+			          						from chk_req_aset  a
+			     						   	   , chk_req       b
+										   where 1=1
+											 and a.chk_req_sno = b.chk_req_sno
+											 AND a.CMPL_YN     = 'Y'
+										   	<if test="searchType.equals('searchPeriod')">
+										     AND A.chk_dt between #{chkStrtDt} and #{chkEndDt}
+										   </if>
+										)   c
+			                  on ( b.aset_id = c.aset_id ) 
+			          left outer join t_tot   d
+			                  on ( 1=1 )
+			 where 1=1
+			   and a.leaf_yn = 'Y' 
+	    	<if test="searchType.equals('asetClsfNm')">
+	   	 	   AND A.aset_clsf_nm LIKE '%' || #{searchStr} || '%' 
+	   	 	</if>
+			 group by a.aset_clsf_nm
+	 	)
+		select aset_clsf_nm         as aset_clsf_nm
+		     , chk_1    as chk_1
+		     , chk_2    as chk_2
+		     , chk_3    as chk_3
+		     , CASE WHEN tot_cnt != 0 THEN tot_cnt END  as tot_cnt
+		     , CASE WHEN tot_rt  != 0 THEN tot_rt END   as tot_rt
+		  from t_base
+		 union all
+		select aset_clsf_nm         as aset_clsf_nm
+		     , chk_1    as chk_1
+		     , chk_2    as chk_2
+		     , chk_3    as chk_3
+		     , tot_cnt  as tot_cnt
+		     , tot_rt   as tot_rt
+		  from t_tot
+	</select>
+		
+	<select id="selectTotChkCorpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		with
+		t_mntc_hist as 
+		(
+			select c.corp_id 
+			     , c.corp_ko_nm 
+			     , a.aset_id
+			  from mntc_hist   a
+			  	 , emp   b 
+                 , corp  c 
+			 where 1=1
+			   and a.mntc_emp_id = b.emp_id
+			   and b.corp_id     = c.corp_id
+			   and to_char(now(),'yyyymmdd') between a.ctrt_strt_dt and a.ctrt_end_dt 
+	    	<if test="searchType.equals('corpKoNm')">
+	   	 	   AND c.corp_ko_nm LIKE '%' || #{searchStr} || '%' 
+	   	 	</if>
+		)
+		, t_tot as 
+		(
+			select 'Total'                                        as corp_ko_nm
+			     , sum(case when b.chk_sep_cd = '1' then 1 end)   as chk_1
+			     , sum(case when b.chk_sep_cd = '2' then 1 end)   as chk_2
+			     , sum(case when b.chk_sep_cd = '3' then 1 end)   as chk_3
+			     , count(a.aset_id)                               as tot_cnt
+			     , case when count(a.aset_id) = 0 then 0 
+			       else 100 end                                   as tot_rt
+			  from chk_req_aset  a
+			     , chk_req       b
+			     , aset          c
+			     , aset_clsf     d
+			     , t_mntc_hist   e
+			 where 1=1
+			   and a.chk_req_sno  = b.chk_req_sno
+			   and a.aset_id      = c.aset_id
+			   and c.aset_clsf_id = d.aset_clsf_id
+			   and a.aset_id      = e.aset_id
+<!-- 			   and A.ASET_ID     in ( select aset_id from t_mntc_hist)	 -->
+			   AND a.CMPL_YN      = 'Y'
+		   	<if test="searchType.equals('searchPeriod')">
+		       AND A.chk_dt between #{chkStrtDt} and #{chkEndDt}
+		   </if>
+		)
+		, t_chk_rslt as 
+		(	
+			select b.corp_id
+			     , sum(case when d.chk_sep_cd = '1' then 1 end)   as chk_1
+			     , sum(case when d.chk_sep_cd = '2' then 1 end)   as chk_2
+			     , sum(case when d.chk_sep_cd = '3' then 1 end)   as chk_3
+			     , count(a.aset_id)                               as tot_cnt
+			     , cast( ( cast(count(a.aset_id) as numeric(10,4)) / 
+			               cast( max(c.tot_cnt)  as numeric(10,4)) * 100) as numeric(5,2) )    as tot_rt
+			  from chk_req_aset  a
+			  	 , t_mntc_hist   b
+			  	 , t_tot         c
+			     , chk_req       d
+			 where 1=1
+			   and a.aset_id     = b.aset_id
+			   and a.chk_req_sno = d.chk_req_sno
+			   AND A.CMPL_YN     = 'Y'     
+		   	<if test="searchType.equals('searchPeriod')">
+		       AND A.chk_dt between #{chkStrtDt} and #{chkEndDt}
+		   </if>
+			 group by 
+			       b.corp_id
+		) 
+		select corp_ko_nm
+		     , chk_1    as chk_1
+		     , chk_2    as chk_2
+		     , chk_3    as chk_3
+		     , tot_cnt  as tot_cnt
+		     , tot_rt   as tot_rt
+		  from corp   a
+		         left outer join t_chk_rslt   b
+		         		 on ( a.corp_id = b.corp_id )
+		 where 1=1
+    	<if test="searchType.equals('corpKoNm')">
+   	 	   AND a.corp_ko_nm LIKE '%' || #{searchStr} || '%' 
+   	 	</if>
+		 union all 
+		select corp_ko_nm
+		     , chk_1    as chk_1
+		     , chk_2    as chk_2
+		     , chk_3    as chk_3
+		     , tot_cnt  as tot_cnt
+		     , tot_rt   as tot_rt
+		  from t_tot
+	</select>	
+
+				
+</mapper>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.SttMapper">
+
+	<select id="selectSttList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT COUNT(*) OVER() AS total_count
+             , (CASE WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ < ]]> COUNT(*) OVER() THEN 'Y' WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ >= ]]> COUNT(*) OVER() THEN 'N' END) AS next_page_yn
+             , mkate_id
+             , mkate_proc_id
+             , mkate_nm
+             , mkate_type
+             , TO_CHAR(occu_time, 'YYYY-MM-DD HH24:MI') AS mkate_occu_time
+          FROM cmon_mkate A
+         WHERE 1=1
+           <if test="occuTime != null and occuTime != '' ">
+           AND TO_CHAR(A.occu_time, 'YYYYMMDD') >= #{occuTime}
+		   </if>         
+         ORDER BY A.occu_time DESC      
+         LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)	
+	</select>
+				
+	<insert id="insertInventory" parameterType="java.util.HashMap">
+		<if test="ivtList.size != 0">
+		INSERT INTO manual_inventory
+			(
+				zone
+				, loc_nm
+				, datacenter_nm
+				, rack_location
+				, equip_position
+				, own_dept_nm
+				, center_nm
+				, equnr
+				, host_nm
+				, mgmt_ip
+				, ipmi_ip
+				, std_cd
+				, std_nm
+				, e_std_cd
+				, e_std_nm
+				, svc_usage
+				, platform
+				, platform_ver
+				, os
+				, os_ver
+				, usage
+				, hw_yn
+				, csw_yn
+				, os_yn
+				, cret_dt
+				, cretr_id
+				, amd_dt
+				, amdr_id
+			)
+			VALUES 
+        <foreach collection="ivtList" item="item" separator=",">
+			(
+				#{item.zone}
+				, #{item.loc_nm}
+				, #{item.datacenter_nm}
+				, #{item.rack_location}
+				, CAST(NULLIF(#{item.equip_position} ,'') AS INTEGER)
+				, #{item.own_dept_nm}
+				, #{item.center_nm}
+				, #{item.equnr}
+				, #{item.host_nm}
+				, #{item.mgmt_ip}
+				, #{item.ipmi_ip}
+				, #{item.std_cd}
+				, #{item.std_nm}
+				, #{item.e_std_cd}
+				, #{item.e_std_nm}
+				, #{item.svc_usage}
+				, #{item.platform}
+				, #{item.platform_ver}
+				, #{item.os}
+				, #{item.os_ver}
+				, #{item.usage}
+				, #{item.hw_yn}
+				, #{item.csw_yn}
+				, #{item.os_yn}
+				, now()
+				, #{userId}
+				, now()
+				, #{userId}
+			)
+        </foreach>
+    	</if>
+	</insert>
+	
+	<select id="selectInventoryList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT seq
+        	, zone
+        	, loc_nm
+        	, datacenter_nm
+        	, rack_location
+        	, equip_position
+        	, own_dept_nm
+        	, center_nm
+        	, equnr
+        	, host_nm
+        	, mgmt_ip
+        	, ipmi_ip
+        	, std_cd
+        	, std_nm
+        	, e_std_cd
+        	, e_std_nm
+        	, svc_usage
+        	, platform
+        	, platform_ver
+        	, os
+        	, os_ver
+        	, usage
+        	, hw_yn
+        	, csw_yn
+        	, os_yn
+        	, cretr_id
+        	, (SELECT user_name FROM cmon_user WHERE user_id = cretr_id) AS cretr_nm
+			, TO_CHAR(cret_dt, 'YYYY-MM-DD HH24:MI:SS') AS cret_dt
+        	, (SELECT user_name FROM cmon_user WHERE user_id = amdr_id) AS amdr_nm
+			, TO_CHAR(amd_dt, 'YYYY-MM-DD HH24:MI:SS') AS amd_dt
+        	, count(seq) OVER() AS total_count
+		FROM manual_inventory
+		WHERE 1=1
+		<if test="searchStr != null and searchStr != ''">
+		 <choose>
+			<when test="searchType.equals('equip_position')">
+				AND equip_position = CAST(#{searchStr} AS INTEGER)
+			</when>
+			<otherwise>
+	   	 		AND UPPER(${searchType}) LIKE '%' || UPPER(#{searchStr}) || '%'
+	   	 	</otherwise>
+	   	  </choose>
+	   	 </if>
+		ORDER BY zone, loc_nm
+	   	<if test = 'pagingYn != null and pagingYn != ""'>	
+			<if test = 'pagingYn.equals("Y")'>	         
+        		 LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)
+			</if>
+		</if>	
+	</select>
+		
+	<delete id="deleteInventory" parameterType="java.util.HashMap">
+		DELETE FROM manual_inventory
+		WHERE seq IN ( ${delSeq} )
+	</delete>
+	
+	<update id="updateInventory" parameterType="java.util.HashMap">
+		<if test="updateList.size != 0">
+        <foreach collection="updateList" item="item" separator=";">
+		UPDATE manual_inventory
+		SET zone = #{item.zone}
+			, loc_nm = #{item.loc_nm}
+			, datacenter_nm = #{item.datacenter_nm}
+			, rack_location = #{item.rack_location}
+			, equip_position = CAST(NULLIF(#{item.equip_position} ,'') AS INTEGER)
+			, own_dept_nm = #{item.own_dept_nm}
+			, center_nm = #{item.center_nm}
+			, equnr = #{item.equnr}
+ 			, host_nm = #{item.host_nm}
+			, mgmt_ip = #{item.mgmt_ip}
+			, ipmi_ip = #{item.ipmi_ip}
+			, std_cd = #{item.std_cd}
+			, std_nm = #{item.std_nm}
+			, e_std_cd = #{item.e_std_cd}
+			, e_std_nm = #{item.e_std_nm}
+			, svc_usage = #{item.svc_usage}
+			, platform = #{item.platform}
+			, platform_ver = #{item.platform_ver}
+			, os = #{item.os}
+			, os_ver = #{item.os_ver}
+			, usage = #{item.usage}
+			, hw_yn = #{item.hw_yn}
+			, csw_yn = #{item.csw_yn}
+			, os_yn = #{item.os_yn}
+			, amd_dt = now()
+			, amdr_id = #{userId}
+		WHERE seq = #{item.seq}
+        </foreach>
+    	</if>
+	</update>
+		
+				
+</mapper>

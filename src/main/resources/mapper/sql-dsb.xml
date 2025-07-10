@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.DsbMapper">
+
+	<select id="selectDsbList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT COUNT(*) OVER() AS total_count
+             , (CASE WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ < ]]> COUNT(*) OVER() THEN 'Y' WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ >= ]]> COUNT(*) OVER() THEN 'N' END) AS next_page_yn
+             , mkate_id
+             , mkate_proc_id
+             , mkate_nm
+             , mkate_type
+             , TO_CHAR(occu_time, 'YYYY-MM-DD HH24:MI') AS mkate_occu_time
+          FROM cmon_mkate A
+         WHERE 1=1
+           <if test="occuTime != null and occuTime != '' ">
+           AND TO_CHAR(A.occu_time, 'YYYYMMDD') >= #{occuTime}
+		   </if>         
+         ORDER BY A.occu_time DESC
+         LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)
+	</select>
+	
+	<!-- 이벤트 건수 -->
+	<select id="selectEvtCnt" resultType="int">
+        SELECT COUNT(*) AS evt_cnt 
+        FROM cmon_event_info 
+        WHERE event_state  != '조치완료'
+	</select>
+	
+	<!-- 인시던트 건수 -->
+	<select id="selectIcdCnt" resultType="int">
+        SELECT COUNT(*) AS i_cnt 
+        FROM cmon_incident_info 
+        WHERE incident_state = '조치중' 
+        	AND incident_level = '이상징후'
+	</select>		
+	
+	<!-- 장애건수 -->
+	<select id="selectErrCnt" resultType="int">
+        SELECT COUNT(*) AS i_cnt 
+        FROM cmon_incident_info 
+        WHERE incident_state = '조치중' AND (incident_level LIKE '%등급')
+	</select>
+	
+	<!-- 총 인시던트 건수 -->
+	<select id="selectTotIcdCnt" resultType="int">
+        SELECT count(*) as totIcdCnt 
+        FROM cmon_incident_info  
+        WHERE  incident_state !='조치완료'
+	</select>		
+	
+	<!-- 서버 현황 -->
+	<select id="selectServerStat" resultType="java.util.HashMap">
+        SELECT CLI.idc_name		 
+            , (SELECT count(*) FROM cmon_incident_info CII WHERE container_nm = CLI.idc_name and CII.incident_state != '조치완료') AS inc_total_cnt 
+            , (SELECT count(*) FROM cmon_event_info CEI WHERE container_nm = CLI.idc_name and CEI.event_state !='조치완료') AS eve_total_cnt	 
+       FROM 
+           cmon_idc_list CLI
+       GROUP BY idc_name
+	</select>	
+		
+	<!-- 공지사항 -->
+	<select id="selectNotice" resultType="java.util.HashMap">
+        SELECT a.bbm_id
+             , a.bbm_titl
+             , a.bbm_ctnt
+             , a.reg_emp_id
+             , b.emp_nm        as reg_emp_nm
+             , a.reg_dttm 
+          FROM bbs   a
+                 left outer join emp   b
+                 	     on ( a.reg_emp_id = b.emp_id )
+         where 1=1
+           and a.bbs_sep_cd = 'N'
+           and par_bbm_id is null
+        ORDER BY a.reg_dttm DESC 
+        LIMIT 5
+	</select>	
+	
+	<!-- 인시던트 목록 조회 -->
+	<select id="selectIcdList" resultType="java.util.HashMap">
+        SELECT incident_id, incident_level, incident_start_time ,container_nm ,stdnm 
+        FROM cmon_incident_info 
+        WHERE incident_state = '조치중' ORDER BY incident_id DESC
+	</select>
+		
+	<!-- 차트데이터 조회 -->
+	<select id="getChartData" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT chart_date, event_count, incident_count
+        FROM 
+          cmon_daily_chart
+        WHERE 
+          chart_date >= TO_TIMESTAMP(#{start_chart_date},'YYYY-MM-DD') 
+        ORDER BY chart_date ASC
+	</select>
+	
+	<!-- 작업현황 -->
+	<select id="selectExpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+       SELECT content 
+       FROM cmon_event_exception 
+       WHERE end_time > TO_TIMESTAMP(#{SRVDT},'YYYY-MM-DD')
+       ORDER BY regist_time DESC LIMIT 4
+	</select>
+	
+	<!-- 공지사항 팝업 -->
+	<select id="selectNoticeDetail" parameterType="int" resultType="java.util.HashMap">
+<!--        SELECT idx,title,content,regist_person,regist_time  -->
+<!--        FROM cmon_notice  -->
+<!--        WHERE idx = #{idx} -->
+		SELECT a.bbm_id
+             , a.bbm_titl
+             , a.bbm_ctnt
+             , a.reg_emp_id
+             , b.emp_nm        as reg_emp_nm
+             , a.reg_dttm 
+          FROM bbs   a
+                 left outer join emp   b
+                 	     on ( a.reg_emp_id = b.emp_id )
+         where 1=1
+           and a.bbs_sep_cd = 'N'
+           and a.bbm_id     = #{idx}
+	</select>
+	
+	<!-- 수집서버상태 -->
+	<select id="getAgentStat" resultType="int">
+		SELECT COUNT(*) AS i_cnt 
+		FROM cmon_agent_info 
+		WHERE agent_alive = 0
+	</select>
+	
+	<!-- 좌측 상단 막대그래프  -->
+	<select id="selecYcnt" resultType="java.util.HashMap">
+		WITH T_aset_real AS (
+		    -- 매물 등록 건수 (chk_1)
+		    SELECT 
+		        e.corp_id,
+		        e.emp_id,
+		        e.emp_nm,
+		        COUNT(*) AS chk_1
+		    FROM aset_real ar
+		    JOIN emp e ON ar.reg_emp_id = e.emp_id
+		    WHERE ar.reg_dttm &gt;= DATE_TRUNC('MONTH', CURRENT_DATE) 
+		      AND ar.reg_dttm &lt; DATE_TRUNC('MONTH', CURRENT_DATE) + INTERVAL '1 MONTH'
+		    GROUP BY e.corp_id, e.emp_id, e.emp_nm
+		),
+		T_mntc_hist AS (
+		    -- 계약 등록 건수 (chk_2)
+		    SELECT 
+		        e.corp_id,
+		        e.emp_id,
+		        e.emp_nm,
+		        COUNT(*) AS chk_2
+		    FROM mntc_hist mh
+		    JOIN emp e ON mh.reg_emp_id = e.emp_id
+		    WHERE mh.reg_dttm &gt;= DATE_TRUNC('MONTH', CURRENT_DATE) 
+		      AND mh.reg_dttm &lt; DATE_TRUNC('MONTH', CURRENT_DATE) + INTERVAL '1 MONTH'
+		    GROUP BY e.corp_id, e.emp_id, e.emp_nm
+		),
+		T_EMP_LIST AS (
+		    -- 🔹 모든 회사의 직원 리스트 가져오기 (데이터가 없을 수도 있음)
+		    SELECT DISTINCT e.corp_id, e.emp_id, e.emp_nm
+		    FROM emp e
+		),
+		T_DATA AS (
+		    -- 매물 등록 및 계약 등록 데이터 병합
+		    SELECT 
+		        el.corp_id,
+		        el.emp_id,
+		        el.emp_nm,
+		        COALESCE(ar.chk_1, 0) AS chk_1,
+		        COALESCE(mh.chk_2, 0) AS chk_2
+		    FROM T_EMP_LIST el
+		    LEFT JOIN T_aset_real ar ON el.emp_id = ar.emp_id
+		    LEFT JOIN T_mntc_hist mh ON el.emp_id = mh.emp_id
+		)
+		SELECT 
+		    d.corp_id,
+		    d.emp_id,
+		    d.emp_nm,
+		    SUM(d.chk_1) AS chk_1,
+		    SUM(d.chk_2) AS chk_2
+		FROM T_DATA d
+		GROUP BY d.corp_id, d.emp_id, d.emp_nm
+		ORDER BY d.corp_id, d.emp_id
+	</select>
+	
+</mapper>

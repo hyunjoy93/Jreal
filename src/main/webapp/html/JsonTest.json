@@ -1,0 +1,16 @@
+{
+  "nodes":[
+        { "data":{ "id": "n0", "parent": "group1", "label":"172.25.0.1"}, "classes": "aggregation"},
+        { "data":{ "id": "n1", "parent": "group1", "label":"172.25.0.2"}, "classes": "aggregation"},
+        { "data":{ "id": "group1", "label":"Aggregation"}, "classes": "non-border-group"},
+        { "data":{ "id": "t1", "parent": "group2", "label":"172.25.1.1"}, "classes": "tor"},
+        { "data":{ "id": "t2", "parent": "group2", "label":"172.25.1.2"}, "classes": "tor"},
+        { "data":{ "id": "group2", "label":"ToR"}, "classes": "non-border-group"}
+      ],
+      "edges":[
+        { "data":{ "id": "e0", "source": "n0", "target": "t2"} },
+        { "data":{ "id": "e1", "source": "n1", "target": "t2"} },
+        { "data":{ "id": "e2", "source": "t1", "target": "n1"} }, 
+        { "data":{ "id": "e3", "source": "n0", "target": "t1"} }          
+      ]    
+}                                                                                                                                                                                                                                                                  

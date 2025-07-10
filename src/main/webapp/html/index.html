@@ -1,0 +1,583 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>[KT Cloud] 통합관제시스템 퍼블리시</title>
+<link href="img/favicon.png" rel="icon">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+<script src="js/jquery-1.11.3.min.js"></script>
+<style>
+* { margin:0; padding:0; border:0; box-sizing:border-box; }
+body { width:100%; height:100%; padding:30px; color:#000; font:normal 12px/16px 'Roboto', sans-serif; letter-spacing: 0.5px; word-break: keep-all; }
+h1 { display:block; overflow:hidden; font-size:16px; padding:15px 0; }
+table { border-spacing:0; border-collapse:collapse; width:100%; border:1px solid #555; }
+thead th, tbody th, tfoot td { padding:5px 10px; border:1px solid #555; background-color:#eee; }
+thead th { color: #fff; font-size: 10px; font-weight: 300; background-color: #555; }
+table tr:hover { background-color: #f8f8f8; }
+table tr.line td { border-top:2px solid #555; }
+table tr.dash td { border-top:6px double #555; }
+table td { padding:5px 10px; border:1px solid #555; }
+table td input { width: 100%; font-family: inherit; text-align: center; color: #888; border: 0; background: none; }
+table td.gray { color: #b0b0b0; }
+table td.center { text-align:center; }
+table td.percent { text-align:center; }
+table td.percent::after { content: "%"; }
+table td.percent.red { color:red; }
+table tr.off { color:#bbb; }
+table tr.off a { color:#bbb; }
+p { position:relative; display:block; overflow:hidden; padding-left:10px; }
+p:before { position:absolute; left:0; top:7px; content:""; display:block; overflow:hidden; width:2px; height:2px; background-color:#000; }
+ul { display:block; overflow:hidden; padding:20px 30px; background-color:#f5f5f5; margin-top:20px; }
+#count { text-align: center; font-weight: 500; }
+#guide { float: right; margin-bottom: 5px; }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".percent").each(function(){ 
+		var per = $(this).text();
+		if(per == 0){
+			$(this).addClass('gray');
+		};
+		if(per == 100){
+			$(this).addClass('red');
+		};
+	});
+	$(function(){ 
+		var sum = 0;
+		$(".num").each(function(){ 
+			sum += Number($(this).val()); 
+		}); 
+		$("#count").text(sum);
+	});
+});
+</script> 
+
+</head>
+<body>
+<h1>[KT Cloud] 통합관제시스템 퍼블리시</h1>
+<table>
+    <colgroup>
+    	<col width="10%">
+        <col width="12%">
+        <col width="12%">
+		<col width="12%">
+        <col width="5%">
+		<col width="12%">
+        <col width="5%">
+        <col width="*">
+        <col width="5%">
+    </colgroup>
+    <thead>
+    	<tr>
+            <th>Category</th>
+            <th>Depth1</th>
+			<th>Depth2</th>
+			<th>Depth3</th>
+            <th>Type</th>
+			<th>File Name</th>
+            <th>Percent</th>
+            <th>Memo</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>		
+		
+		<tr class="line">
+            <td rowspan="3">공통</td>
+			<td rowspan="2">로그인</td>
+            <td>Tobe</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="login.html" target="_blank">login.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-11-14 : 새디자인</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr class="off">
+            <td>Asis</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="login_old.html" target="_blank">login_old.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>에러</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="error.html" target="_blank">error.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="line">
+            <td rowspan="4">Dashboard</td>
+            <td rowspan="2">Tobe</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="main.html" target="_blank">main.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-11-18 : 메뉴수정</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>관제용 대시보드</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="main_dashboard.html" target="_blank">main_dashboard.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr class="off">
+            <td rowspan="2">Asis</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="2"><a href="main_old.html" target="_blank">main_old.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr class="off">
+			<td>공지사항 상세</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+
+		<tr class="line">
+            <td rowspan="4">이벤트관리</td>
+            <td rowspan="2">이벤트 상황관리</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="2"><a href="sub_event_state.html" target="_blank">sub_event_state.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>이벤트 처리 및 상세내역</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>인프라 긴급점검</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_event_infra.html" target="_blank">sub_event_infra.html</a></td>
+            <td class="percent">0</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>VOC 등록</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_event_voc.html" target="_blank">sub_event_voc.html</a></td>
+            <td class="percent">0</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="line">
+            <td rowspan="5">인시던트관리</td>
+            <td rowspan="3">인시던트 상황관리</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="3"><a href="sub_incident_state.html" target="_blank">sub_incident_state.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td rowspan="2">인시던트ID 상황관리</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-11-18 : 이벤트 종료처리 추가</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr class="off">
+			<td>이벤트 종료처리</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-11-18 : 제거</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td rowspan="2">장애복구View</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_incident_restore.html" target="_blank">sub_incident_restore.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-11-14 : 화면추가</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>읽기전용</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_incident_restore_pop.html" target="_blank">sub_incident_restore_pop.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-11-14 : 화면추가</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="line">
+            <td rowspan="2">구성/성능관리</td>
+            <td>구성정보조회</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_manage_consist.html" target="_blank">sub_manage_consist.html</a></td>
+            <td class="percent">0</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>성능정보조회</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_manage_performance.html" target="_blank">sub_manage_performance.html</a></td>
+            <td class="percent">0</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="line">
+            <td rowspan="2">작업관리</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="2"><a href="sub_work_exception.html" target="_blank">sub_work_exception.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-12-14 : 추가</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>작업내역</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>2022-12-14 : 추가</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="line">
+            <td rowspan="2">통계</td>
+            <td>이벤트 통계</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_stats_event.html" target="_blank">sub_stats_event.html</a></td>
+            <td class="percent">0</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>인시던트 통계</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="sub_stats_incident.html" target="_blank">sub_stats_incident.html</a></td>
+            <td class="percent">0</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="line">
+            <td rowspan="11">관제운영관리</td>
+            <td rowspan="2">사용자 관리</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="2"><a href="sub_control_member.html" target="_blank">sub_control_member.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>이벤트 종료처리</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td rowspan="3">통합 비상연락망 관리</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="3"><a href="sub_control_contact.html" target="_blank">sub_control_contact.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>사용자추가</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>SMS발송규칙추가</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td rowspan="3">관제연동상태 관리</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="3"><a href="sub_control_linkage.html" target="_blank">sub_control_linkage.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>관제대상리스트</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>수집서버추가</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td rowspan="3">공지사항 관리</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="3"><a href="sub_control_notice.html" target="_blank">sub_control_notice.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>등록</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>상세</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="dash">
+            <td rowspan="6">VM관리</td>
+            <td rowspan="6">[CS] IPC-PROD</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="4"><a href="cloud-bot/sub_pod_vm.html" target="_blank">cloud-bot/sub_pod_vm.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>POD정보</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>HOST정보</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>고객정보</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>고객정보(새창)</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="cloud-bot/sub_pod_vm_pop.html" target="_blank">cloud-bot/sub_pod_vm_pop.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+            <td>서비스요약</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="cloud-bot/sub_pod_vm_view.html" target="_blank">cloud-bot/sub_pod_vm_view.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+		<tr class="dash">
+            <td rowspan="3">M-Kate 장애View</td>
+            <td>목록</td>
+            <td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td rowspan="2"><a href="m-kate/m_kate.html" target="_blank">m-kate/m_kate.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>상세</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center gray">popup</td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		<tr>
+			<td>에러</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+            <td class="center">page</td>
+			<td><a href="m-kate/m_kate_error.html" target="_blank">m-kate/m_kate_error.html</a></td>
+            <td class="percent">100</td>
+            <td>
+            	<p>&nbsp;</p>
+            </td>
+            <td><input type="text" class="num" value="1" readonly></td>
+        </tr>
+		
+
+    </tbody>
+    <tfoot>
+    	<tr class="line">
+            <td colspan="8" class="center">Total</td>
+            <td id="count">0</td>
+        </tr>
+    </tfoot>
+</table>
+</body>
+</html>

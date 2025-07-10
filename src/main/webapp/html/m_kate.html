@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+<link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container m-kate">
+	
+<header class="header">
+	<h1 class="logo"><a href=""><strong>{{ name_eng }}</strong> 장애View</a></h1>
+	<button type="button" class="btClose"><i>닫기</i></button>
+</header>
+
+<section class="section">
+	
+	<div class="headline">
+		<h3 class="mainTitle">장애·이상징후 상황 현황</h3>
+	</div>
+	
+	<ul class="tap">
+		<li class="on">실시간대응</li>
+		<li>장애이력</li>
+	</ul>
+	
+	<div class="tapCon view1">
+
+		<div class="grid">
+			<table>
+				<colgroup>
+					<col width="40px">
+					<col width="120px">
+					<col width="72px">
+					<col width="*">
+				</colgroup>
+				<thead>
+					<tr>
+						<th><span>No.</span></th>
+						<th><span>발생일시</span></th>
+						<th><span>구분</span></th>
+						<th><span>서비스명</span></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="4" class="noData">실시간 대응 가능한 장애·이상징후가 없습니다.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="control">
+			<div class="pages">
+				<button type="button" class="btPrev end" disabled>처음 페이지</button>
+				<button type="button" class="btPrev" disabled>이전 페이지</button>
+				<a href="" class="pg on">1</a>
+				<a href="" class="pg">2</a>
+				<a href="" class="pg">3</a>
+				<a href="" class="pg">4</a>
+				<a href="" class="pg">5</a>
+				<button type="button" class="btNext">다음 페이지</button>
+				<button type="button" class="btNext end">마지막 페이지</button>
+			</div>
+		</div>
+	</div><!--//view1-->
+	
+	<div class="tapCon view2 hide">
+		<div class="search">
+			<div class="box">
+				<form>
+					<div class="set">
+						<select class="select sm">
+							<option>전체</option>
+							<option>이상징후</option>
+							<option>장애</option>
+						</select>
+						<input type="text" class="input date" placeholder="시작일">
+						<span class="txt">~</span>
+						<input type="text" class="input date" placeholder="종료일">
+						<button type="button" class="bt bg primary">검색</button>
+					</div>
+				</form>
+			</div>
+		</div><!--//search-->
+
+		<div class="grid">
+			<table>
+				<colgroup>
+					<col width="40px">
+					<col width="120px">
+					<col width="72px">
+					<col width="*">
+				</colgroup>
+				<thead>
+					<tr>
+						<th><span>No.</span></th>
+						<th><span>발생일시</span></th>
+						<th><span>구분</span></th>
+						<th><span>서비스명</span></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="n in 20">
+						<td>0</td>
+						<td>2022-10-28 00:00</td>
+						<td><span class="badge careful">이상징후</span></td>
+						<td class="tl crop">어플리케이션 성능관리어플리케이션 성능관리 어플리케이션 성능관리 어플리케이션 성능관리 어플리케이션 성능관리 어플리케이션 성능관리</td>
+					</tr>
+					<tr v-for="n in 5">
+						<td>0</td>
+						<td>2022-10-28 00:00</td>
+						<td><span class="badge danger">장애</span></td>
+						<td class="tl crop">어플리케이션 성능관리 어플리케이션 성능관리</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="control">
+			<div class="pages">
+				<button type="button" class="btPrev end" disabled>처음 페이지</button>
+				<button type="button" class="btPrev" disabled>이전 페이지</button>
+				<a href="" class="pg on">1</a>
+				<a href="" class="pg">2</a>
+				<a href="" class="pg">3</a>
+				<a href="" class="pg">4</a>
+				<a href="" class="pg">5</a>
+				<button type="button" class="btNext">다음 페이지</button>
+				<button type="button" class="btNext end">마지막 페이지</button>
+			</div>
+		</div>
+	</div><!--//view2-->
+
+</section>
+
+
+<!-- 팝업 -->
+
+<article class="popup hide" id="pop1">
+	<div class="popBox">
+
+		<div class="conHead">
+			<span class="badge careful">이상징후</span>
+			<p class="time">발생시각 2022-10-28 00:00</p>
+			<button type="button" class="btClose"><i>닫기</i></button>
+		</div>
+
+		<div class="conBody">
+			
+			<h5 class="popTitle crop"><span class="badge">C등급</span> 어플리케이션 성능관리 어플리케이션 성능관리 어플리케이션 성능관리 어플리케이션 성능관리어플리케이션 성능관리어플리케이션 성능관리</h5>
+			
+			<div class="headline">
+				<h6 class="minTitle">상황대응 담당자</h6>
+			</div>
+			<table class="field">
+				<colgroup>
+					<col width="80px">
+					<col width="80px">
+					<col width="*">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th rowspan="3">상황담당</th>
+						<th>관제상황조장</th>
+						<td>홍길동</td>
+					</tr>
+					<tr>
+						<th>상황반장</th>
+						<td>-</td>
+					</tr>
+					<tr>
+						<th>복구반장</th>
+						<td>-</td>
+					</tr>
+					<tr>
+						<th>연관조직정보</th>
+						<th>복구팀</th>
+						<td>-</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="headline">
+				<h6 class="minTitle">실시간 대응 현황</h6>
+				<p class="txt">최근 Update <b>2022-10-28 00:00</b></p>
+			</div>
+			<div class="grid auto">
+				<table>
+					<colgroup>
+						<col width="56px">
+						<col width="*">
+					</colgroup>
+					<thead>
+						<tr>
+							<th><span>처리시간</span></th>
+							<th><span>처리내역</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="n in 30">
+							<td>10-28<br> 00:00</td>
+							<td class="tl"><span class="ellipsis">이상징후 팩스 공지발송 이상징후 팩스 공지발송 이상징후 팩스 공지발송 이상징후 팩스 공지발송이상징후 팩스 공지발송이상징후 팩스 공지발송 이상징후 팩스 공지발송</span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			
+		</div><!--//conBody-->
+
+		<!--div class="conFoot">
+			<div class="btns">
+				<button type="button" class="bt max bg primary">확인</button>
+			</div>
+		</div-->
+
+	</div>
+</article>
+
+<!--//팝업 -->
+	
+	
+	
+<!-- 로딩 -->
+<div class="loading">
+	<ul class="spinner">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+</div>
+
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+<script>
+	var depth1=0
+	var depth2=0
+	var depth3=0
+	var depth4=0
+	
+	setTimeout(function(){
+		$('.loading').addClass('hide');
+	}, 5000);
+
+	$('.view2 .grid td').click(function(){
+		$('#pop1').removeClass('hide');
+	});
+	
+	$('.popTitle.crop').click(function(){
+		$(this).toggleClass('on');
+	});
+	
+	$('.grid td .ellipsis').click(function(){
+		$(this).toggleClass('on');
+	});
+	
+</script>

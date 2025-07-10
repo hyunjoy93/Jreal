@@ -1,0 +1,120 @@
+
+
+자산 분류 asset_
+
+
+사용자 결재자 권한 구분 
+
+1.시스템 어드민
+2.유지보수 담당자
+3.결재자
+
+
+렉실장도 일단 이미지 등록으로 PDF 뷰어 이미지 
+
+
+
+전산팀이 없는 경우 일떄 , 내부직원들이 요청 사항을 넣을 수 있는 게시판?!?!?!? -- 보류 
+
+
+
+sms 전송 ( 점검 요청 왔을 때 유지보수 담당자에게 알림 call )
+
+
+
+
+자산관리에 유지보수담당 회사
+자산테이블, 유지보수계약이력 테이블, 사용자 테이블, 회사 테이블 쪼인 ,,,,,,,
+
+
+
+
+
+    var tree = [
+        {
+            "id": 1,
+            "content": "First item",
+            "classes": ["dd-nochildren"]
+        },
+        {
+            "id": 2,
+            "content": "Second item",
+            "children": [
+                {
+                    "id": 3,
+                    "content": "Item 3"
+                },
+                {
+                    "id": 4,
+                    "content": "Item 4"
+                },
+                {
+                    "id": 5,
+                    "content": "Item 5",
+                    "value": "Item 5 value",
+                    "foo": "Bar",
+                    "children": [
+                        {
+                            "id": 6,
+                            "content": "Item 6"
+                        },
+                        {
+                            "id": 7,
+                            "content": "Item 7"
+                        },
+                        {
+                            "id": 8,
+                            "content": "Item 8"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "content": "Item 9"
+        },
+        {
+            "id": 10,
+            "content": "Item 10",
+            "children": [
+                {
+                    "id": 11,
+                    "content": "Item 11",
+                    "children": [
+                        {
+                            "id": 12,
+                            "content": "Item 12"
+                        }
+                    ]
+                }
+            ]
+        }
+    ];
+    
+    
+    
+    apvl_emp_id1
+: 
+"jsnam@itsm.co.kr"
+apvl_emp_id2
+: 
+"test@itsm.co.kr"
+aset_clsf_nm
+: 
+"알카텔 백본"
+aset_id
+: 
+"1"
+aset_nm
+: 
+"알카텔 백본#1"
+content
+: 
+"알카텔 백본 > 알카텔 백본#1"
+corp_id
+: 
+"2"
+corp_ko_nm
+: 
+"스탠다드글로벌IT"

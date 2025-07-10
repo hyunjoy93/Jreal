@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.SptMapper">
+
+	<!-- 공지사항 목록 -->
+	<select id="selectNotice" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	with
+	t_base as 
+	(
+       SELECT a.bbm_id
+        	, a.bbs_sep_cd
+        	, a.bbm_titl
+        	, a.bbm_ctnt
+        	, a.bbm_trg_cd
+        	, a.par_bbm_id
+        	, a.bbm_lvl
+        	, a.leaf_yn
+        	, ( select count(*)
+        	      from bbs   z
+        	     where 1=1
+        	       and a.bbm_id = z.par_bbm_id )   as reply_cnt
+        	, c.corp_ko_nm   as corp_ko_nm 
+        	, b.dept_nm      as dept_nm
+        	, a.reg_emp_id   as reg_emp_id
+        	, b.emp_nm       as reg_emp_nm
+        	, TO_CHAR(a.reg_dttm, 'YYYY-MM-DD HH24:MI:SS') AS reg_dttm
+            , <![CDATA[
+               '<button type="button" class="bt bd gb primary bbm-update">수정</button> <button type="button" class="bt bd gb bbm-delete">삭제</button>'
+               ]]> AS btn_upd_del
+         FROM bbs   a
+                left outer join emp   b
+                        on ( a.reg_emp_id = b.emp_id )
+                left outer join corp   c
+                        on ( b.corp_id = c.corp_id )
+        WHERE 1=1
+          AND par_bbm_id is null
+	)
+	select *
+	  from t_base 
+	 where 1=1	       
+      <if test="searchStr != null and searchStr != ''">
+ 	 	<if test="searchType.equals('bbmTitl')">
+ 	 		AND bbm_titl LIKE '%' || #{searchStr} || '%' 
+ 	 	</if>
+ 	 	<if test="searchType.equals('regEmpNm')">
+ 	 		AND reg_emp_nm LIKE '%' || #{searchStr} || '%'
+ 	 	</if>
+ 	 </if>
+     ORDER BY bbm_id DESC
+	</select>
+	
+	<!-- 공지사항 상세 -->
+	<select id="selectNoticeDetail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT a.bbm_id                           as bbm_id 
+         	 , a.bbm_titl                         as bbm_titl
+        	 , a.bbm_ctnt                         as bbm_ctnt
+        	 , a.reg_emp_id                       as reg_emp_id
+        	 , b.emp_nm                           as reg_emp_nm
+        	 , TO_CHAR(a.reg_dttm, 'YYYY-MM-DD')  AS reg_dttm
+          FROM bbs   a
+                 left outer join emp   b
+                         on ( a.reg_emp_id = b.emp_id )
+         WHERE 1=1  
+		   AND a.bbm_id = #{bbm_id}
+           AND a.par_bbm_id is null
+	</select>
+		
+	<!-- 공지사항 상세 파일 -->
+	<select id="selectNoticeFiles" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT 
+	        apnd_file_sep_cd
+	        , apnd_file_trg_id
+	        , apnd_file_sno
+	        , apnd_file_path
+	        , apnd_file_nm
+		   	, reg_emp_id
+		   	, reg_dttm
+		   	, mod_emp_id
+		   	, mod_dttm
+		FROM apnd_file
+		WHERE apnd_file_trg_id = #{apnd_file_trg_id}
+       	<if test="apnd_file_sno != null and apnd_file_sno != ''">
+       		AND apnd_file_sno = CAST(#{apnd_file_sno} AS INTEGER)
+       	</if>
+       	 order by apnd_file_sno
+		
+		
+	</select>
+	<!-- 공지사항 idx -->
+	<select id="selectMaxIdx" resultType="String">
+        SELECT MAX(substr(bbm_id, 3)) AS bbm_id
+        FROM bbs 
+        WHERE 1=1 
+        ORDER BY bbm_id DESC LIMIT 1
+	</select>
+	
+	<!-- 공지사항 등록 -->
+	<insert id="insertNotice" parameterType="java.util.HashMap">
+        INSERT INTO bbs 
+        (
+	        bbm_id
+			,bbs_sep_cd
+			,bbm_titl
+			,bbm_ctnt
+			,bbm_trg_cd
+			,par_bbm_id
+			,bbm_lvl
+			,leaf_yn
+			,reg_emp_id
+			,reg_dttm
+			,mod_emp_id
+			,mod_dttm
+        )
+        VALUES
+        (
+        	#{idx}
+        	, 'N'
+        	, #{bbm_titl}
+        	, #{bbm_ctnt}
+        	, 'A'
+        	, null
+        	, 1
+        	, 'N'
+        	, #{user_id}
+        	, now()
+        	, #{user_id}
+        	, now()
+        )
+	</insert>
+	
+	<!-- 공지사항 파일등록 -->
+	<insert id="insertNoticeFiles" parameterType="java.util.HashMap">
+        INSERT INTO apnd_file 
+        (
+	        apnd_file_sep_cd
+	        , apnd_file_trg_id
+	        , apnd_file_sno
+	        , apnd_file_path
+	        , apnd_file_nm
+		   	, reg_emp_id
+		   	, reg_dttm
+		   	, mod_emp_id
+		   	, mod_dttm
+        )
+        VALUES
+        (
+        	#{apnd_file_sep_cd}
+        	, #{apnd_file_trg_id}
+        	, #{apnd_file_sno}
+        	, #{apnd_file_path}
+        	, #{apnd_file_nm}
+        	, #{user_id}
+        	, now()
+        	, #{user_id}
+        	, now()
+        )
+	</insert>
+	
+	<!-- 공지사항 파일삭제 -->
+	<delete id="deleteNoticeFiles" parameterType="java.util.HashMap">
+        DELETE FROM apnd_file
+         WHERE 1=1
+           AND apnd_file_trg_id = #{bbm_id_mod}
+	</delete>
+	
+	<!-- 파일삭제 -->
+	<delete id="deleteFiles" parameterType="java.util.HashMap">
+        DELETE FROM apnd_file
+         WHERE 1=1
+           AND apnd_file_trg_id = #{apnd_file_trg_id}
+           AND apnd_file_sno = #{apnd_file_sno}
+	</delete>
+	
+	
+	<!-- 공지사항 삭제 -->
+	<delete id="deleteNotice" parameterType="java.util.HashMap">
+		DELETE FROM bbs
+		 WHERE 1=1
+		   AND bbm_id = #{bbmId};
+		
+		DELETE FROM bbs
+		 WHERE 1=1
+		   AND par_bbm_id = #{bbmId};
+	</delete>
+	
+	<!-- 공지사항 수정 -->
+	<update id="updateNotice" parameterType="java.util.HashMap">
+        UPDATE bbs
+        SET   bbm_titl = #{bbm_titl_mod}
+        	, bbm_ctnt = #{bbm_ctnt_mod}
+			, mod_emp_id = #{user_id_mod}
+			, mod_dttm = now()
+        WHERE bbm_id = #{bbm_id_mod}
+	</update>
+	
+	<!-- 공지사항 답변 댓글목록 -->
+	<select id="selectReplList" parameterType="String" resultType="java.util.HashMap">
+        SELECT bbm_id
+        	, bbm_titl
+        	, bbm_ctnt
+        	, par_bbm_id
+        	, reg_emp_id
+        	, TO_CHAR(reg_dttm, 'YYYY-MM-DD') AS reg_dttm
+        FROM bbs
+        WHERE 1=1
+            AND par_bbm_id = #{txnId}
+	</select>
+		
+	<!-- 공지사항 답변 댓글삭제 -->
+	<delete id="deleteRepl" parameterType="java.util.HashMap">
+		DELETE FROM bbs
+		 WHERE bbm_id  = #{bbm_id}
+		   AND BBM_LVL = 2
+	</delete>
+	
+	<!-- VOC 댓글 등록 -->
+	<insert id="insertRepl" parameterType="java.util.HashMap">
+        INSERT INTO bbs 
+        (
+	        bbm_id
+			,bbs_sep_cd
+			,bbm_titl
+			,bbm_ctnt
+			,bbm_trg_cd
+			,par_bbm_id
+			,bbm_lvl
+			,leaf_yn
+			,reg_emp_id
+			,reg_dttm
+			,mod_emp_id
+			,mod_dttm
+        )
+        VALUES
+        (
+        	#{bbmIdx}
+        	, 'N'
+        	, #{bbm_titl}
+        	, #{bbm_ctnt}
+        	, 'A'
+        	, #{par_bbm_id}
+        	, 2
+        	, 'N'
+        	, #{user_id}
+        	, now()
+        	, #{user_id}
+        	, now()
+        )
+	</insert>
+			
+	<!-- FAQ 목록 FAQ 카테고리 코드 재정의 되면 수정해야함.-->
+	<select id="selectFaq" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+      SELECT bbs_txn_id                                     AS bbs_txn_id
+      	     , CASE ctgry_type_cd
+	       	   WHEN 'F99'
+	       	         THEN '공통'
+	       	   ELSE ''
+	       	   END											  AS ctgry_type_cd
+             , pstng_title_nm                                 AS pstng_title_nm
+             , TO_CHAR(amd_dt, 'YYYY-MM-DD HH24:MI:SS')       AS amd_dt
+             , amdr_id                                        AS amdr_id
+             , <![CDATA[
+                 '<button type="button" class="bt bd gb primary user-update">수정</button> <button type="button" class="bt bd gb user-delete">삭제</button>'
+               ]]> AS btn_upd_del
+             , count(bbs_txn_id) OVER() AS total_count
+        FROM bbs_txn BT
+       WHERE 1=1
+         AND pstng_type_cd = 'F'
+       <!-- <if test="ctgryTypeCdGroup != null and ctgryTypeCdGroup != ''">
+        		AND ctgry_type_cd = #{ctgryTypeCdGroup}
+        </if> -->
+         <if test="searchStr != null and searchStr != ''">
+	   	 	<if test="searchType.equals('pstngTitleNm')">
+	   	 		AND pstng_title_nm LIKE '%' || #{searchStr} || '%' 
+	   	 	</if>
+	   	 	<if test="searchType.equals('pstngSbst')">
+	   	 		AND pstng_sbst LIKE '%' || #{searchStr} || '%'
+	   	 	</if>
+	   	 </if>
+        ORDER BY bbs_txn_id DESC
+        LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)
+	</select>
+	
+	<!-- FAQ 상세 -->
+	<select id="selectFaqDetail" parameterType="int" resultType="java.util.HashMap">
+      SELECT  ctgry_type_cd
+        	, pstng_title_nm
+        	, TO_CHAR(amd_dt, 'YYYY-MM-DD HH24:MI:SS')      AS amd_dt
+        	, amdr_id
+        	, pstng_sbst
+        	, bbs_txn_id
+        FROM bbs_txn
+       WHERE 1=1
+		 AND bbs_txn_id = #{bbsTxnId}
+	</select>
+	
+	<!-- FAQ 등록 -->
+	<insert id="insertFaq" parameterType="java.util.HashMap">
+        INSERT INTO BBS_TXN 
+        (     ctgry_type_cd
+        	, pstng_type_cd
+	        , pstng_title_nm
+	        , pstng_sbst
+	        , use_yn
+	        , view_cnt
+	        , ans_cmplt_yn
+	        , cret_dt
+	        , cretr_id
+	        , amd_dt
+	        , amdr_id
+        )
+        VALUES
+        (
+        	  'F99' 
+        	, 'F'
+	        , #{pstngTitleNm}
+	        , #{pstngSbst}
+	        , 'Y'
+	        , 0
+	        , 'N'
+	        , now()
+	        , #{userId}
+	        , now()
+	        , #{userId}
+        )
+	</insert>
+	
+	<!-- FAQ 수정 -->
+	<update id="updateFaq" parameterType="java.util.HashMap">
+		UPDATE bbs_txn
+		SET   ctgry_type_cd = 'F99'
+			, pstng_title_nm = #{pstngTitleNm}
+			, pstng_sbst = #{pstngSbst}
+			, amd_dt = now()
+			, amdr_id = #{userId}
+		WHERE bbs_txn_id = CAST(#{bbsTxnId} AS INTEGER)
+	</update>
+		
+	<!-- FAQ 삭제 -->
+	<delete id="deleteFaq" parameterType="int">
+		DELETE FROM bbs_txn
+		WHERE bbs_txn_id = #{bbsTxnId}
+	</delete>
+	
+	<!-- 나의업무현황 계약 LIST -->
+	<select id="selectTodoMntcList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		with
+		t_base as 
+		(
+			select a.mntc_ctrt_sno
+	             , a.aset_id 
+	             , (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT par_aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = d.aset_clsf_id)) AS aset_clsf_id
+	             , (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = d.aset_clsf_id)) AS aset_clsf_nm
+			     , d.aset_nm
+	             , a.aset_chrg_emp_id1
+	             , a.aset_chrg_emp_id2
+	             , (select emp_nm from emp where emp_id = a.aset_chrg_emp_id1) as aset_chrg_emp_nm1
+	             , (select emp_nm from emp where emp_id = a.aset_chrg_emp_id2) as aset_chrg_emp_nm2
+			     , a.mntc_emp_id 
+			     , substr(a.ctrt_strt_dt ,1,4)||'-'||
+				   substr(a.ctrt_strt_dt ,5,2)||'-'||
+				   substr(a.ctrt_strt_dt ,7,2)           as ctrt_strt_dt
+			     , substr(a.ctrt_end_dt ,1,4)||'-'||
+				   substr(a.ctrt_end_dt ,5,2)||'-'||
+				   substr(a.ctrt_end_dt ,7,2)            as ctrt_end_dt 
+			     , substr(a.ctrt_dt ,9,2)||':'||
+				   substr(a.ctrt_dt ,11,2) as ctrt_dt 
+		         , (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.contract_type AND col_en_nm = 'CONTRACT_TYPE') AS contract_type
+			     , a.del_yn
+			     , a.ctrt_dt as ctrt_dt2
+			  from mntc_hist   a
+			     , aset_real   d
+			 where 1=1
+			   and a.aset_id           = d.aset_id
+		)
+		select *
+		  from t_base   a
+           where LEFT(a.ctrt_dt2, 8) = TO_CHAR(NOW(), 'YYYYMMDD')
+		  order by aset_id
+	</select>
+	
+	<!-- 나의업무현황 출퇴근 LIST -->
+	<select id="selectTodoCheckInList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT b.emp_id,
+		       b.emp_nm,
+		       c.corp_ko_nm,
+		       TO_CHAR(a.clock_in_time, 'HH24:MI') AS clock_in_time,
+		       TO_CHAR(a.clock_out_time, 'HH24:MI') AS clock_out_time
+		  FROM emp b
+		  LEFT JOIN attendance_records a
+		    ON b.emp_id = a.emp_id
+		   AND a.work_date = NOW()::DATE
+		  LEFT JOIN corp c
+		    ON b.corp_id = c.corp_id
+		   order by c.corp_ko_nm
+	</select>
+	
+</mapper>

@@ -1,0 +1,1169 @@
+-- agent_message definition
+
+-- Drop table
+
+-- DROP TABLE agent_message;
+
+CREATE TABLE agent_message (
+	occu_time timestamp NULL,
+	target_ip varchar(20) NULL,
+	target_level varchar(20) NULL,
+	target_item varchar(200) NULL,
+	target_value varchar(30) NULL,
+	target_contents varchar(1000) NULL,
+	send_agent varchar(20) NULL,
+	create_time timestamp NULL,
+	host_group_name varchar(100) NULL,
+	sms_msg varchar(200) NULL,
+	trigger_id int8 NULL,
+	proxy_name varchar(10) NULL,
+	zbx_available int4 NULL,
+	ipmi_available int4 NULL,
+	snmp_available int4 NULL,
+	jmx_available int4 NULL
+);
+CREATE INDEX agent_message_idx01 ON agent_message USING btree (target_ip, target_contents);
+CREATE INDEX agent_message_idx02 ON agent_message USING btree (trigger_id);
+
+
+-- aset definition
+
+-- Drop table
+
+-- DROP TABLE aset;
+
+CREATE TABLE aset (
+	aset_id varchar(100) NOT NULL,
+	aset_nm varchar(100) NULL,
+	aset_clsf_cd varchar(20) NOT NULL,
+	aset_stus_sep_cd varchar(1) NULL,
+	apvl_emp_id1 varchar(100) NOT NULL,
+	apvl_emp_id2 varchar(100) NOT NULL,
+	scrt_rat_cd varchar(1) NULL,
+	muft_corp_nm varchar(100) NULL,
+	aset_mdl_nm varchar(100) NULL,
+	ip_addr varchar(100) NULL,
+	instl_plce varchar(500) NULL,
+	prps_desc varchar(500) NULL,
+	intd_dt varchar(8) NULL,
+	intd_cost numeric(21, 3) NULL,
+	note varchar(500) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT aset_pkey PRIMARY KEY (aset_id)
+);
+
+
+-- aset_chg_hist definition
+
+-- Drop table
+
+-- DROP TABLE aset_chg_hist;
+
+CREATE TABLE aset_chg_hist (
+	aset_id varchar(100) NOT NULL,
+	aset_info_chg_dttm timestamp NOT NULL,
+	aset_nm varchar(100) NULL,
+	aset_clsf_cd varchar(20) NULL,
+	aset_stus_sep_cd varchar(1) NULL,
+	apvl_emp_id1 varchar(100) NULL,
+	apvl_emp_id2 varchar(100) NULL,
+	scrt_rat_cd varchar(1) NULL,
+	aset_mdl_nm varchar(100) NULL,
+	muft_corp_nm varchar(100) NULL,
+	ip_addr varchar(100) NULL,
+	instl_plce varchar(500) NULL,
+	prps_desc varchar(500) NULL,
+	intd_cost numeric(21, 3) NULL,
+	note varchar(500) NULL,
+	rglr_chk_sep_cd varchar(1) NULL,
+	rglr_chk_dd varchar(500) NULL,
+	chk_type_cd varchar(1) NULL,
+	chk_form_id varchar(100) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	intd_dt varchar(8) NULL,
+	CONSTRAINT aset_chg_hist_pkey PRIMARY KEY (aset_id, aset_info_chg_dttm)
+);
+
+
+-- aset_clsf_cd definition
+
+-- Drop table
+
+-- DROP TABLE aset_clsf_cd;
+
+CREATE TABLE aset_clsf_cd (
+	aset_clsf_cd varchar(20) NOT NULL,
+	aset_clsf_nm varchar(100) NULL,
+	par_aset_clsf_cd varchar(20) NULL,
+	leaf_yn varchar(1) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT aset_clsf_cd_pkey PRIMARY KEY (aset_clsf_cd)
+);
+
+
+-- auto_inventory definition
+
+-- Drop table
+
+-- DROP TABLE auto_inventory;
+
+CREATE TABLE auto_inventory (
+	seq int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	"zone" varchar(100) NULL,
+	loc_nm varchar(250) NULL,
+	datacenter_nm varchar(255) NULL,
+	rack_location varchar(20) NULL,
+	equip_position int4 NULL,
+	own_dept_nm varchar(50) NULL,
+	center_nm varchar(60) NULL,
+	equnr varchar(30) NULL,
+	host_nm varchar(200) NULL,
+	mgmt_ip varchar(100) NULL,
+	ipmi_ip varchar(100) NULL,
+	std_cd varchar(8) NULL,
+	std_nm varchar(120) NULL,
+	e_std_cd varchar(8) NULL,
+	e_std_nm varchar(120) NULL,
+	svc_usage varchar(91) NULL,
+	platform varchar(80) NULL,
+	platfoem_ver varchar(50) NULL,
+	os varchar(80) NULL,
+	os_ver varchar(50) NULL,
+	"usage" varchar(80) NULL,
+	hw_yn varchar(1) NULL,
+	csw_yn varchar(1) NULL,
+	os_yn varchar(1) NULL,
+	CONSTRAINT auto_inventory_pkey PRIMARY KEY (seq)
+);
+
+
+-- bbs_repl definition
+
+-- Drop table
+
+-- DROP TABLE bbs_repl;
+
+CREATE TABLE bbs_repl (
+	bbs_repl_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	bbs_txn_id int8 NOT NULL,
+	repl_sbst text NOT NULL,
+	cret_dt timestamp NULL,
+	cretr_id varchar(30) NULL,
+	amd_dt timestamp NULL,
+	amdr_id varchar(30) NULL,
+	CONSTRAINT bbs_repl_pkey PRIMARY KEY (bbs_repl_id)
+);
+
+
+-- bbs_txn definition
+
+-- Drop table
+
+-- DROP TABLE bbs_txn;
+
+CREATE TABLE bbs_txn (
+	bbs_txn_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	parent_id int8 NULL,
+	pstng_type_cd varchar(3) NOT NULL,
+	pstng_title_nm varchar(200) NOT NULL,
+	pstng_sbst text NOT NULL,
+	use_yn varchar(1) NOT NULL,
+	view_cnt numeric(10) NULL,
+	ctgry_type_cd varchar(3) NULL,
+	ans_cmplt_yn varchar(1) NULL,
+	pop_show_yn varchar(1) NULL DEFAULT 'N'::character varying,
+	pop_show_st_dt timestamp NULL,
+	pop_show_fns_dt timestamp NULL,
+	cret_dt timestamp NULL,
+	cretr_id varchar(30) NULL,
+	amd_dt timestamp NULL,
+	amdr_id varchar(30) NULL,
+	answer text NULL,
+	ans_id varchar(30) NULL,
+	ans_dt timestamp NULL,
+	CONSTRAINT bbs_txn_pkey PRIMARY KEY (bbs_txn_id)
+);
+
+
+-- chk_form definition
+
+-- Drop table
+
+-- DROP TABLE chk_form;
+
+CREATE TABLE chk_form (
+	chk_form_id varchar(100) NOT NULL,
+	chk_form_nm varchar(100) NULL,
+	prps_desc varchar(500) NULL,
+	use_yn varchar(1) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT chk_form_pkey PRIMARY KEY (chk_form_id)
+);
+
+
+-- chk_form_item definition
+
+-- Drop table
+
+-- DROP TABLE chk_form_item;
+
+CREATE TABLE chk_form_item (
+	chk_form_id varchar(100) NOT NULL,
+	chk_item_nm varchar(100) NOT NULL,
+	chk_crtr_desc varchar(500) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT chk_form_item_pkey PRIMARY KEY (chk_form_id, chk_item_nm)
+);
+
+
+-- chk_req definition
+
+-- Drop table
+
+-- DROP TABLE chk_req;
+
+CREATE TABLE chk_req (
+	chk_req_sno numeric(15) NOT NULL,
+	chk_sprt_type_cd varchar(1) NULL,
+	chk_sep_cd varchar(1) NULL,
+	chk_req_ctnt varchar(500) NULL,
+	vist_plan_strt_time varchar(6) NULL,
+	vist_plan_end_time varchar(6) NULL,
+	vist_goal_ctnt bpchar(18) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	chk_req_reg_dt varchar(8) NULL,
+	prc_cmpl_dt varchar(8) NULL,
+	vist_plan_dt varchar(8) NULL,
+	CONSTRAINT chk_req_pkey PRIMARY KEY (chk_req_sno)
+);
+
+
+-- chk_req_apvl definition
+
+-- Drop table
+
+-- DROP TABLE chk_req_apvl;
+
+CREATE TABLE chk_req_apvl (
+	chk_req_sno numeric(15) NOT NULL,
+	apvl_prc_seqno numeric(10) NOT NULL,
+	apvl_emp_id varchar(100) NULL,
+	apvl_prc_sep_cd varchar(1) NULL,
+	send_ctnt varchar(500) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT chk_req_apvl_pkey PRIMARY KEY (chk_req_sno, apvl_prc_seqno)
+);
+
+
+-- chk_req_aset definition
+
+-- Drop table
+
+-- DROP TABLE chk_req_aset;
+
+CREATE TABLE chk_req_aset (
+	chk_req_sno numeric(15) NOT NULL,
+	aset_id varchar(100) NOT NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT chk_req_aset_pkey PRIMARY KEY (chk_req_sno, aset_id)
+);
+
+
+-- chk_rslt definition
+
+-- Drop table
+
+-- DROP TABLE chk_rslt;
+
+CREATE TABLE chk_rslt (
+	chk_req_sno numeric(15) NOT NULL,
+	aset_id varchar(100) NOT NULL,
+	chk_dt varchar(8) NOT NULL,
+	hdcp_ctnt varchar(500) NULL,
+	prc_rslt_sep_cd varchar(500) NULL,
+	uniq_item varchar(500) NULL,
+	chk_sprt_type_cd varchar(1) NULL,
+	chk_sep_cd varchar(1) NULL,
+	apnd_file_path varchar(500) NULL,
+	apnd_file_nm varchar(100) NULL,
+	cmpl_yn varchar(1) NULL,
+	cmpl_cnfm_emp_id varchar(100) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT chk_rslt_pkey PRIMARY KEY (chk_req_sno, aset_id, chk_dt)
+);
+
+
+-- cmon_agent_info definition
+
+-- Drop table
+
+-- DROP TABLE cmon_agent_info;
+
+CREATE TABLE cmon_agent_info (
+	agent_name varchar(30) NULL,
+	agent_ip varchar(20) NOT NULL,
+	agent_port varchar(20) NULL,
+	agent_cycle_sec int4 NULL,
+	agent_alive int4 NULL,
+	CONSTRAINT cmon_agent_info_pk PRIMARY KEY (agent_ip)
+);
+CREATE INDEX cmon_agent_info_idx1 ON cmon_agent_info USING btree (agent_alive);
+
+
+-- cmon_agent_target_list definition
+
+-- Drop table
+
+-- DROP TABLE cmon_agent_target_list;
+
+CREATE TABLE cmon_agent_target_list (
+	agent_ip varchar(20) NULL,
+	target_ip varchar(20) NULL,
+	target_group varchar(100) NULL,
+	target_host varchar(100) NULL
+);
+CREATE INDEX cmon_agent_target_list_idx1 ON cmon_agent_target_list USING btree (agent_ip);
+
+
+-- cmon_daily_chart definition
+
+-- Drop table
+
+-- DROP TABLE cmon_daily_chart;
+
+CREATE TABLE cmon_daily_chart (
+	chart_date timestamp NULL,
+	event_count int4 NULL,
+	incident_count int4 NULL
+);
+CREATE INDEX cmon_daily_chart_idx1 ON cmon_daily_chart USING btree (chart_date);
+
+
+-- cmon_event_exception definition
+
+-- Drop table
+
+-- DROP TABLE cmon_event_exception;
+
+CREATE TABLE cmon_event_exception (
+	start_time timestamp NULL,
+	end_time timestamp NULL,
+	type_nm varchar(30) NULL,
+	container_nm varchar(50) NULL,
+	datacenter_nm varchar(50) NULL,
+	stdnm varchar(50) NULL,
+	estdnm varchar(50) NULL,
+	"content" varchar(200) NULL,
+	charge_depart varchar(50) NULL,
+	charge_person varchar(20) NULL,
+	phone varchar(50) NULL,
+	regist_person varchar(20) NULL,
+	regist_time timestamp NULL
+);
+
+
+-- cmon_event_group definition
+
+-- Drop table
+
+-- DROP TABLE cmon_event_group;
+
+CREATE TABLE cmon_event_group (
+	event_group varchar(10) NULL,
+	event_content varchar(20) NULL
+);
+CREATE UNIQUE INDEX cmon_event_group_idx01 ON cmon_event_group USING btree (event_content);
+
+
+-- cmon_event_info definition
+
+-- Drop table
+
+-- DROP TABLE cmon_event_info;
+
+CREATE TABLE cmon_event_info (
+	event_id varchar(20) NOT NULL,
+	occu_time timestamp NULL,
+	target_ip varchar(20) NULL,
+	target_item varchar(200) NULL,
+	target_value varchar(20) NULL,
+	target_contents varchar(1000) NULL,
+	send_agent varchar(20) NULL,
+	create_time timestamp NULL,
+	event_level varchar(30) NULL,
+	last_occu_time timestamp NULL,
+	event_occu_count int4 NULL,
+	equ_barcode varchar(30) NULL,
+	device_ip varchar(60) NULL,
+	mgmt_ip varchar(30) NULL,
+	ipmi_ip varchar(30) NULL,
+	physical_address varchar(50) NULL,
+	hostname varchar(200) NULL,
+	equip_label varchar(50) NULL,
+	model varchar(50) NULL,
+	manuf_nm varchar(50) NULL,
+	container_nm varchar(30) NULL,
+	datacenter_nm varchar(30) NULL,
+	rack_location varchar(30) NULL,
+	equip_position varchar(30) NULL,
+	stdnm varchar(50) NULL,
+	estdnm varchar(50) NULL,
+	type_nm varchar(30) NULL,
+	own_dept_nm varchar(50) NULL,
+	warr_st_dt varchar(30) NULL,
+	hwoprusrcd varchar(30) NULL,
+	event_state varchar(30) NULL,
+	event_step1_user varchar(20) NULL,
+	event_step1_state varchar(20) NULL,
+	event_step1_start timestamp NULL,
+	event_step1_end timestamp NULL,
+	event_step1_contents text NULL,
+	event_step2_user varchar(20) NULL,
+	event_step2_state varchar(20) NULL,
+	event_step2_start timestamp NULL,
+	event_step2_end timestamp NULL,
+	event_step2_contents text NULL,
+	event_service_impact varchar(10) NULL,
+	event_tech_voc varchar(10) NULL,
+	event_result_type varchar(20) NULL,
+	event_result_user varchar(20) NULL,
+	event_result_time timestamp NULL,
+	incident_id varchar(20) NULL,
+	exception_flag int4 NULL,
+	zabbix_state varchar(20) NULL DEFAULT ''::character varying,
+	gubun varchar(10) NULL,
+	trigger_id int8 NULL,
+	host_group_gubun varchar(10) NULL,
+	zbx_available int4 NULL,
+	ipmi_available int4 NULL,
+	snmp_available int4 NULL,
+	jmx_available int4 NULL,
+	CONSTRAINT cmon_event_info_pk PRIMARY KEY (event_id)
+);
+
+
+-- cmon_idc_list definition
+
+-- Drop table
+
+-- DROP TABLE cmon_idc_list;
+
+CREATE TABLE cmon_idc_list (
+	idc_name varchar(30) NOT NULL,
+	CONSTRAINT cmon_idc_list_pk PRIMARY KEY (idc_name)
+);
+
+
+-- cmon_incident_contact definition
+
+-- Drop table
+
+-- DROP TABLE cmon_incident_contact;
+
+CREATE TABLE cmon_incident_contact (
+	type_nm varchar(30) NULL,
+	container_nm varchar(50) NULL,
+	datacenter_nm varchar(50) NULL,
+	stdnm varchar(50) NULL,
+	estdnm varchar(50) NULL,
+	incident_level varchar(20) NULL,
+	charge_depart varchar(50) NULL,
+	charge_person varchar(20) NULL,
+	phone varchar(50) NULL,
+	mail varchar(50) NULL
+);
+
+
+-- cmon_incident_event_info definition
+
+-- Drop table
+
+-- DROP TABLE cmon_incident_event_info;
+
+CREATE TABLE cmon_incident_event_info (
+	incident_id varchar(20) NOT NULL,
+	event_id varchar(20) NOT NULL,
+	CONSTRAINT cmon_incident_event_info_pkey PRIMARY KEY (incident_id, event_id)
+);
+
+
+-- cmon_incident_info definition
+
+-- Drop table
+
+-- DROP TABLE cmon_incident_info;
+
+CREATE TABLE cmon_incident_info (
+	incident_id varchar(20) NOT NULL,
+	event_id varchar(4500) NULL,
+	event_time timestamp NULL,
+	type_nm varchar(20) NULL,
+	container_nm varchar(50) NULL,
+	datacenter_nm varchar(50) NULL,
+	stdnm varchar(50) NULL,
+	estdnm varchar(50) NULL,
+	incident_level varchar(20) NULL,
+	incident_state varchar(20) NULL,
+	incident_contents varchar(500) NULL,
+	incident_start_time timestamp NULL,
+	incident_end_time timestamp NULL,
+	captain varchar(30) NULL,
+	incident_chief varchar(30) NULL,
+	restore_chief varchar(30) NULL,
+	restore_team varchar(30) NULL,
+	incident_service_impact varchar(10) NULL,
+	incident_tech_voc varchar(10) NULL,
+	itsm_incident_id varchar(30) NULL,
+	incident_result_type varchar(30) NULL,
+	incident_result_user varchar(20) NULL,
+	CONSTRAINT cmon_incident_info_pk PRIMARY KEY (incident_id)
+);
+CREATE INDEX cmon_incident_info_idx1 ON cmon_incident_info USING btree (incident_state, incident_id);
+
+
+-- cmon_incident_proc definition
+
+-- Drop table
+
+-- DROP TABLE cmon_incident_proc;
+
+CREATE TABLE cmon_incident_proc (
+	idx int4 NOT NULL,
+	incident_id varchar(20) NULL,
+	proc_time timestamp NULL,
+	proc_content varchar(200) NULL,
+	proc_user varchar(30) NULL,
+	CONSTRAINT cmon_incident_proc_pk PRIMARY KEY (idx)
+);
+CREATE INDEX cmon_incident_proc_idx1 ON cmon_incident_proc USING btree (incident_id);
+
+
+-- cmon_login_log definition
+
+-- Drop table
+
+-- DROP TABLE cmon_login_log;
+
+CREATE TABLE cmon_login_log (
+	login_time timestamp NULL,
+	id varchar(30) NULL,
+	success_flag varchar(10) NULL,
+	csrf varchar(50) NULL,
+	user_name varchar(30) NULL,
+	dept_name varchar(50) NULL,
+	agency_name varchar(50) NULL,
+	company_name varchar(50) NULL
+);
+
+
+-- cmon_mkate definition
+
+-- Drop table
+
+-- DROP TABLE cmon_mkate;
+
+CREATE TABLE cmon_mkate (
+	mkate_id varchar NOT NULL,
+	mkate_proc_id varchar NULL,
+	mkate_nm varchar NULL,
+	mkate_type varchar NULL,
+	mkate_level varchar NULL,
+	charge_depart varchar NULL,
+	charge_person varchar NULL,
+	charge_person2 varchar NULL,
+	charge_person3 varchar NULL,
+	occu_time timestamp NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- cmon_mkate_proc definition
+
+-- Drop table
+
+-- DROP TABLE cmon_mkate_proc;
+
+CREATE TABLE cmon_mkate_proc (
+	mkate_proc_id varchar NOT NULL,
+	proc_contents varchar NULL,
+	proc_time timestamp NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- cmon_notice definition
+
+-- Drop table
+
+-- DROP TABLE cmon_notice;
+
+CREATE TABLE cmon_notice (
+	idx int4 NOT NULL,
+	regist_time timestamp NULL,
+	regist_person varchar(30) NULL,
+	title varchar(100) NULL,
+	"content" varchar(1000) NULL,
+	CONSTRAINT cmon_notice_pk PRIMARY KEY (idx)
+);
+
+
+-- cmon_user definition
+
+-- Drop table
+
+-- DROP TABLE cmon_user;
+
+CREATE TABLE cmon_user (
+	user_id varchar(30) NOT NULL,
+	user_password varchar(300) NULL,
+	user_group varchar(30) NULL,
+	user_name varchar(30) NULL,
+	user_depart varchar(50) NULL,
+	last_login varchar(10) NULL,
+	CONSTRAINT cmon_user_pk PRIMARY KEY (user_id)
+);
+
+
+-- comm_cd definition
+
+-- Drop table
+
+-- DROP TABLE comm_cd;
+
+CREATE TABLE comm_cd (
+	col_id varchar(100) NOT NULL,
+	col_nm varchar(100) NULL,
+	col_desc varchar(500) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT comm_cd_pkey PRIMARY KEY (col_id)
+);
+
+
+-- comm_cd_detl definition
+
+-- Drop table
+
+-- DROP TABLE comm_cd_detl;
+
+CREATE TABLE comm_cd_detl (
+	col_id varchar(100) NOT NULL,
+	cd_id varchar(100) NOT NULL,
+	cd_ko_nm varchar(100) NULL,
+	cd_en_nm varchar(100) NULL,
+	cd_desc varchar(500) NULL,
+	sort_ord numeric(10) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT comm_cd_detl_pkey PRIMARY KEY (col_id, cd_id)
+);
+
+
+-- corp definition
+
+-- Drop table
+
+-- DROP TABLE corp;
+
+CREATE TABLE corp (
+	corp_id varchar(100) NOT NULL,
+	corp_nm varchar(100) NULL,
+	corp_no varchar(20) NULL,
+	biz_reg_no varchar(20) NULL,
+	addr varchar(1000) NULL,
+	rep_telno varchar(50) NULL,
+	web_site_url varchar(1000) NULL,
+	mntc_corp_yn varchar(1) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT corp_pkey PRIMARY KEY (corp_id)
+);
+
+
+-- dept definition
+
+-- Drop table
+
+-- DROP TABLE dept;
+
+CREATE TABLE dept (
+	dept_id varchar(100) NOT NULL,
+	corp_id varchar(100) NOT NULL,
+	dept_cd varchar(20) NULL,
+	dept_nm varchar(100) NULL,
+	par_dept_id varchar(100) NULL,
+	leaf_yn varchar(1) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT dept_pkey PRIMARY KEY (dept_id)
+);
+
+
+-- emp definition
+
+-- Drop table
+
+-- DROP TABLE emp;
+
+CREATE TABLE emp (
+	emp_id varchar(100) NOT NULL,
+	corp_id varchar(100) NOT NULL,
+	dept_id varchar(100) NULL,
+	emp_no varchar(50) NULL,
+	emp_nm varchar(100) NULL,
+	job_lvl_cd varchar(2) NULL,
+	intp_no varchar(50) NULL,
+	celp_no varchar(11) NULL,
+	email_addr varchar(1000) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT emp_pkey PRIMARY KEY (emp_id)
+);
+
+
+-- event_received_message definition
+
+-- Drop table
+
+-- DROP TABLE event_received_message;
+
+CREATE TABLE event_received_message (
+	datetime timestamp NULL,
+	target_ip varchar(50) NULL,
+	target_item varchar(5) NULL,
+	target_value varchar(2) NULL,
+	target_content varchar(500) NULL,
+	send_agent varchar(50) NULL,
+	proc_datetime timestamp NULL
+);
+
+
+-- itsm_infra_change definition
+
+-- Drop table
+
+-- DROP TABLE itsm_infra_change;
+
+CREATE TABLE itsm_infra_change (
+	change_id varchar(100) NOT NULL,
+	z_chm_division varchar(500) NULL,
+	reason varchar(500) NULL,
+	"location" varchar(500) NULL,
+	z_cloudyn varchar(500) NULL,
+	status_name varchar(500) NULL,
+	z_complete_type varchar(500) NULL,
+	requested_date varchar(500) NULL,
+	affected_item_name varchar(500) NULL,
+	category_name varchar(500) NULL,
+	implementation_end varchar(500) NULL,
+	chm_type1_name varchar(500) NULL,
+	assign_dept_name varchar(500) NULL,
+	z_accept_date varchar(500) NULL,
+	description text NULL,
+	requestor_name varchar(500) NULL,
+	closing_comments varchar(500) NULL,
+	current_phase_name varchar(500) NULL,
+	z_service_downyn varchar(500) NULL,
+	reg_time varchar(500) NULL,
+	coord_dept_name varchar(500) NULL,
+	company_name varchar(500) NULL,
+	implementation_start varchar(500) NULL,
+	z_chm_accept_type_l1 varchar(500) NULL,
+	z_chm_accept_type_l2 varchar(500) NULL,
+	z_disposer_name varchar(500) NULL,
+	z_chm_accept_type_l3 varchar(500) NULL,
+	z_fail_type varchar(500) NULL,
+	z_acceptor_name varchar(500) NULL,
+	"plans" text NULL,
+	process_type_cod_name varchar(500) NULL,
+	z_impact_analysis_result text NULL,
+	z_acceptyn varchar(500) NULL,
+	requestor_email varchar(500) NULL,
+	hours_worked varchar(500) NULL,
+	z_service_normal text NULL,
+	chm_type3_name varchar(500) NULL,
+	title varchar(500) NULL,
+	priority_code varchar(500) NULL,
+	assets_name text NULL,
+	part_name varchar(500) NULL,
+	z_disposal_team_name varchar(500) NULL,
+	z_close_code varchar(500) NULL,
+	domain_name varchar(500) NULL,
+	requestor_dept_name varchar(500) NULL,
+	severity varchar(500) NULL,
+	assignee_name varchar(500) NULL,
+	z_service_inspector varchar(500) NULL,
+	reg_user_name varchar(500) NULL,
+	z_reviewer_name varchar(500) NULL,
+	z_restoreyn varchar(500) NULL,
+	coordinator_name varchar(500) NULL,
+	chm_type2_name varchar(500) NULL,
+	cret_dt timestamp NULL,
+	amd_dt timestamp NULL,
+	CONSTRAINT itsm_infra_change_pkey PRIMARY KEY (change_id)
+);
+
+
+-- itsm_tam_change definition
+
+-- Drop table
+
+-- DROP TABLE itsm_tam_change;
+
+CREATE TABLE itsm_tam_change (
+	tam_id varchar(100) NOT NULL,
+	resolved_problems text NULL,
+	expect_man_hour varchar(500) NULL,
+	"location" varchar(500) NULL,
+	planned_start varchar(500) NULL,
+	status_name varchar(500) NULL,
+	requestor_email varchar(500) NULL,
+	planner_team varchar(500) NULL,
+	affected_item_name varchar(500) NULL,
+	category_name varchar(500) NULL,
+	title varchar(500) NULL,
+	assign_dept_name varchar(500) NULL,
+	description varchar(500) NULL,
+	requestor_name varchar(500) NULL,
+	closing_comments text NULL,
+	disposer_team varchar(500) NULL,
+	planned_end varchar(500) NULL,
+	current_phase_name varchar(500) NULL,
+	assets_name text NULL,
+	real_man_hour varchar(500) NULL,
+	reg_time varchar(500) NULL,
+	disposal_start_date varchar(500) NULL,
+	chm_plan text NULL,
+	disposer varchar(500) NULL,
+	disposal_end_date varchar(500) NULL,
+	requestor_dept_name varchar(500) NULL,
+	domain_name varchar(500) NULL,
+	assignee_name varchar(500) NULL,
+	company_name varchar(500) NULL,
+	reg_user_name varchar(500) NULL,
+	complete_type varchar(500) NULL,
+	task_type_l3 varchar(500) NULL,
+	task_type_l2 varchar(500) NULL,
+	parentid varchar(500) NULL,
+	task_type_l1 varchar(500) NULL,
+	planner varchar(500) NULL,
+	review_comments text NULL,
+	cret_dt timestamp NULL,
+	amd_dt timestamp NULL,
+	CONSTRAINT itsm_tam_change_pkey PRIMARY KEY (tam_id)
+);
+CREATE INDEX itsm_tam_change_idx01 ON itsm_tam_change USING btree (parentid, tam_id);
+
+
+-- login_hist definition
+
+-- Drop table
+
+-- DROP TABLE login_hist;
+
+CREATE TABLE login_hist (
+	emp_id varchar(100) NOT NULL,
+	conn_dttm timestamp NOT NULL,
+	conn_ip_addr varchar(1000) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT login_hist_pkey PRIMARY KEY (emp_id, conn_dttm)
+);
+
+
+-- manual_inventory definition
+
+-- Drop table
+
+-- DROP TABLE manual_inventory;
+
+CREATE TABLE manual_inventory (
+	seq int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	"zone" varchar(100) NULL,
+	loc_nm varchar(250) NULL,
+	datacenter_nm varchar(40) NULL,
+	rack_location varchar(40) NULL,
+	equip_position int4 NULL,
+	own_dept_nm varchar(50) NULL,
+	center_nm varchar(60) NULL,
+	equnr varchar(30) NULL,
+	host_nm varchar(200) NULL,
+	mgmt_ip varchar(100) NULL,
+	ipmi_ip varchar(100) NULL,
+	std_cd varchar(8) NULL,
+	std_nm varchar(120) NULL,
+	e_std_cd varchar(8) NULL,
+	e_std_nm varchar(120) NULL,
+	svc_usage varchar(91) NULL,
+	platform varchar(80) NULL,
+	platform_ver varchar(50) NULL,
+	os varchar(80) NULL,
+	os_ver varchar(50) NULL,
+	"usage" varchar(10) NULL,
+	hw_yn varchar(1) NULL,
+	csw_yn varchar(1) NULL,
+	os_yn varchar(1) NULL,
+	cret_dt timestamp NULL,
+	cretr_id varchar(30) NULL,
+	amd_dt timestamp NULL,
+	amdr_id varchar(30) NULL,
+	CONSTRAINT manual_inventory_pkey PRIMARY KEY (seq)
+);
+
+
+-- mntc_hist definition
+
+-- Drop table
+
+-- DROP TABLE mntc_hist;
+
+CREATE TABLE mntc_hist (
+	aset_id varchar(100) NOT NULL,
+	emp_id varchar(100) NOT NULL,
+	ctrt_strt_dt varchar(8) NOT NULL,
+	ctrt_end_dt varchar(8) NOT NULL,
+	mntc_ctrt_sep_cd varchar(1) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT mntc_hist_pkey PRIMARY KEY (aset_id, emp_id, ctrt_strt_dt, ctrt_end_dt)
+);
+
+
+-- ntic definition
+
+-- Drop table
+
+-- DROP TABLE ntic;
+
+CREATE TABLE ntic (
+	ntic_item_sno numeric(15) NOT NULL,
+	ntic_titl varchar(50) NULL,
+	ntic_ctnt varchar(500) NULL,
+	ntic_trg_cd varchar(1) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT ntic_pkey PRIMARY KEY (ntic_item_sno)
+);
+
+
+-- ntic_file definition
+
+-- Drop table
+
+-- DROP TABLE ntic_file;
+
+CREATE TABLE ntic_file (
+	ntic_item_sno numeric(15) NOT NULL,
+	apnd_file_sno numeric(15) NOT NULL,
+	apnd_file_path varchar(500) NULL,
+	apnd_file_nm varchar(100) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT ntic_file_pkey PRIMARY KEY (ntic_item_sno, apnd_file_sno)
+);
+
+
+-- pswd_chg_hist definition
+
+-- Drop table
+
+-- DROP TABLE pswd_chg_hist;
+
+CREATE TABLE pswd_chg_hist (
+	emp_id varchar(100) NOT NULL,
+	pswd_chg_dttm timestamp NOT NULL,
+	crnt_pswd varchar(20) NULL,
+	bef_pswd varchar(20) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT pswd_chg_hist_pkey PRIMARY KEY (emp_id, pswd_chg_dttm)
+);
+
+
+-- rglr_chk definition
+
+-- Drop table
+
+-- DROP TABLE rglr_chk;
+
+CREATE TABLE rglr_chk (
+	aset_id varchar(100) NOT NULL,
+	chk_sprt_type_cd varchar(1) NULL,
+	rglr_chk_prd_sep_cd varchar(1) NULL,
+	rglr_chk_dd varchar(500) NULL,
+	chk_form_id varchar(100) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT rglr_chk_pkey PRIMARY KEY (aset_id)
+);
+
+
+-- sms_group definition
+
+-- Drop table
+
+-- DROP TABLE sms_group;
+
+CREATE TABLE sms_group (
+	zabbix_ip varchar(30) NULL,
+	group_name varchar(50) NULL
+);
+
+
+-- sms_send_log definition
+
+-- Drop table
+
+-- DROP TABLE sms_send_log;
+
+CREATE TABLE sms_send_log (
+	zabbix_ip varchar(30) NULL,
+	send_time timestamp NULL,
+	host_group_name varchar(50) NULL,
+	host_name varchar(50) NULL,
+	host_ip varchar(50) NULL,
+	event_level int4 NULL,
+	user_id varchar(50) NULL,
+	group_name varchar(50) NULL
+);
+
+
+-- sms_send_message definition
+
+-- Drop table
+
+-- DROP TABLE sms_send_message;
+
+CREATE TABLE sms_send_message (
+	host_group_name varchar(100) NULL,
+	host_name varchar(60) NULL,
+	severity int4 NULL,
+	target_ip varchar(20) NULL,
+	sms_msg varchar(200) NULL,
+	trigger_id int8 NULL,
+	send_agent varchar(20) NULL
+);
+
+
+-- sms_send_rule definition
+
+-- Drop table
+
+-- DROP TABLE sms_send_rule;
+
+CREATE TABLE sms_send_rule (
+	idx int4 NULL,
+	zabbix_ip varchar(30) NULL,
+	host_group_name varchar(100) NULL,
+	host_name varchar(100) NULL,
+	host_ip varchar(50) NULL,
+	event_level varchar(30) NULL,
+	user_id varchar(50) NULL,
+	group_name varchar(50) NULL
+);
+CREATE INDEX sms_send_rule_idx1 ON sms_send_rule USING btree (zabbix_ip);
+CREATE INDEX sms_send_rule_idx2 ON sms_send_rule USING btree (idx);
+
+
+-- sms_user_contact definition
+
+-- Drop table
+
+-- DROP TABLE sms_user_contact;
+
+CREATE TABLE sms_user_contact (
+	zabbix_ip varchar(30) NULL,
+	user_id varchar(50) NULL,
+	user_name varchar(30) NULL,
+	user_depart varchar(50) NULL,
+	user_phone varchar(50) NULL,
+	user_mail varchar(50) NULL
+);
+CREATE INDEX sms_user_contact_idx1 ON sms_user_contact USING btree (user_id);
+
+
+-- sms_user_relation definition
+
+-- Drop table
+
+-- DROP TABLE sms_user_relation;
+
+CREATE TABLE sms_user_relation (
+	zabbix_ip varchar(30) NULL,
+	group_name varchar(50) NULL,
+	user_id varchar(50) NULL
+);
+
+
+-- "system" definition
+
+-- Drop table
+
+-- DROP TABLE "system";
+
+CREATE TABLE "system" (
+	site_nm varchar(100) NOT NULL,
+	site_ctnt varchar(500) NULL,
+	logo_file_nm varchar(100) NULL,
+	icon_file_nm varchar(100) NULL,
+	cprt_ctnt varchar(500) NULL,
+	reg_emp_id varchar(100) NOT NULL,
+	reg_dttm timestamp NOT NULL,
+	mod_emp_id varchar(100) NOT NULL,
+	mod_dttm timestamp NOT NULL,
+	CONSTRAINT system_pkey PRIMARY KEY (site_nm)
+);
+
+INSERT INTO cmon_user
+(user_id, user_password, user_group, user_name, user_depart, last_login)
+VALUES('hjyou', 'hKdwzuzRUIRAfKFoz1aFmRGjaGdbHyuo1/+wr4VTKNY=', '관리자', '유현종', NULL, NULL);
+INSERT INTO cmon_user
+(user_id, user_password, user_group, user_name, user_depart, last_login)
+VALUES('admin', 'hKdwzuzRUIRAfKFoz1aFmRGjaGdbHyuo1/+wr4VTKNY=', '관리자', '관리자', '관리자', NULL);

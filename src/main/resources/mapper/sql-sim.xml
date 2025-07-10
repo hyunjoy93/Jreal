@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.cmm.mapper.SimMapper">
+
+	<!-- 인프라 변경 작업-->
+	 <insert id="addItsmTamChange" parameterType="HashMap">
+		/* ScheduleItsmMapper.addTamChange */
+		with upsert as (
+			update itsm_tam_change
+			set resolved_problems	=	#{resolvedProblems}
+				,expect_man_hour	=	#{expectManHour}
+				,location	=	#{location}
+				,planned_start	=	#{plannedStart}
+				,status_name	=	#{statusName}
+				,requestor_email	=	#{requestorEmail}
+				,planner_team	=	#{plannerTeam}
+				,affected_item_name	=	#{affectedItemName}
+				,category_name	=	#{categoryName}
+				,title	=	#{title}
+				,assign_dept_name	=	#{assignDeptName}
+				,description	=	#{description}
+				,requestor_name	=	#{requestorName}
+				,closing_comments	=	#{closingComments}
+				,disposer_team	=	#{disposerTeam}
+				,planned_end	=	#{plannedEnd}
+				,current_phase_name	=	#{currentPhaseName}
+				,assets_name	=	#{assetsName}
+				,real_man_hour	=	#{realManHour}
+				,reg_time	=	#{regTime}
+				,disposal_start_date	=	#{disposalStartDate}
+				,chm_plan	=	#{chmPlan}
+				,disposer	=	#{disposer}
+				,disposal_end_date	=	#{disposalEndDate}
+				,requestor_dept_name	=	#{requestorDeptName}
+				,domain_name	=	#{domainName}
+				,assignee_name	=	#{assigneeName}
+				,company_name	=	#{companyName}
+				,reg_user_name	=	#{regUserName}
+				,complete_type	=	#{completeType}
+				,task_type_l3	=	#{taskTypeL3}
+				,task_type_l2	=	#{taskTypeL2}
+				,parentid	=	#{parentID}
+				,task_type_l1	=	#{taskTypeL1}
+				,planner	=	#{planner}
+				,review_comments	=	#{reviewComments}
+				,amd_dt = now()
+			where tam_id = #{tamID}
+			returning *
+		)
+		insert into itsm_tam_change( tam_id, resolved_problems, expect_man_hour, location, planned_start, status_name, requestor_email, planner_team, affected_item_name, category_name, title, assign_dept_name, description, requestor_name, closing_comments, disposer_team, planned_end, current_phase_name, assets_name, real_man_hour, reg_time, disposal_start_date, chm_plan, disposer, disposal_end_date, requestor_dept_name, domain_name, assignee_name, company_name, reg_user_name, complete_type, task_type_l3, task_type_l2, parentid, task_type_l1, planner, review_comments, cret_dt)
+		select #{tamID}
+							,#{resolvedProblems}
+							,#{expectManHour}
+							,#{location}
+							,#{plannedStart}
+							,#{statusName}
+							,#{requestorEmail}
+							,#{plannerTeam}
+							,#{affectedItemName}
+							,#{categoryName}
+							,#{title}
+							,#{assignDeptName}
+							,#{description}
+							,#{requestorName}
+							,#{closingComments}
+							,#{disposerTeam}
+							,#{plannedEnd}
+							,#{currentPhaseName}
+							,#{assetsName}
+							,#{realManHour}
+							,#{regTime}
+							,#{disposalStartDate}
+							,#{chmPlan}
+							,#{disposer}
+							,#{disposalEndDate}
+							,#{requestorDeptName}
+							,#{domainName}
+							,#{assigneeName}
+							,#{companyName}
+							,#{regUserName}
+							,#{completeType}
+							,#{taskTypeL3}
+							,#{taskTypeL2}
+							,#{parentID}
+							,#{taskTypeL1}
+							,#{planner}
+							,#{reviewComments}
+							,now()
+		where not exists(select * from upsert)
+	</insert>
+
+	<!-- 보안변경 작업 -->
+	<insert id="addItsmSecurityChange" parameterType="HashMap">
+		/* ScheduleItsmMapper.addItsmSecurityChange */
+		with upsert as (
+			update itsm_security_change
+			set 	z_acceptor_name	=	#{zAcceptorName}
+				, resolved_problems	=	#{resolvedProblems}
+				, z_chm_division	=	#{zChmDivision}
+				, process_type_cod_name	=	#{processTypeCodName}
+				, planned_start	=	#{plannedStart}
+				, reason	=	#{reason}
+				, location	=	#{location}
+				, status_name	=	#{statusName}
+				, z_complete_type	=	#{zCompleteType}
+				, requestor_email	=	#{requestorEmail}
+				, z_real_man_day	=	#{zRealManDay}
+				, z_accept_review_opinion	=	#{zAcceptReviewOpinion}
+				, requested_date	=	#{requestedDate}
+				, chm_type3_name	=	#{chmType3Name}
+				, affected_item_name	=	#{affectedItemName}
+				, category_name	=	#{categoryName}
+				, implementation_end	=	#{implementationEnd}
+				, title	=	#{title}
+				, assign_dept_name	=	#{assignDeptName}
+				, chm_type1_name	=	#{chmType1Name}
+				, z_accept_date	=	#{zAcceptDate}
+				, description	=	#{description}
+				, requestor_name	=	#{requestorName}
+				, planned_end	=	#{plannedEnd}
+				, current_phase_name	=	#{currentPhaseName}
+				, assets_name	=	#{assetsName}
+				, reg_time	=	#{regTime}
+				, z_disposal_team_name	=	#{zDisposalTeamName}
+				, part_name	=	#{partName}
+				, coord_dept_name	=	#{coordDeptName}
+				, requestor_dept_name	=	#{requestorDeptName}
+				, domain_name	=	#{domainName}
+				, assignee_name	=	#{assigneeName}
+				, company_name	=	#{companyName}
+				, reg_user_name	=	#{regUserName}
+				, implementation_start	=	#{implementationStart}
+				, z_change_level	=	#{zChangeLevel}
+				, z_chm_accept_type_l1	=	#{zChmAcceptTypeL1}
+				, z_disposer_name	=	#{zDisposerName}
+				, z_restoreYN	=	#{zRestoreYN}
+				, z_chm_accept_type_l2	=	#{zChmAcceptTypeL2}
+				, z_chm_accept_type_l3	=	#{zChmAcceptTypeL3}
+				, z_fail_type	=	#{zFailType}
+				, coordinator_name	=	#{coordinatorName}
+				, chm_type2_name	=	#{chmType2Name}
+				, z_deputy_yn	=	#{zDeputyYn}
+				, amd_dt	=	now()
+			where change_id = #{changeID}
+			returning *
+		)
+		insert into itsm_security_change( change_id, z_acceptor_name, resolved_problems, z_chm_division, process_type_cod_name, planned_start, reason, location, status_name, z_complete_type, requestor_email, z_real_man_day, z_accept_review_opinion, requested_date, chm_type3_name, affected_item_name, category_name, implementation_end, title, assign_dept_name, chm_type1_name, z_accept_date, description, requestor_name, planned_end, current_phase_name, assets_name, reg_time, z_disposal_team_name, part_name, coord_dept_name, requestor_dept_name, domain_name, assignee_name, company_name, reg_user_name, implementation_start, z_change_level, z_chm_accept_type_l1, z_disposer_name, z_restoreYN, z_chm_accept_type_l2, z_chm_accept_type_l3, z_fail_type, coordinator_name, chm_type2_name, z_deputy_yn, cret_dt)
+		select  #{changeID}
+				,#{zAcceptorName}
+				,#{resolvedProblems}
+				,#{zChmDivision}
+				,#{processTypeCodName}
+				,#{plannedStart}
+				,#{reason}
+				,#{location}
+				,#{statusName}
+				,#{zCompleteType}
+				,#{requestorEmail}
+				,#{zRealManDay}
+				,#{zAcceptReviewOpinion}
+				,#{requestedDate}
+				,#{chmType3Name}
+				,#{affectedItemName}
+				,#{categoryName}
+				,#{implementationEnd}
+				,#{title}
+				,#{assignDeptName}
+				,#{chmType1Name}
+				,#{zAcceptDate}
+				,#{description}
+				,#{requestorName}
+				,#{plannedEnd}
+				,#{currentPhaseName}
+				,#{assetsName}
+				,#{regTime}
+				,#{zDisposalTeamName}
+				,#{partName}
+				,#{coordDeptName}
+				,#{requestorDeptName}
+				,#{domainName}
+				,#{assigneeName}
+				,#{companyName}
+				,#{regUserName}
+				,#{implementationStart}
+				,#{zChangeLevel}
+				,#{zChmAcceptTypeL1}
+				,#{zDisposerName}
+				,#{zRestoreYN}
+				,#{zChmAcceptTypeL2}
+				,#{zChmAcceptTypeL3}
+				,#{zFailType}
+				,#{coordinatorName}
+				,#{chmType2Name}
+				,#{zDeputyYn}
+							,now()
+		where not exists(select * from upsert)
+	</insert>
+
+
+	<!-- 인프라변경 -->
+	<insert id="addItsmInfraChange" parameterType="HashMap">
+		/* ScheduleItsmMapper.addItsmInfraChange */
+		with upsert as (
+			update itsm_infra_change
+			set 		z_chm_division	=	#{zChmDivision}
+				,	reason	=	#{reason}
+				,	location	=	#{location}
+				,	z_cloudYN	=	#{zCloudYN}
+				,	status_name	=	#{statusName}
+				,	z_complete_type	=	#{zCompleteType}
+				,	requested_date	=	#{requestedDate}
+				,	affected_item_name	=	#{affectedItemName}
+				,	category_name	=	#{categoryName}
+				,	implementation_end	=	#{implementationEnd}
+				,	chm_type1_name	=	#{chmType1Name}
+				,	assign_dept_name	=	#{assignDeptName}
+				,	z_accept_date	=	#{zAcceptDate}
+				,	description	=	#{description}
+				,	requestor_name	=	#{requestorName}
+				,	closing_comments	=	#{closingComments}
+				,	current_phase_name	=	#{currentPhaseName}
+				,	z_service_downYN	=	#{zServiceDownYN}
+				,	reg_time	=	#{regTime}
+				,	coord_dept_name	=	#{coordDeptName}
+				,	company_name	=	#{companyName}
+				,	implementation_start	=	#{implementationStart}
+				,	z_chm_accept_type_l1	=	#{zChmAcceptTypeL1}
+				,	z_chm_accept_type_l2	=	#{zChmAcceptTypeL2}
+				,	z_disposer_name	=	#{zDisposerName}
+				,	z_chm_accept_type_l3	=	#{zChmAcceptTypeL3}
+				,	z_fail_type	=	#{zFailType}
+				,	z_acceptor_name	=	#{zAcceptorName}
+				,	plans	=	#{plans}
+				,	process_type_cod_name	=	#{processTypeCodName}
+				,	z_impact_analysis_result	=	#{zImpactAnalysisResult}
+				,	z_acceptYN	=	#{zAcceptYN}
+				,	requestor_email	=	#{requestorEmail}
+				,	hours_worked	=	#{hoursWorked}
+				,	z_service_normal	=	#{zServiceNormal}
+				,	chm_type3_name	=	#{chmType3Name}
+				,	title	=	#{title}
+				,	priority_code	=	#{priorityCode}
+				,	assets_name	=	#{assetsName}
+				,	part_name	=	#{partName}
+				,	z_disposal_team_name	=	#{zDisposalTeamName}
+				,	z_close_code	=	#{zCloseCode}
+				,	domain_name	=	#{domainName}
+				,	requestor_dept_name	=	#{requestorDeptName}
+				,	severity	=	#{severity}
+				,	assignee_name	=	#{assigneeName}
+				,	z_service_inspector	=	#{zServiceInspector}
+				,	reg_user_name	=	#{regUserName}
+				,	z_reviewer_name	=	#{zReviewerName}
+				,	z_restoreYN	=	#{zRestoreYN}
+				,	coordinator_name	=	#{coordinatorName}
+				,	chm_type2_name	=	#{chmType2Name}
+				,	 amd_dt	=	now()
+			where change_id = #{changeID}
+			returning *
+		)
+		insert into itsm_infra_change( change_id, z_chm_division, reason, location, z_cloudYN, status_name, z_complete_type, requested_date, affected_item_name, category_name, implementation_end, chm_type1_name, assign_dept_name, z_accept_date, description, requestor_name, closing_comments, current_phase_name, z_service_downYN, reg_time, coord_dept_name, company_name, implementation_start, z_chm_accept_type_l1, z_chm_accept_type_l2, z_disposer_name, z_chm_accept_type_l3, z_fail_type, z_acceptor_name, plans, process_type_cod_name, z_impact_analysis_result, z_acceptYN, requestor_email, hours_worked, z_service_normal, chm_type3_name, title, priority_code, assets_name, part_name, z_disposal_team_name, z_close_code, domain_name, requestor_dept_name, severity, assignee_name, z_service_inspector, reg_user_name, z_reviewer_name, z_restoreYN, coordinator_name, chm_type2_name, cret_dt)
+		select  #{changeID}
+				,#{zChmDivision}
+				,#{reason}
+				,#{location}
+				,#{zCloudYN}
+				,#{statusName}
+				,#{zCompleteType}
+				,#{requestedDate}
+				,#{affectedItemName}
+				,#{categoryName}
+				,#{implementationEnd}
+				,#{chmType1Name}
+				,#{assignDeptName}
+				,#{zAcceptDate}
+				,#{description}
+				,#{requestorName}
+				,#{closingComments}
+				,#{currentPhaseName}
+				,#{zServiceDownYN}
+				,#{regTime}
+				,#{coordDeptName}
+				,#{companyName}
+				,#{implementationStart}
+				,#{zChmAcceptTypeL1}
+				,#{zChmAcceptTypeL2}
+				,#{zDisposerName}
+				,#{zChmAcceptTypeL3}
+				,#{zFailType}
+				,#{zAcceptorName}
+				,#{plans}
+				,#{processTypeCodName}
+				,#{zImpactAnalysisResult}
+				,#{zAcceptYN}
+				,#{requestorEmail}
+				,#{hoursWorked}
+				,#{zServiceNormal}
+				,#{chmType3Name}
+				,#{title}
+				,#{priorityCode}
+				,#{assetsName}
+				,#{partName}
+				,#{zDisposalTeamName}
+				,#{zCloseCode}
+				,#{domainName}
+				,#{requestorDeptName}
+				,#{severity}
+				,#{assigneeName}
+				,#{zServiceInspector}
+				,#{regUserName}
+				,#{zReviewerName}
+				,#{zRestoreYN}
+				,#{coordinatorName}
+				,#{chmType2Name}
+				,now()
+		where not exists(select * from upsert)
+	</insert>
+
+	<!-- ap 변경 -->
+	<insert id="addItsmApChange" parameterType="HashMap">
+		/* ScheduleItsmMapper.addItsmApChange */
+		with upsert as (
+			update itsm_ap_change
+				set complete_review	=	#{completeReview}
+				,ap_close_code	=	#{apCloseCode}
+				,releaseYN	=	#{releaseYN}
+				,cab_performYN	=	#{cabPerformYN}
+				,complete_date	=	#{completeDate}
+				,category_name	=	#{categoryName}
+				,acceptor	=	#{acceptor}
+				,implementation_end	=	#{implementationEnd}
+				,title	=	#{title}
+				,release_date	=	#{releaseDate}
+				,develop_result	=	#{developResult}
+				,description	=	#{description}
+				,accept_date	=	#{acceptDate}
+				,z_category	=	#{zCategory}
+				,ito_sr_type	=	#{itoSrType}
+				,requestor_name	=	#{requestorName}
+				,pre_sr_expectMD	=	#{preSrExpectMD}
+				,domain	=	#{domain}
+				,dev_complete_reviewer	=	#{devCompleteReviewer}
+				,affected_item	=	#{affectedItem}
+				,change_plan_expectMD	=	#{changePlanExpectMD}
+				,itms_dr_no	=	#{itmsDrNo}
+				,accept_review_opinion	=	#{acceptReviewOpinion}
+				,cab_attendance	=	#{cabAttendance}
+				,release_rsult	=	#{releaseRsult}
+				,dev_complete_review	=	#{devCompleteReview}
+				,dev_end_date	=	#{devEndDate}
+				,realMD	=	#{realMD}
+				,cab_call_date	=	#{cabCallDate}
+				,part_name	=	#{partName}
+				,requestor_dept_name	=	#{requestorDeptName}
+				,request_type	=	#{requestType}
+				,itms_approval_date	=	#{itmsApprovalDate}
+				,realFP	=	#{realFP}
+				,company_name	=	#{companyName}
+				,detail_planner	=	#{detailPlanner}
+				,coord_dept	=	#{coordDept}
+				,implementation_start	=	#{implementationStart}
+				,pre_sr_expectFP	=	#{preSrExpectFP}
+				,ktds_realMD	=	#{ktdsRealMD}
+				,developer	=	#{developer}
+				,coordinator	=	#{coordinator}
+				,dev_start_date	=	#{devStartDate}
+				,change_plan_expectFP	=	#{changePlanExpectFP}
+				,amd_dt	=	now()
+			where change_id = #{changeID}
+			returning *
+		)
+		INSERT INTO itsm_ap_change(change_id, complete_review, ap_close_code, releaseyn, cab_performyn, complete_date, category_name, acceptor, implementation_end, title, release_date, develop_result, description, accept_date, z_category, ito_sr_type, requestor_name, pre_sr_expectmd, domain, dev_complete_reviewer, affected_item, change_plan_expectmd, itms_dr_no, accept_review_opinion, cab_attendance, release_rsult, dev_complete_review, dev_end_date, realmd, cab_call_date, part_name, requestor_dept_name, request_type, itms_approval_date, realfp, company_name, detail_planner, coord_dept, implementation_start, pre_sr_expectfp, ktds_realmd, developer, coordinator, dev_start_date, change_plan_expectfp, cret_dt)
+		select #{changeID}
+				,#{completeReview}
+				,#{apCloseCode}
+				,#{releaseYN}
+				,#{cabPerformYN}
+				,#{completeDate}
+				,#{categoryName}
+				,#{acceptor}
+				,#{implementationEnd}
+				,#{title}
+				,#{releaseDate}
+				,#{developResult}
+				,#{description}
+				,#{acceptDate}
+				,#{zCategory}
+				,#{itoSrType}
+				,#{requestorName}
+				,#{preSrExpectMD}
+				,#{domain}
+				,#{devCompleteReviewer}
+				,#{affectedItem}
+				,#{changePlanExpectMD}
+				,#{itmsDrNo}
+				,#{acceptReviewOpinion}
+				,#{cabAttendance}
+				,#{releaseRsult}
+				,#{devCompleteReview}
+				,#{devEndDate}
+				,#{realMD}
+				,#{cabCallDate}
+				,#{partName}
+				,#{requestorDeptName}
+				,#{requestType}
+				,#{itmsApprovalDate}
+				,#{realFP}
+				,#{companyName}
+				,#{detailPlanner}
+				,#{coordDept}
+				,#{implementationStart}
+				,#{preSrExpectFP}
+				,#{ktdsRealMD}
+				,#{developer}
+				,#{coordinator}
+				,#{devStartDate}
+				,#{changePlanExpectFP}
+				,now()
+			where not exists(select * from upsert)
+	</insert>
+
+
+	<!-- itsm release -->
+	<insert id="addItsmRelease" parameterType="HashMap">
+		/* ScheduleItsmMapper.addItsmRelease */
+		with upsert as (
+			update itsm_release
+			set  status	=	#{status}
+				,	part_name	=	#{partName}
+				,	reg_date	=	#{regDate}
+				,	requestor_email	=	#{requestorEmail}
+				,	domain_name	=	#{domainName}
+				,	requestor_dept_name	=	#{requestorDeptName}
+				,	requested_date	=	#{requestedDate}
+				,	company_name	=	#{companyName}
+				,	requestor	=	#{requestor}
+				,	affected_item_name	=	#{affectedItemName}
+				,	category_name	=	#{categoryName}
+				,	title	=	#{title}
+				,	category	=	#{category}
+				,	description	=	#{description}
+				,	company	=	#{company}
+				,	requestor_name	=	#{requestorName}
+				,	domain	=	#{domain}
+				,	affected_item	=	#{affectedItem}
+				,	part	=	#{part}
+				,	requestor_dept	=	#{requestorDept}
+				,	amd_dt	=	now()
+			where change_id = #{changeID}
+			returning *
+		)
+		insert into itsm_release(change_id, status, part_name, reg_date, requestor_email, domain_name, requestor_dept_name, requested_date, company_name, requestor, affected_item_name, category_name, title, category, description, company, requestor_name, domain, affected_item, part, requestor_dept, cret_dt)
+		select  #{changeID}
+				,#{status}
+				,#{partName}
+				,#{regDate}
+				,#{requestorEmail}
+				,#{domainName}
+				,#{requestorDeptName}
+				,#{requestedDate}
+				,#{companyName}
+				,#{requestor}
+				,#{affectedItemName}
+				,#{categoryName}
+				,#{title}
+				,#{category}
+				,#{description}
+				,#{company}
+				,#{requestorName}
+				,#{domain}
+				,#{affectedItem}
+				,#{part}
+				,#{requestorDept}
+				,now()
+		where not exists(select * from upsert)
+	</insert>
+
+	<!-- 표준서비스 코드 조회 -->
+	<select id="selectStdCd" resultType="String">
+		select stdcd as stdcd
+		from inventory_itam_history
+		group by stdcd
+	</select>
+
+</mapper>
+
+

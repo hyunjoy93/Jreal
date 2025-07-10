@@ -1,0 +1,315 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+<link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container m-kate">
+	
+<header class="header">
+	<h2 class="pageTitle">장애View</h2>
+</header>
+
+<section class="section">
+	
+	<div class="headline">
+		<h3 class="mainTitle">서비스등급별 통계정보</h3>
+	</div>
+	<div class="doughnut">
+		<div class="graph">
+			<p>A</p>
+			<canvas id="chart1"></canvas>
+		</div>
+		<div class="graph">
+			<p>B</p>
+			<canvas id="chart2"></canvas>
+		</div>
+		<div class="graph">
+			<p>C</p>
+			<canvas id="chart3"></canvas>
+		</div>
+	</div>
+	<div class="grid auto">
+		<table>
+			<thead>
+				<tr>
+					<th><span>등급</span></th>
+					<th><span>대상<br>서비스</span></th>
+					<th><span>영향<br>없음</span></th>
+					<th><span>점검중</span></th>
+					<th><span>복구중</span></th>
+					<th><span>복구<br>완료</span></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>A</td>
+					<td>19</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+				<tr>
+					<td>B</td>
+					<td>36</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+				<tr>
+					<td>C</td>
+					<td>27</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td><span>계</span></td>
+					<td><span>19</span></td>
+					<td><span>28</span></td>
+					<td><span>6</span></td>
+					<td><span>3</span></td>
+					<td><span>8</span></td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	
+	<div class="headline">
+		<h3 class="mainTitle">도메인별 통계정보</h3>
+	</div>
+	<div class="grid auto">
+		<table>
+			<thead>
+				<tr>
+					<th><span>구분</span></th>
+					<th><span>대상<br>서비스</span></th>
+					<th><span>영향<br>없음</span></th>
+					<th><span>점검중</span></th>
+					<th><span>복구중</span></th>
+					<th><span>복구<br>완료</span></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="tl">영업계</td>
+					<td>19</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+				<tr>
+					<td class="tl">경영계</td>
+					<td>19</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+				<tr>
+					<td class="tl">플랫폼계</td>
+					<td>19</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+				<tr>
+					<td class="tl">인프라계</td>
+					<td>19</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+				<tr>
+					<td class="tl">미운영</td>
+					<td>19</td>
+					<td>28</td>
+					<td>6</td>
+					<td>3</td>
+					<td>8</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td><span>계</span></td>
+					<td><span>19</span></td>
+					<td><span>28</span></td>
+					<td><span>6</span></td>
+					<td><span>3</span></td>
+					<td><span>8</span></td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+
+</section>
+
+
+<!-- 팝업 -->
+
+<article class="popup hide" id="pop1">
+	<div class="popBox">
+
+		<div class="conHead">
+			<h5 class="popTitle">POD정보</h5>
+			<button type="button" class="btClose"><i>닫기</i></button>
+		</div>
+
+		<div class="conBody cols">
+			<table class="field">
+				<colgroup>
+					<col width="100px">
+					<col width="300px">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>POD명</th>
+						<td>CA-DMZ-CSPROD-01</td>
+					</tr>
+					<tr>
+						<th>pod_id</th>
+						<td>173</td>
+					</tr>
+					<tr>
+						<th>pod_uuid</th>
+						<td>7306280a-aef7-47f3-b7cd-cd53c0f6bfae</td>
+					</tr>
+				</tbody>
+			</table>
+		</div><!--//conBody-->
+
+		<div class="conFoot">
+			<div class="btns">
+				<button type="button" class="bt max bg primary">확인</button>
+			</div>
+		</div>
+
+	</div>
+</article>
+
+<!--//팝업 -->
+
+
+
+
+<footer class="footer">ⓒ KT cloud {{ name_eng }}</footer>
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+<script>
+	var depth1=0
+	var depth2=0
+	var depth3=0
+	var depth4=0
+</script>
+
+<script>
+const ctx1 = document.getElementById('chart1');
+const chart1 = new Chart(ctx1, {
+	type: 'doughnut',
+	data: {
+		datasets: [{
+			data: [40, 16, 8],
+			backgroundColor: [
+				'rgb(0,19,76)',
+				'rgba(11,94,215,0.5)',
+				'rgba(11,94,215,0.1)'
+			],
+			borderWidth: 0
+		}]
+	},
+	options: {
+		cutout: 35,
+		plugins: {
+			legend: {
+				display: false
+			},
+		}
+	}
+});
+	
+const ctx2 = document.getElementById('chart2');
+const chart2 = new Chart(ctx2, {
+	type: 'doughnut',
+	data: {
+		datasets: [{
+			data: [40, 16, 8],
+			backgroundColor: [
+				'rgb(0,19,76)',
+				'rgba(11,94,215,0.5)',
+				'rgba(11,94,215,0.1)'
+			],
+			borderWidth: 0
+		}]
+	},
+	options: {
+		cutout: 35,
+		plugins: {
+			legend: {
+				display: false
+			},
+		}
+	}
+});
+	
+const ctx3 = document.getElementById('chart3');
+const chart3 = new Chart(ctx3, {
+	type: 'doughnut',
+	data: {
+		datasets: [{
+			data: [40, 16, 8],
+			backgroundColor: [
+				'rgb(0,19,76)',
+				'rgba(11,94,215,0.5)',
+				'rgba(11,94,215,0.1)'
+			],
+			borderWidth: 0
+		}]
+	},
+	options: {
+		cutout: 35,
+		plugins: {
+			legend: {
+				display: false
+			},
+		}
+	}
+});
+</script>

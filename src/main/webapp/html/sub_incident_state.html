@@ -1,0 +1,653 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container">
+
+<header class="header">
+	
+	<button type="button" class="btMenu"><i>좌측메뉴열닫</i></button>
+
+	<h1 class="logo"><a href="main.html"><strong>{{ name_eng }}</strong> {{ name_kor }}</a></h1>
+
+	<nav class="gnb">
+		<ul class="mainMenu">
+			<li>
+				<a href="main.html" class="menu">Dashboard</a>
+				<a href="#" class="btPop" onclick="window.open('main_dashboard.html','','All=no,width=1600px,height=840px,left=0,top=0');">관제용</a>
+			</li>
+			<li>
+				<a href="sub_event_state.html" class="menu">이벤트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_event_state.html" class="menu">이벤트 상황관리</a></li>
+					<li><a href="sub_event_infra.html" class="menu">인프라 긴급점검</a></li>
+					<li><a href="sub_event_voc.html" class="menu">VOC 등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_incident_state.html" class="menu">인시던트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_incident_state.html" class="menu">인시던트 상황관리</a></li>
+					<li><a href="sub_incident_restore.html" class="menu">장애복구View</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_manage_consist.html" class="menu">구성/성능관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_manage_consist.html" class="menu">구성정보조회</a></li>
+					<li><a href="sub_manage_performance.html" class="menu">성능정보조회</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_work_exception.html" class="menu">작업관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_work_exception.html" class="menu">예외등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_stats_event.html" class="menu">통계</a>
+				<ul class="subMenu">
+					<li><a href="sub_stats_event.html" class="menu">이벤트 통계</a></li>
+					<li><a href="sub_stats_incident.html" class="menu">인시던트 통계</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_control_member.html" class="menu">관제운영관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_control_member.html" class="menu">사용자 관리</a></li>
+					<li><a href="sub_control_contact.html" class="menu">통합 비상연락망 관리</a></li>
+					<li><a href="sub_control_linkage.html" class="menu">관제연동상태 관리</a></li>
+					<li><a href="sub_control_notice.html" class="menu">공지사항 관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="cloud-bot/sub_pod_vm.html" class="menu" target="_blank">운영자동화</a>
+				<!--ul class="subMenu">
+					<li><a href="cloud-bot/sub_pod_vm.html" class="menu">[CS] IPC-PROD</a></li>
+				</ul-->
+			</li>
+		</ul>
+	</nav>
+
+	<div class="user">
+		<div class="userName"><span class="pic"><!--img src="img/temp_profile.png" alt=""--></span>홍길동</div>
+		<div class="userMenu">
+			<!--
+			<p class="head">마스터 관리자<em>Super Admin</em></p>
+			<a href="" class="menu">나의 프로필</a>
+			<a href="" class="menu">프로필수정</a>
+			-->
+			<a href="login.html" class="menu">로그아웃</a>
+		</div>
+	</div>
+
+</header>
+	
+<section class="section">
+
+	<div class="conHead">
+
+		<ol class="breadcrumb">
+			<li><a href="" class="home">Home</a></li>
+			<li>인시던트 관리</li>
+			<li>인시던트 상황 관리</li>
+		</ol>
+
+		<div class="headline">
+			<h2 class="pageTitle">인시던트 상황 관리</h2>
+			<button type="button" class="btSound" title="스피커">소리끔/켬</button>
+			<p class="informTxt">구글정책으로 사운드 자동실행이 불가하오니 스피커 버튼으로 사운드를 실행시켜 주세요.</p>
+			<div class="btns">
+				<button type="button" class="bt bd">엑셀다운로드</button>
+			</div>
+		</div>
+
+		<div class="nowTime"><b>2022-00-00 00:00:00</b></div>
+
+	</div><!--//conHead-->
+
+	<div class="conBody">
+
+		<div class="realTime">
+			<div class="check switch"><input type="checkbox" id="realCHK" checked><label>실시간</label></div>
+
+			<p class="txt on"><span class="bulletTxt">마지막 조회시간 : 2022-06-29 09:52:53</span></p>
+
+			<button type="button" class="btSync" title="지금 업데이트">지금 업데이트</button>
+
+			<!--div class="btns">
+				<button type="button" class="bt bd">엑셀다운로드</button>
+			</div-->
+		</div>
+
+		<div class="search hide">
+
+			<div class="box">
+				<form>
+					<table class="field">
+						<tbody>
+							<tr>
+								<th>조회기간</th>
+								<td>
+									<input type="text" class="input date" placeholder="시작일">
+									<input type="time" class="input time">
+									<span class="txt">~</span>
+									<input type="text" class="input date" placeholder="종료일">
+									<input type="time" class="input time">
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+				<div class="btns">
+					<button type="button" class="bt bg primary">검색</button>
+					<!--button type="button" class="bt bg">초기화</button-->
+					<button type="button" class="btRefresh" title="초기화">초기화</button>
+				</div>
+			</div>
+
+		</div><!--//search-->
+
+		<div class="result">
+
+			<div class="control">
+
+				<span class="count">
+					<select class="select sm">
+						<option>20</option>
+						<option>1,000</option>
+					</select>
+					<i>화면에 표시할 리스트 갯수</i>
+				</span>
+
+			</div><!--//control-->
+
+			<div class="grid">
+				<table>
+					<thead>
+						<tr class="sorter hide">
+							<th><span><input type="text" class="input" value="" placeholder="인시던트ID"></span></th>
+							<th>
+								<span>
+									<select class="select">
+										<option>등급</option>
+										<option>Critical</option>
+										<option>Insident</option>
+									</select>
+								</span>
+							</th>
+							<th>
+								<span>
+									<select class="select">
+										<option>상태</option>
+										<option>조치완료</option>
+										<option>조치중</option>
+									</select>
+								</span>
+							</th>
+							<th><span><input type="text" class="input" value="" placeholder="장비유형 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="내용 검색"></span></th>
+							<th><span></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="데이터센터명 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="표준서비스명 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="단위서비스명 검색"></span></th>
+							<th><span></span></th>
+						</tr>
+						<tr>
+							<th class="range"><span>인시던트ID</span></th>
+							<th class="range"><span>등급</span></th>
+							<th class="range"><span>상태</span></th>
+							<th class="range"><span>장비유형</span></th>
+							<th class="range"><span>내용</span></th>
+							<th class="range"><span>발생시간</span></th>
+							<th class="range"><span>데이터센터명</span></th>
+							<th class="range"><span>표준서비스명</span></th>
+							<th class="range"><span>단위서비스명</span></th>
+							<th class="range"><span>종료시간</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="on" v-for="n in 5">
+							<td>I202207300001</td>
+							<td>1등급</td>
+							<td>장애</td>
+							<td>서버</td>
+							<td class="tl">디스크 남은 용량 10%</td>
+							<td>2022-07-23 15:00:33</td>
+							<td>데이터센터 이름</td>
+							<td>표준서비스명</td>
+							<td>단위서비스명</td>
+							<td>2022-07-23 15:00:33</td>
+						</tr>
+						<tr v-for="n in 30">
+							<td>I202207300001</td>
+							<td>1등급</td>
+							<td>장애</td>
+							<td>서버</td>
+							<td class="tl">디스크 남은 용량 10%</td>
+							<td>2022-07-23 15:00:33</td>
+							<td>데이터센터 이름</td>
+							<td>표준서비스명</td>
+							<td>단위서비스명</td>
+							<td>2022-07-23 15:00:33</td>
+						</tr>
+					</tbody>
+				</table>
+			</div><!--//grid-->
+
+			<div class="control">
+
+				<span class="count">현재 페이지 <b>1</b> <i>/</i> 전체 <b>1</b> 페이지</span>
+
+				<div class="pages">
+					<button type="button" class="btPrev end" disabled>처음 페이지</button>
+					<button type="button" class="btPrev" disabled>이전 페이지</button>
+					<a href="" class="pg on">1</a>
+					<a href="" class="pg">2</a>
+					<a href="" class="pg">3</a>
+					<a href="" class="pg">4</a>
+					<a href="" class="pg">5</a>
+					<button type="button" class="btNext">다음 페이지</button>
+					<button type="button" class="btNext end">마지막 페이지</button>
+				</div>
+
+			</div><!--//control-->
+
+		</div><!--//result-->
+
+	</div><!--//pageBody-->
+
+</section>
+
+
+
+
+<!--2022-11-18-->
+
+<!-- [팝업] 인시던트ID 상황관리 -->
+<article class="popup hide" id="test-popup1">
+	<div class="popBox">
+
+		<div class="conHead">
+			<h5 class="popTitle">인시던트ID 상황관리</h5>
+			<button type="button" class="btClose"><i>닫기</i></button>
+		</div>
+
+		<div class="conBody cols">
+
+			<div class="panel fix">
+
+				<table class="field">
+					<colgroup>
+						<col width="120px">
+						<col width="*">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>인시던트 상태</th>
+							<td>
+								<span class="txt">조치중/종료</span>
+								<!--button type="button" class="bt bd secondary" id="test-bt-popup2">인시던트 종료</button-->
+							</td>
+						</tr>
+						<tr>
+							<th>인시던트 등급</th>
+							<td>
+								<span class="check"><input type="radio" name="test1" checked><label>이상징후</label></span>
+								<span class="check"><input type="radio" name="test1"><label>1등급</label></span>
+								<span class="check"><input type="radio" name="test1"><label>2등급</label></span>
+								<span class="check"><input type="radio" name="test1"><label>3등급</label></span>
+								<span class="check"><input type="radio" name="test1"><label>4등급</label></span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="headline">
+					<h6 class="minTitle">서비스 정보</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="120px">
+						<col width="*">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>이벤트ID</th>
+							<td>
+								<select class="select">
+									<option>내부관리용_이벤트ID_1</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>인시던트ID</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>센터</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>표준서비스명</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>단위서비스명</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>이벤트 발생시간</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>이벤트제목</th>
+							<td>-</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="headline">
+					<h6 class="minTitle">담당자 정보</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="120px">
+						<col width="100px">
+						<col width="*">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th rowspan="3">상황담당</th>
+							<th>관제상황조장</th>
+							<td><input type="text" class="input" value="홍길동" readonly></td>
+						</tr>
+						<tr>
+							<th>상황반장</th>
+							<td><input type="text" class="input" value=""></td>
+						</tr>
+						<tr>
+							<th>복구반장</th>
+							<td><input type="text" class="input" value=""></td>
+						</tr>
+						<tr>
+							<th>연관조직정보</th>
+							<th>복구팀</th>
+							<td><input type="text" class="input" value=""></td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div><!--//panel-->
+
+			<div class="panel fix">
+
+				<div class="elapsed time">경과 시간<strong>00: 00 : 35</strong></div>
+
+				<div class="headline">
+					<h6 class="minTitle">조치 진행결과</h6>
+					<div class="btns">
+						<button type="button" class="bt bd primary">수정</button>
+						<button type="button" class="bt bd primary">새로고침</button>
+						<button type="button" class="bt bd">내용복사</button>
+					</div>
+				</div>
+				<div class="grid sizeS">
+					<table>
+						<thead>
+							<tr>
+								<th><span>처리시간</span></th>
+								<th><span>처리내역(입력)</span></th>
+								<th><span>등록자</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="on">
+								<td>2022-00-00 00:00:00</td>
+								<td class="tl">이상징후 발생 공지이상징후 발생 공지이상징후 발생 공지</td>
+								<td>자동입력</td>
+							</tr>
+							<tr v-for="n in 10">
+								<td>2022-00-00 00:00:00</td>
+								<td class="tl">이상징후 발생 공지</td>
+								<td>자동입력</td>
+							</tr>
+						</tbody>
+						<!--tfoot>
+							<tr>
+								<td colspan="3">
+									<span>
+										<div class="set comment">
+											<input type="text" class="input" placeholder="이벤트 처리내역 입력">
+											<span class="count"><b>0</b><i>/</i>100</span>
+											<button type="button" class="bt bg secondary">추가</button>
+										</div>
+									</span>
+								</td>
+							</tr>
+						</tfoot-->
+					</table>
+				</div>
+				<!--span class="informTxt">조치경과는 내림차순으로 정렬됩니다.</span-->
+
+				<div class="headline">
+					<h6 class="minTitle">이벤트 처리내역 추가</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="50px">
+						<col width="*">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>처리<br>내역</th>
+							<td>
+								<div class="set comment">
+									<textarea class="textarea" placeholder="이벤트 처리내역 입력"></textarea>
+									<span class="count"><b>0</b><i>/</i>100</span>
+									<button type="button" class="bt bg secondary">추가</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<span class="informTxt">조치경과는 내림차순으로 정렬됩니다.</span>
+				
+				<div class="headline">
+					<h6 class="minTitle">이벤트 종료처리</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="140px">
+						<col width="180px">
+						<col width="140px">
+						<col width="180px">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>서비스 영향도 여부</th>
+							<td>
+								<span class="check"><input type="radio" name="test2"><label>있음</label></span>
+								<span class="check"><input type="radio" name="test2"><label>없음</label></span>
+							</td>
+							<th>테크센터 VOC</th>
+							<td>
+								<span class="check"><input type="radio" name="test3"><label>Y</label></span>
+								<span class="check"><input type="radio" name="test3"><label>N</label></span>
+							</td>
+						</tr>
+						<tr>
+							<th>ITSM 인시던트 ID</th>
+							<td colspan="3"><span class="txt">I202207300001</span></td>
+						</tr>
+						<tr>
+							<th>구분</th>
+							<td colspan="3">
+								<span class="check"><input type="radio" name="test4"><label>조치 후 정상화</label></span>
+								<span class="check"><input type="radio" name="test4"><label>인시던</label></span>
+								<span class="check"><input type="radio" name="test4"><label>변경작업</label></span>
+								<span class="check"><input type="radio" name="test4"><label>자연해소</label></span>
+								<span class="check"><input type="radio" name="test4"><label>오탐</label></span>
+								<span class="check"><input type="radio" name="test4"><label>정보성</label></span>
+								<span class="check"><input type="radio" name="test4"><label>운영자 확인</label></span>
+								<span class="check"><input type="radio" name="test4"><label>외부영향</label></span>
+								<span class="check"><input type="radio" name="test4"><label>테스트 이벤트 발생</label></span>
+							</td>
+						</tr>
+						<tr>
+							<th>인시던트 종료 처리자</th>
+							<td><span class="txt">홍길동</span></td>
+							<th>인시던트 종료 시간</th>
+							<td><span class="txt">23:52:52</span></td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div><!--//panel-->
+
+		</div><!--//conBody-->
+
+		<div class="conFoot">
+			<div class="btns">
+				<button type="button" class="bt max bd secondary">성능정보</button>
+				<button type="button" class="bt max bd secondary">구성정보</button>
+			</div>
+			<div class="btns">
+				<!--button type="button" class="bt max bd">취소</button-->
+				<button type="button" class="bt max bd primary">인시던트 조치완료</button>
+				<button type="button" class="bt max bg primary">저장</button>
+			</div>
+		</div>
+
+	</div>
+</article>	
+<!--// [팝업] 인시던트ID 상황관리 -->
+
+
+
+
+<!-- [팝업] 인시던트종료 --
+<article class="popup hide" id="test-popup2">
+	<div class="popBox">
+
+		<div class="conHead">
+			<h5 class="popTitle">[2022070700034] 이벤트 종료처리</h5>
+			<button type="button" class="btClose"><i>닫기</i></button>
+		</div>
+
+		<div class="conBody">
+
+			<table class="field">
+				<colgroup>
+					<col width="140px">
+					<col width="180px">
+					<col width="140px">
+					<col width="180px">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>서비스 영향도 여부</th>
+						<td>
+							<span class="check"><input type="radio" name="test2"><label>있음</label></span>
+							<span class="check"><input type="radio" name="test2"><label>없음</label></span>
+						</td>
+						<th>테크센터 VOC</th>
+						<td>
+							<span class="check"><input type="radio" name="test3"><label>Y</label></span>
+							<span class="check"><input type="radio" name="test3"><label>N</label></span>
+						</td>
+					</tr>
+					<tr>
+						<th>ITSM 인시던트 ID</th>
+						<td colspan="3"><span class="txt">I202207300001</span></td>
+					</tr>
+					<tr>
+						<th>구분</th>
+						<td colspan="3">
+							<span class="check"><input type="radio" name="test4"><label>조치 후 정상화</label></span>
+							<span class="check"><input type="radio" name="test4"><label>인시던</label></span>
+							<span class="check"><input type="radio" name="test4"><label>변경작업</label></span>
+							<span class="check"><input type="radio" name="test4"><label>자연해소</label></span>
+							<span class="check"><input type="radio" name="test4"><label>오탐</label></span>
+							<span class="check"><input type="radio" name="test4"><label>정보성</label></span>
+							<span class="check"><input type="radio" name="test4"><label>운영자 확인</label></span>
+							<span class="check"><input type="radio" name="test4"><label>외부영향</label></span>
+							<span class="check"><input type="radio" name="test4"><label>테스트 이벤트 발생</label></span>
+						</td>
+					</tr>
+					<tr>
+						<th>인시던트 종료 처리자</th>
+						<td><span class="txt">홍길동</span></td>
+						<th>인시던트 종료 시간</th>
+						<td><span class="txt">23:52:52</span></td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+
+		<div class="conFoot">
+			<div class="btns">
+				<button type="button" class="bt max bd">취소</button>
+				<button type="button" class="bt max bg primary">저장</button>
+			</div>
+		</div>
+
+	</div>
+</article>	
+<!--// [팝업] 인시던트ID 상황관리 -->
+
+<!--//2022-11-18-->
+
+
+
+<footer class="footer">ⓒ KT cloud {{ name_eng }}</footer>
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+<script>
+	var depth1=3
+	var depth2=1
+	var depth3=0
+	var depth4=0
+	
+	/* 팝업테스트 */
+	$('.grid tbody tr').dblclick(function(){
+		$('#test-popup1').removeClass('hide');
+	});
+	/*
+	$('#test-bt-popup2').click(function(){
+		$('#test-popup2').removeClass('hide');
+	});
+	*/
+</script>

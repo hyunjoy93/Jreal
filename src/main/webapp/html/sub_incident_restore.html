@@ -1,0 +1,348 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container">
+
+<header class="header">
+	
+	<button type="button" class="btMenu"><i>좌측메뉴열닫</i></button>
+
+	<h1 class="logo"><a href="main.html"><strong>{{ name_eng }}</strong> {{ name_kor }}</a></h1>
+
+	<nav class="gnb">
+		<ul class="mainMenu">
+			<li>
+				<a href="main.html" class="menu">Dashboard</a>
+				<a href="#" class="btPop" onclick="window.open('main_dashboard.html','','All=no,width=1600px,height=840px,left=0,top=0');">관제용</a>
+			</li>
+			<li>
+				<a href="sub_event_state.html" class="menu">이벤트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_event_state.html" class="menu">이벤트 상황관리</a></li>
+					<li><a href="sub_event_infra.html" class="menu">인프라 긴급점검</a></li>
+					<li><a href="sub_event_voc.html" class="menu">VOC 등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_incident_state.html" class="menu">인시던트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_incident_state.html" class="menu">인시던트 상황관리</a></li>
+					<li><a href="sub_incident_restore.html" class="menu">장애복구View</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_manage_consist.html" class="menu">구성/성능관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_manage_consist.html" class="menu">구성정보조회</a></li>
+					<li><a href="sub_manage_performance.html" class="menu">성능정보조회</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_work_exception.html" class="menu">작업관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_work_exception.html" class="menu">예외등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_stats_event.html" class="menu">통계</a>
+				<ul class="subMenu">
+					<li><a href="sub_stats_event.html" class="menu">이벤트 통계</a></li>
+					<li><a href="sub_stats_incident.html" class="menu">인시던트 통계</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_control_member.html" class="menu">관제운영관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_control_member.html" class="menu">사용자 관리</a></li>
+					<li><a href="sub_control_contact.html" class="menu">통합 비상연락망 관리</a></li>
+					<li><a href="sub_control_linkage.html" class="menu">관제연동상태 관리</a></li>
+					<li><a href="sub_control_notice.html" class="menu">공지사항 관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_pod_vm.html" class="menu">VM관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_pod_vm.html" class="menu">[CS] IPC-PROD</a></li>
+				</ul>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="user">
+		<div class="userName"><span class="pic"><!--img src="img/temp_profile.png" alt=""--></span>홍길동</div>
+		<div class="userMenu">
+			<!--
+			<p class="head">마스터 관리자<em>Super Admin</em></p>
+			<a href="" class="menu">나의 프로필</a>
+			<a href="" class="menu">프로필수정</a>
+			-->
+			<a href="login.html" class="menu">로그아웃</a>
+		</div>
+	</div>
+
+</header>
+	
+<section class="section">
+
+	<div class="conHead">
+
+		<ol class="breadcrumb">
+			<li><a href="" class="home">Home</a></li>
+			<li>인시던트 관리</li>
+			<li>장애복구View</li>
+		</ol>
+
+		<div class="headline">
+			<h2 class="pageTitle">장애복구View</h2>
+			<div class="confirm">
+				<table class="field">
+					<tbody>
+						<tr>
+							<th>최종확인자</th>
+							<td>홍길동</td>
+							<th>확인시간</th>
+							<td>2022-00-00 00:00</td>
+						</tr>
+					</tbody>
+				</table>
+				<button type="button" class="bt bg primary">최종확인</button>
+			</div>
+		</div>
+		
+		<a href="sub_incident_restore_pop.html" class="nowURL" target="_blank">읽기전용 http://10.217.17.252/view/recovery.php?id=1327</a>
+	</div><!--//conHead-->
+
+	<div class="conBody cols noP">
+		
+		<div class="view resize x">
+			<dl class="scroll">
+				<dt>[CS] IPC-PROD</dt>
+				<dd>
+					<ul>
+						<li v-for="n in 30">
+							<button type="button" class="btData">VIEW정보</button>
+							<div class="check"><input type="radio" name="test"><label><b>2022-05-22 14:36</b> #1327(임희철) CA-DMZ-CS-PROD-13 : cnode05</label></div>
+							<div class="info">
+								<table class="field">
+									<colgroup>
+										<col width="100px">
+										<col width="*">
+										<col width="100px">
+										<col width="*">
+									</colgroup>
+									<tbody>
+										<tr>
+											<th>뷰번호</th>
+											<td>#1327</td>
+											<th>구분</th>
+											<td>IPC_PROD</td>
+										</tr>
+										<tr>
+											<th>대상장비</th>
+											<td colspan="3">CA-DMZ-CS-PROD-13 : cnode05</td>
+										</tr>
+										<tr>
+											<th>상면</th>
+											<td>천안-05-10-04</td>
+											<th>최고전파등급</th>
+											<td>2등급</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+		</div>
+
+		<div class="result">
+			
+			<div class="control">
+				<button type="button" class="btSort">POD열닫</button>
+				<span class="count">Total <b>0</b></span>
+				<div class="btns">
+					<select class="select md">
+						<option>SLA등급 전체</option>
+						<option>A</option>
+						<option>B</option>
+						<option>C</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="grid">
+				<table>
+					<thead>
+						<tr>
+							<th><span>도메인</span></th>
+							<th><span>서비스명</span></th>
+							<th><span>SLA<br>등급</span></th>
+							<th><span>AP담당</span></th>
+							<th><span>영향도</span></th>
+							<th><span>최종점검<br>결과</span></th>
+							<th><span>운영범위</span></th>
+							<th><span>운영여부</span></th>
+							<th><span>IT기획실<br>여부</span></th>
+							<th><span>서비스<br>이중화</span></th>
+							<th><span>POD-CNODE목록</span></th>
+							<th><span>POD<br>이중화</span></th>
+							<th><span>CNODE<br>이중화</span></th>
+							<th><span>VR수</span></th>
+							<th><span>VM수</span></th>
+							<th><span>web수</span></th>
+							<th><span>was수</span></th>
+							<th><span>db수</span></th>
+							<th><span>etc수</span></th>
+							<th><span>OS담당</span></th>
+							<th><span>OS부서</span></th>
+							<th><span>AP부서</span></th>
+							<th><span>AP담당</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="n in 20">
+							<td class="tl">02.KOS-Web</td>
+							<td>웹서비스GW</td>
+							<td>A</td>
+							<td>임은영</td>
+							<td>
+								<select class="select sm">
+									<option>옵션1</option>
+									<option>옵션2</option>
+									<option>옵션3</option>
+								</select>
+							</td>
+							<td></td>
+							<td>OS MW AP</td>
+							<td>운영중</td>
+							<td><span class="sign not">N</span></td>
+							<td><span class="sign yes">Y</span></td>
+							<td class="tl">CA-DMZ-CS-PROD-13 : cnode05</td>
+							<td><span class="sign yes">Y</span></td>
+							<td><span class="sign yes">Y</span></td>
+							<td>-</td>
+							<td>1</td>
+							<td>1</td>
+							<td>0</td>
+							<td>0</td>
+							<td>0</td>
+							<td>이승훈</td>
+							<td>KTDS 인프라 서비스본부 인프라운영담당 채널경영 인프라팀</td>
+							<td>CRM담당 오픈채널서비스팀</td>
+							<td>임은영</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td><span></span></td>
+							<td><span>11</span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span>0</span></td>
+							<td><span>14</span></td>
+							<td><span>10</span></td>
+							<td><span>1</span></td>
+							<td><span>0</span></td>
+							<td><span>3</span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+							<td><span></span></td>
+						</tr>
+					</tfoot>
+				</table>
+			</div><!--//grid-->
+
+			<div class="control">
+				
+				<span class="count">
+					<select class="select sm">
+						<option>20</option>
+						<option>1,000</option>
+					</select>
+				</span>
+
+				<div class="pages">
+					<button type="button" class="btPrev end" disabled>처음 페이지</button>
+					<button type="button" class="btPrev" disabled>이전 페이지</button>
+					<a href="" class="pg on">1</a>
+					<a href="" class="pg">2</a>
+					<a href="" class="pg">3</a>
+					<a href="" class="pg">4</a>
+					<a href="" class="pg">5</a>
+					<button type="button" class="btNext">다음 페이지</button>
+					<button type="button" class="btNext end">마지막 페이지</button>
+				</div>
+
+			</div><!--//control-->
+
+		</div><!--//result-->
+
+	</div><!--//pageBody-->
+
+</section>
+
+	
+
+
+
+<footer class="footer">ⓒ KT cloud {{ name_eng }}</footer>
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+<script>
+	var depth1=3
+	var depth2=2
+	var depth3=0
+	var depth4=0
+	
+	/* 팝업테스트 */
+	$('.grid tbody tr').dblclick(function(){
+		$('#test-popup1').removeClass('hide');
+	});
+	$('#test-bt-popup2').click(function(){
+		$('#test-popup2').removeClass('hide');
+	});
+	
+</script>

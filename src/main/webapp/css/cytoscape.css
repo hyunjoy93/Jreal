@@ -1,0 +1,45 @@
+@charset "utf-8";
+
+
+        .wrap {
+            width: 1000px;
+			height: 100%;
+            margin: 0 auto;
+			display: flex;
+			flex-direction: row;
+        }
+
+        .visual{display:flex; width:100%; height:100%; background: url("/img/topology_bg.jpg") no-repeat center / cover;}
+        .visual h1{margin:auto;}
+
+        @media (max-width:480px) {
+            input.capchatxt{width:30%;}
+            .linkWrap ul {
+                justify-content: center;
+            }
+
+            .linkWrap ul li a {
+                width: 100%;
+                padding: 1vw 1.5vw;
+            }
+
+            .layerPopup .popupArea {
+                width: 100%;
+                max-width: none;
+                border-radius: 0;
+                /*max-width: 90vw; width:90vw; max-height:140vw;*/
+                overflow-y: auto;
+                min-width: 0;
+            }
+
+			.min-vh-100 {
+			    min-height: 100vh!important;
+			}
+        }
+
+#cy {
+    width: 100%;
+    height: 90%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+}

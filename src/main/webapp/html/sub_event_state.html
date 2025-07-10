@@ -1,0 +1,658 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+<link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container">
+
+<header class="header">
+	
+	<button type="button" class="btMenu"><i>좌측메뉴열닫</i></button>
+
+	<h1 class="logo"><a href="main.html"><strong>{{ name_eng }}</strong> {{ name_kor }}</a></h1>
+
+	<nav class="gnb">
+		<ul class="mainMenu">
+			<li>
+				<a href="main.html" class="menu">Dashboard</a>
+				<a href="#" class="btPop" onclick="window.open('main_dashboard.html','','All=no,width=1600px,height=840px,left=0,top=0');">관제용</a>
+			</li>
+			<li>
+				<a href="sub_event_state.html" class="menu">이벤트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_event_state.html" class="menu">이벤트 상황관리</a></li>
+					<li><a href="sub_event_infra.html" class="menu">인프라 긴급점검</a></li>
+					<li><a href="sub_event_voc.html" class="menu">VOC 등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_incident_state.html" class="menu">인시던트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_incident_state.html" class="menu">인시던트 상황관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_manage_consist.html" class="menu">구성/성능관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_manage_consist.html" class="menu">구성정보조회</a></li>
+					<li><a href="sub_manage_performance.html" class="menu">성능정보조회</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_work_exception.html" class="menu">작업관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_work_exception.html" class="menu">예외등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_stats_event.html" class="menu">통계</a>
+				<ul class="subMenu">
+					<li><a href="sub_stats_event.html" class="menu">이벤트 통계</a></li>
+					<li><a href="sub_stats_incident.html" class="menu">인시던트 통계</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_control_member.html" class="menu">관제운영관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_control_member.html" class="menu">사용자 관리</a></li>
+					<li><a href="sub_control_contact.html" class="menu">통합 비상연락망 관리</a></li>
+					<li><a href="sub_control_linkage.html" class="menu">관제연동상태 관리</a></li>
+					<li><a href="sub_control_notice.html" class="menu">공지사항 관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_pod_vm.html" class="menu">VM관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_pod_vm.html" class="menu">[CS] IPC-PROD</a></li>
+				</ul>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="user">
+		<div class="userName"><span class="pic"><!--img src="img/temp_profile.png" alt=""--></span>홍길동</div>
+		<div class="userMenu">
+			<!--
+			<p class="head">마스터 관리자<em>Super Admin</em></p>
+			<a href="" class="menu">나의 프로필</a>
+			<a href="" class="menu">프로필수정</a>
+			-->
+			<a href="login.html" class="menu">로그아웃</a>
+		</div>
+	</div>
+
+</header>
+	
+<section class="section">
+
+	<div class="conHead">
+
+		<ol class="breadcrumb">
+			<li><a href="" class="home">Home</a></li>
+			<li>이벤트 관리</li>
+			<li>이벤트 상황 관리</li>
+		</ol>
+
+		<div class="headline">
+			<h2 class="pageTitle">이벤트 상황 관리</h2>
+			<button type="button" class="btSound" title="스피커">소리끔/켬</button>
+			<p class="informTxt">구글정책으로 사운드 자동실행이 불가하오니 스피커 버튼으로 사운드를 실행시켜 주세요.</p>
+			<div class="btns">
+				<button type="button" class="bt bd">엑셀다운로드</button>
+			</div>
+		</div>
+
+		<div class="nowTime"><b>2022-00-00 00:00:00</b></div>
+
+	</div><!--//conHead-->
+
+	<div class="conBody">
+
+		<div class="realTime">
+
+			<div class="set radio">
+				<div class="check"><input type="radio" name="live" id="realCHK" checked><label>실시간 확인중</label></div>
+				<div class="check"><input type="radio" name="live"><label>이력확인</label></div>
+			</div>
+
+			<button type="button" class="btUpdate" title="지금 업데이트">2022-06-29 09:52:53</button>
+
+			<div class="btns">
+				<button type="button" class="btColumn">컬럼선택</button>
+				<!--button type="button" class="bt bd primary">컬럼선택</button>
+				<button type="button" class="bt bd">엑셀다운로드</button-->
+			</div>
+		</div>
+
+		<div class="search hide">
+
+			<div class="box">
+				<form>
+					<table class="field">
+						<tbody>
+							<tr>
+								<th>조회기간</th>
+								<td>
+									<input type="text" class="input date" placeholder="시작일">
+									<input type="time" class="input time">
+									<span class="txt">~</span>
+									<input type="text" class="input date" placeholder="종료일">
+									<input type="time" class="input time">
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+				<div class="btns">
+					<button type="button" class="bt bg primary">검색</button>
+					<!--button type="button" class="bt bg">초기화</button-->
+					<button type="button" class="btRefresh" title="초기화">초기화</button>
+				</div>
+			</div>
+
+		</div><!--//search-->
+
+		<ul class="column hide">
+			<li>이벤트 발생시간</li>
+			<li>이벤트 등급</li>
+			<li>이벤트 상태</li>
+			<li>이벤트 지속시간</li>
+			<li>이벤트 누적횟수</li>
+			<li>이벤트 인지시간</li>
+			<li>이벤트 대응단계</li>
+			<li>인시던트</li>
+			<li>인지자</li>
+			<li>조치담당자</li>
+			<li>이벤트 제목</li>
+			<li>표준서비스명</li>
+			<li>단위서비스명</li>
+			<li>호스트명</li>
+			<li>IP</li>
+			<li>센터</li>
+			<li>층/실</li>
+			<li>상면정보</li>
+			<li>이벤트ID</li>
+			<li>완료시간</li>
+			<li>테크센터VOC</li>
+		</ul>
+
+		<div class="result">
+
+			<div class="control">
+
+				<span class="count">
+					<select class="select sm">
+						<option>20</option>
+						<option>1,000</option>
+					</select>
+					<i>화면에 표시할 리스트 갯수</i>
+				</span>
+
+				<div class="btns">
+					<button type="button" class="bt bg">인시던트확대</button>
+					<button type="button" class="bt bd primary">인지</button>
+					<button type="button" class="bt bd primary">대응중</button>
+					<button type="button" class="bt bd primary">이관</button>
+					<button type="button" class="bt bg primary">조치완료</button>
+				</div>
+
+			</div><!--//control-->
+
+			<div class="grid">
+				<table>
+					<thead>
+						<tr class="sorter hide">
+							<th><span></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="이벤트ID"></span></th>
+							<th><span></span></th>
+							<th><span></span></th>
+							<th>
+								<span>
+									<select class="select">
+										<option>등급</option>
+										<option>Critical</option>
+										<option>Insident</option>
+									</select>
+								</span>
+							</th>
+							<th>
+								<span>
+									<select class="select">
+										<option>상태</option>
+										<option>조치완료</option>
+										<option>조치중</option>
+									</select>
+								</span>
+							</th>
+							<th><span></span></th>
+							<th><span></span></th>
+							<th>
+								<span>
+									<select class="select">
+										<option>단계</option>
+										<option>신규</option>
+										<option>조치중</option>
+									</select>
+								</span>
+							</th>
+							<th><span><input type="text" class="input" value="" placeholder="인시던트 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="인지자 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="조치담당자 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="제목 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="표준서비스명 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="단위서비스명 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="호스트명 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="IP 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="센터 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="층/실 검색"></span></th>
+							<th><span><input type="text" class="input" value="" placeholder="상면정보 검색"></span></th>
+						</tr>
+						<tr>
+							<th><span><div class="check only"><input type="checkbox" name="checkall"><label>전체선택</label></div></span></th>
+							<th class="range"><span>이벤트ID</span></th>
+							<th class="range"><span>발생시간</span></th>
+							<th class="range"><span>인지시간</span></th>
+							<th class="range"><span class="sm">등급</span></th>
+							<th class="range"><span class="md">상태</span></th>
+							<th class="range"><span>지속시간</span></th>
+							<th class="range"><span>누적횟수</span></th>
+							<th class="range"><span class="sm">대응단계</span></th>
+							<th class="range"><span>인시던트</span></th>
+							<th class="range"><span>인지자</span></th>
+							<th class="range"><span>조치담당자</span></th>
+							<th class="range"><span>제목</span></th>
+							<th class="range"><span>표준서비스명</span></th>
+							<th class="range"><span>단위서비스명</span></th>
+							<th class="range"><span>호스트명</span></th>
+							<th class="range"><span>IP</span></th>
+							<th class="range"><span>센터</span></th>
+							<th class="range"><span>층/실</span></th>
+							<th class="range"><span>상면정보</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="on">
+							<td><div class="check only"><input type="checkbox" name="chk"><label>선택</label></div></td>
+							<td>E2022061600002</td>
+							<td>2022-07-23 15:00:33</td>
+							<td>2022-07-23 15:00:33</td>
+							<td><span class="badge danger">Fatal</span></td>
+							<td>장애</td>
+							<td>15:00:33</td>
+							<td class="tr">3074</td>
+							<td>조치중</td>
+							<td><span class="badge danger">I202207300001</span></td>
+							<td>홍길동</td>
+							<td>공통계정</td>
+							<td class="tl">Zabbix server: Version has changed (new version: 5.0.24)</td>
+							<td>코넷프리미엄</td>
+							<td>서비스명1</td>
+							<td>호스트명1</td>
+							<td>28.43.189.76</td>
+							<td>천안CDC</td>
+							<td>12층/4실</td>
+							<td>4-0109</td>
+						</tr>
+						<tr v-for="n in 30">
+							<td><div class="check only"><input type="checkbox" name="chk"><label>선택</label></div></td>
+							<td>E2022061600002</td>
+							<td>2022-07-23 15:00:33</td>
+							<td>2022-07-23 15:00:33</td>
+							<td><span class="badge careful">Critical</span></td>
+							<td>장애</td>
+							<td>15:00:33</td>
+							<td class="tr">1</td>
+							<td>조치중</td>
+							<td><span class="badge">I202207300001</span></td>
+							<td>홍길동</td>
+							<td>공통계정</td>
+							<td class="tl">[HW0002]{$TRIGGERPREFIX} Unavailable by ICMP ping</td>
+							<td>코넷프리미엄</td>
+							<td>서비스명1</td>
+							<td>호스트명1</td>
+							<td>28.43.189.76</td>
+							<td>천안CDC</td>
+							<td>12층/4실</td>
+							<td>4-0109</td>
+						</tr>
+					</tbody>
+				</table>
+			</div><!--//grid-->
+
+			<div class="control">
+
+				<span class="count">현재 페이지 <b>1</b> <i>/</i> 전체 <b>1</b> 페이지</span>
+
+				<div class="pages">
+					<button type="button" class="btPrev end" disabled>처음 페이지</button>
+					<button type="button" class="btPrev" disabled>이전 페이지</button>
+					<a href="" class="pg on">1</a>
+					<a href="" class="pg">2</a>
+					<a href="" class="pg">3</a>
+					<a href="" class="pg">4</a>
+					<a href="" class="pg">5</a>
+					<button type="button" class="btNext">다음 페이지</button>
+					<button type="button" class="btNext end">마지막 페이지</button>
+				</div>
+
+			</div><!--//control-->
+
+		</div><!--//result-->
+
+	</div><!--//pageBody-->
+
+</section>
+
+
+
+
+
+<!-- [팝업] 이벤트 처리 및 상세내역 -->
+<article class="popup hide" id="test-popup1">
+	<div class="popBox">
+
+		<div class="conHead">
+			<h5 class="popTitle">[2022070700034] 이벤트 처리 및 상세내역</h5>
+			<button type="button" class="btClose"><i>닫기</i></button>
+		</div>
+
+		<div class="conBody cols">
+
+			<div class="panel fix">
+
+				<div class="headline">
+					<h6 class="minTitle">이벤트 정보</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="140px">
+						<col width="180px">
+						<col width="140px">
+						<col width="180px">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>이벤트 제목</th>
+							<td colspan="3">[HW0002]{$TRIGGERPREFIX} Unavailable by ICMP ping</td>
+						</tr>
+						<tr>
+							<th>이벤트 등급</th>
+							<td><span class="badge careful">Critical</span></td>
+							<th>이벤트 발생항목</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>표준서비스명</th>
+							<td>코넷프리미엄</td>
+							<th>호스트명</th>
+							<td>CVSAAS_SMAS03</td>
+						</tr>
+						<tr>
+							<th>단위서비스명</th>
+							<td>서비스명2</td>
+							<th>IP</th>
+							<td>28.43.189.72</td>
+						</tr>
+						<tr>
+							<th>센터</th>
+							<td colspan="3">천안CDC</td>
+						</tr>
+						<tr>
+							<th>층/실</th>
+							<td>12층/4실</td>
+							<th>실장위치</th>
+							<td>14</td>
+						</tr>
+						<tr>
+							<th>상면정보</th>
+							<td>4-0109</td>
+							<th>설비 바코드</th>
+							<td>4897</td>
+						</tr>
+						<tr>
+							<th>테크VOC 접수여부</th>
+							<td colspan="3">초기 구현에는 공란 (연동 포인트 없음)인시던트로 확대시 입력 받음</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="headline">
+					<h6 class="minTitle">대응 상태</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="140px">
+						<col width="180px">
+						<col width="140px">
+						<col width="180px">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>대응 상태</th>
+							<td>신규</td>
+							<th>인시던트</th>
+							<td><span class="badge danger">I202207300001</span></td>
+						</tr>
+						<tr>
+							<th>이벤트 발생시간</th>
+							<td>2022-06-27 10:23:22.5</td>
+							<th>이벤트 상태</th>
+							<td>해소</td>
+						</tr>
+						<tr class="hot">
+							<th>이벤트 누적 횟수</th>
+							<td>9</td>
+							<th>이벤트 지속시간</th>
+							<td>3:12:52</td>
+
+						</tr>
+					</tbody>
+				</table>
+
+			</div><!--//panel-->
+
+			<div class="panel fix">
+
+				<div class="headline">
+					<h6 class="minTitle">이벤트 처리상세</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="140px">
+						<col width="180px">
+						<col width="140px">
+						<col width="180px">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>인지자</th>
+							<td>홍길동</td>
+							<th>처리진행현황</th>
+							<td>이관</td>
+						</tr>
+						<tr>
+							<th>대응시작시간</th>
+							<td>2022-07-27 10:23:22</td>
+							<th>대응종료/이관시간</th>
+							<td>2022-07-27 10:23:22</td>
+						</tr>
+						<tr>
+							<th>내용</th>
+							<td colspan="3">
+								<div class="set comment">
+									<textarea class="textarea" placeholder="내용입력"></textarea>
+									<span class="count"><b>0</b><i>/</i>100</span>
+									<div class="btns">
+										<button type="button" class="bt bd primary">인지</button>
+										<button type="button" class="bt bd primary">저장</button>
+										<button type="button" class="bt bd primary">이관</button>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="field">
+					<colgroup>
+						<col width="140px">
+						<col width="180px">
+						<col width="140px">
+						<col width="180px">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>조치담당자</th>
+							<td>-</td>
+							<th>처리진행현황</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>대응시작시간</th>
+							<td>-</td>
+							<th>대응종료/이관시간</th>
+							<td>-</td>
+						</tr>
+						<tr>
+							<th>내용</th>
+							<td colspan="3">
+								<div class="set comment">
+									<textarea class="textarea" placeholder="내용입력" disabled></textarea>
+									<span class="count"><b>0</b><i>/</i>100</span>
+									<div class="btns">
+										<button type="button" class="bt bd primary" disabled>인지접수 및 조치</button>
+										<button type="button" class="bt bd primary" disabled>저장</button>
+										<button type="button" class="bt bd primary" disabled>이관</button>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+
+				<div class="headline">
+					<h6 class="minTitle">이벤트 종료처리</h6>
+				</div>
+				<table class="field">
+					<colgroup>
+						<col width="140px">
+						<col width="180px">
+						<col width="140px">
+						<col width="180px">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>서비스 영향도 여부</th>
+							<td>
+								<span class="check"><input type="radio" name="test2" checked disabled><label>있음</label></span>
+								<span class="check"><input type="radio" name="test2" disabled><label>없음</label></span>
+							</td>
+							<th>테크센터 VOC</th>
+							<td>
+								<span class="check"><input type="radio" name="test3"><label>Y</label></span>
+								<span class="check"><input type="radio" name="test3"><label>N</label></span>
+							</td>
+						</tr>
+						<tr>
+							<th>구분</th>
+							<td colspan="3">
+								<span class="check"><input type="radio" name="test4"><label>조치 후 정상화</label></span>
+								<span class="check"><input type="radio" name="test4"><label>인시던트</label></span>
+								<span class="check"><input type="radio" name="test4"><label>변경작업</label></span>
+								<span class="check"><input type="radio" name="test4"><label>자연해소</label></span>
+								<span class="check"><input type="radio" name="test4"><label>오탐</label></span>
+								<span class="check"><input type="radio" name="test4"><label>정보성</label></span>
+								<span class="check"><input type="radio" name="test4"><label>운영자 확인</label></span>
+								<span class="check"><input type="radio" name="test4"><label>외부영향</label></span>
+								<span class="check"><input type="radio" name="test4"><label>테스트 이벤트 발생</label></span>
+							</td>
+						</tr>
+						<tr>
+							<th>인시던트 종료 처리자</th>
+							<td>홍길동</td>
+							<th>인시던트 종료 시간</th>
+							<td>23:52:52</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div><!--//panel-->
+
+		</div><!--//conBody-->
+
+		<div class="conFoot">
+			<div class="btns">
+				<button type="button" class="bt max bd secondary">성능정보</button>
+				<button type="button" class="bt max bd secondary">구성정보</button>
+			</div>
+			<div class="btns">
+				<button type="button" class="bt max bg secondary">인시던트 확대</button>
+				<button type="button" class="bt max bd primary">인시던트 조치완료</button>
+				<button type="button" class="bt max bg primary">저장</button>
+			</div>
+		</div>
+
+	</div>
+</article>	
+<!--// [팝업] 이벤트 처리 및 상세내역 -->
+	
+
+
+
+<footer class="footer">ⓒ KT cloud {{ name_eng }}</footer>
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+<script>
+	var depth1=2
+	var depth2=1
+	var depth3=0
+	var depth4=0
+	
+	/* 팝업 */
+	$('.grid tbody tr').dblclick(function(){
+		$('#test-popup1').removeClass('hide');
+	});
+	
+	/* CHECKBOX ALL */
+	$(function(){
+      $("input[name=checkall]").click( function (){
+        if ($("input[name=checkall]" ).is( ":checked")){
+            $( "input[name=chk]" ).prop('checked', true); 
+        } else {
+            $( "input[name=chk]" ).prop('checked', false); 
+        }
+      } )
+    });
+	
+</script>

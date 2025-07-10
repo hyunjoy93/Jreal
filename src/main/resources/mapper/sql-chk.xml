@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.ChkMapper">
+
+	<select id="selectChkReqInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		 with
+		 t_base as 
+		 (
+				SELECT A.chk_req_sno 
+				     , to_char(a.reg_dttm,'yyyy-mm-dd')   as req_dt
+				     , A.reg_emp_id                       as req_emp_id
+				     , A.chk_sep_cd
+				     , A.chk_sprt_type_cd
+		             , a.chk_req_ctnt
+		             , A.mntc_ctrt_sno
+				     , case when trim(a.vist_plan_dt) != ''
+				            then substring(a.vist_plan_dt,1,4)||'-'||
+				                 substring(a.vist_plan_dt,5,2)||'-'||
+				                 substring(a.vist_plan_dt,7,2)
+				       end        as vist_plan_dt
+				     , a.reg_emp_id
+				  FROM CHK_REQ   A  
+				 WHERE 1=1
+				   AND trim(a.vist_plan_dt) <![CDATA[<=]]>
+			                        case when a.chk_sep_cd = '1'
+			                             then to_char((date_trunc('MONTH', now()) + INTERVAL '2 MONTH - 1 day')::date,'yyyymmdd')
+			                             else a.vist_plan_dt
+			                        end			   
+		    )
+		    , t_chk_req_aset as 
+		    (
+		    	select chk_req_sno 
+		    	  from chk_req_aset
+		    	 where 1=1
+		    	   and ( mntc_emp_id   = CASE WHEN #{loginUserGroup} = 'A01' THEN mntc_emp_id   ELSE #{loginUserId} END or 
+		    	         apvl_emp_id_1 = CASE WHEN #{loginUserGroup} = 'A01' THEN apvl_emp_id_1 ELSE #{loginUserId} END or 
+		    	         apvl_emp_id_2 = CASE WHEN #{loginUserGroup} = 'A01' THEN apvl_emp_id_2 ELSE #{loginUserId} END )
+		    )
+		    , t_final as 
+		    (
+			    select e.cd_ko_nm    as chk_sep_nm
+			         , f.cd_ko_nm    as chk_sprt_type_nm
+			         , b.emp_nm      as req_emp_nm
+			         , a.*
+			      from t_base   a
+					          left outer join emp  b 
+					                  on ( a.req_emp_id = b.emp_id )
+					          left outer join comm_cd_detl   e
+					                  on ( a.chk_sep_cd = E.cd_effv_val      and 
+					                       e.col_en_nm  = 'CHK_SEP_CD' )
+					          left outer join comm_cd_detl   f
+					                  on ( a.chk_sprt_type_cd = f.cd_effv_val      and 
+					                       f.col_en_nm  = 'CHK_SPRT_TYPE_CD' )
+					 WHERE 1=1
+			)	
+			select a.*, #{loginUserId}   as login_user_id, #{loginUserGroup}   as login_user_group
+<!-- 	             , case when a.chk_sep_cd != '1' -->
+<!-- 	                    then <![CDATA[  -->
+<!-- 	               			'<button type="button" class="bt bd gb chkReq-update">수정</button>' -->
+<!-- 	               			'<button type="button" class="bt bd gb chkReq-delete">삭제</button>' -->
+<!-- 	               			]]>  -->
+<!-- 	               END   AS btn_upd_del -->
+	             , <![CDATA[ 
+               			'<button type="button" class="bt bd gb chkReq-delete">삭제</button>'
+	               ]]>    AS btn_upd_del
+			  from t_final   a
+			 where 1=1
+			   and ( a.reg_emp_id   = CASE WHEN #{loginUserGroup} = 'A01' THEN reg_emp_id ELSE #{loginUserId} END or 
+			         a.chk_req_sno in ( select chk_req_sno from t_chk_req_aset ) )
+			 
+   	        <if test="searchStr != null and searchStr != ''">
+		    	<if test="searchType.equals('reqEmpNm')">
+		   	 		AND A.req_emp_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		    	<if test="searchType.equals('chkSepNm')">
+		   	 		AND A.CHK_SEP_NM LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		   	 	<if test="searchType.equals('chkReqCtnt')">
+		   	 		AND A.chk_Req_Ctnt LIKE '%' || #{searchStr} || '%'
+		   	 	</if>
+		   	</if>	
+  	   	    <if test="searchDt != null and searchDt != ''">
+  	   	    	AND vist_plan_dt = #{searchDt}
+		   	</if>	
+			order by A.vist_plan_dt DESC, a.req_dt desc, a.chk_req_sno desc
+	</select>
+
+
+	<select id="selectChkStatList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		with
+		T_APND_FILE AS 
+		(
+			select SUBSTRING(apnd_file_trg_id, strpos(apnd_file_trg_id,'_') + 1
+			                                 , strpos(apnd_file_trg_id,'^') -
+			                                   ( strpos(apnd_file_trg_id,'_') + 1 ) ) as chk_req_sno 
+			     , SUBSTRING(apnd_file_trg_id, strpos(apnd_file_trg_id,'^') + 1 )     as ASET_ID
+			  from apnd_file af 
+			 where apnd_file_sep_cd = 'C'
+			   and APND_FILE_SNO    = 1
+		)
+		, t_base as 
+		(
+			select a.chk_req_sno 
+				 , a.aset_id
+			     , e.aset_nm
+	               || <![CDATA[
+	               '<button type="button" id= "asetInfo" class="gridbtn gridbtn-default gridbtn-xs">자산상세</button>'
+	               ]]>            as aset_nm
+			     , a.mntc_emp_id     
+			     , g.emp_nm                           as mntc_emp_nm
+			     , g.corp_id
+			     , h.corp_ko_nm                       as mntc_corp_ko_nm
+			     , substring(a.chk_dt,1,4)||'-'||
+				   substring(a.chk_dt,5,2)||'-'||
+				   substring(a.chk_dt,7,2)            as chk_dt   
+				 , case when a.chk_dt      is not null and 
+				             ( select count(*)
+				                 from chk_rslt  c
+				                where 1=1
+				                  and a.chk_req_sno = C.chk_req_sno  
+				                  and a.aset_id     = C.ASET_ID ) > 1 
+				        then 'Y' 
+				   end                                as rslt_reg_yn 
+				 , CASE WHEN C.CHK_REQ_SNO IS NOT NULL
+				        THEN 'Y'
+				   END                                AS file_reg_yn
+				 , a.apvl_emp_id_1 
+			     , i.emp_nm                           as apvl_emp_nm_1
+				 , a.apvl_emp_id_2
+			     , j.emp_nm                           as apvl_emp_nm_2
+			     , case when a.apvl_prc_sep_cd_1 = 'F' and 
+			                 a.apvl_prc_sep_cd_2 = 'F' 
+			            then substring(to_char(a.mod_dttm,'yyyymmdd'),1,4)||'-'||
+			                 substring(to_char(a.mod_dttm,'yyyymmdd'),5,2)||'-'||
+			                 substring(to_char(a.mod_dttm,'yyyymmdd'),7,2)
+			       end                                as cmpl_dt
+			  from chk_req_aset   a
+			         left outer join T_APND_FILE   c
+			                 on ( a.chk_req_sno = CAST( C.chk_req_sno AS NUMERIC )  and 
+			                      a.aset_id     = C.ASET_ID ) 
+			         left outer join aset   e
+			                 on ( a.aset_id = e.aset_id  )
+<!-- 			         left outer join mntc_hist   f -->
+<!-- 			                 on ( a.aset_id       = f.aset_id        And  -->
+<!-- 			                      A.mntc_CTRT_SNO = f.mntc_CTRT_SNO  AND -->
+<!-- 			                      to_char(now(),'yyyymmdd') between f.ctrt_strt_dt and f.ctrt_end_dt ) -->
+			         left outer join emp   g
+			                 on ( a.mntc_emp_id = g.emp_id  )
+			         left outer join corp   h
+			                 on ( g.corp_id = h.corp_id  )	
+			         left outer join emp   i
+			                 on ( a.apvl_emp_id_1 = i.emp_id  )
+			         left outer join emp   j
+			                 on ( a.apvl_emp_id_2 = j.emp_id  )
+		)
+		select a.*
+		  from t_base	a	                       
+		 where 1=1
+		   AND A.chk_req_sno = cast( #{chkReqSno} as numeric )
+    	   and ( mntc_emp_id   = CASE WHEN #{loginUserGroup} = 'A01' THEN mntc_emp_id   ELSE #{loginUserId} END or 
+    	         apvl_emp_id_1 = CASE WHEN #{loginUserGroup} = 'A01' THEN apvl_emp_id_1 ELSE #{loginUserId} END or 
+    	         apvl_emp_id_2 = CASE WHEN #{loginUserGroup} = 'A01' THEN apvl_emp_id_2 ELSE #{loginUserId} END )
+		   
+   	        <if test="searchStr != null and searchStr != ''">
+		    	<if test="searchType.equals('reqEmpNm')">
+		   	 		AND A.req_emp_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		    	<if test="searchType.equals('asetNm')">
+		   	 		AND A.aset_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		    	<if test="searchType.equals('mntcCorpKoNm')">
+		   	 		AND A.mntc_corp_ko_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		   	 	<if test="searchType.equals('mntcEmpNm')">
+		   	 		AND A.mntc_emp_nm LIKE '%' || #{searchStr} || '%'
+		   	 	</if>
+		   	</if>		                       
+	</select>
+
+	<select id="selectChkReqCorpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT a.corp_id       as corp_id
+			 , A.corp_ko_nm    as corp_ko_nm
+			 , A.corp_no       as corp_no
+          FROM corp A
+         WHERE 1=1
+           and corp_id in ( 
+           						select corp_id
+								  from emp e
+								 where 1=1
+								   and e.emp_id in ( 
+														select aset_chrg_emp_id1 
+														  from mntc_hist 
+														 where 1=1
+														   and aset_chrg_emp_id1 = CASE WHEN #{loginUserGroup} = 'A01' THEN aset_chrg_emp_id1 ELSE #{loginUserId} END 
+														 union all 
+														select aset_chrg_emp_id2 
+														  from mntc_hist 
+														 where 1=1
+														   and aset_chrg_emp_id2 = CASE WHEN #{loginUserGroup} = 'A01' THEN aset_chrg_emp_id2 ELSE #{loginUserId} END 
+														 union all 
+														select mntc_emp_id 
+														  from mntc_hist 
+														 where 1=1
+														   and mntc_emp_id       = CASE WHEN #{loginUserGroup} = 'A01' THEN mntc_emp_id       ELSE #{loginUserId} END 
+												    )
+
+                          )
+         ORDER BY A.corp_id
+	</select>
+
+	<select id="selectChkReqAsetList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+      	SELECT a.aset_id
+       		 , b.aset_clsf_nm || ' > ' || a.aset_nm as content
+             , a.aset_nm
+             , b.aset_clsf_nm
+             , d.aset_chrg_emp_id1
+             , d.aset_chrg_emp_id2
+             , d.corp_id
+             , d.corp_ko_nm 
+             , d.mntc_emp_id
+             , d.mntc_emp_nm
+<!--              , d.emp_id -->
+          FROM aset   a
+          		left outer join aset_clsf b 
+          				on ( a.aset_clsf_id = b.aset_clsf_id )
+          		left outer join (	select cd_effv_val, cd_ko_nm
+  									  from comm_cd_detl 
+ 									 where col_en_nm = 'ASET_STUS_SEP_CD')	 c 
+          				on ( a.aset_stus_sep_cd = c.cd_effv_val )
+          		join (	select a.aset_id 
+				             , a.aset_chrg_emp_id1
+				             , a.aset_chrg_emp_id2
+          		             , a.mntc_emp_id
+          		             , b.emp_nm          as mntc_emp_nm
+<!--           		             , b.emp_id           -->
+          		             , c.corp_id
+          		             , c.corp_ko_nm
+          		             , a.ctrt_strt_dt
+          		             , a.ctrt_end_dt
+						  from mntc_hist  a
+							 , emp        b
+						     , corp       c
+						 where 1=1
+						   and a.mntc_emp_id  = b.emp_id 
+						   and b.corp_id      = c.corp_id 
+						   and to_char(now(),'yyyymmdd') between a.ctrt_strt_dt and a.ctrt_end_dt)   d   									     						
+					on ( a.aset_id = d.aset_id )
+         WHERE 1=1
+    	   and ( d.aset_chrg_emp_id1 = CASE WHEN #{loginUserGroup} = 'A01' THEN d.aset_chrg_emp_id1 ELSE #{loginUserId} END or 
+    	         d.aset_chrg_emp_id2 = CASE WHEN #{loginUserGroup} = 'A01' THEN d.aset_chrg_emp_id2 ELSE #{loginUserId} END or 
+    	         d.mntc_emp_id       = CASE WHEN #{loginUserGroup} = 'A01' THEN d.mntc_emp_id       ELSE #{loginUserId} END )
+	</select>
+
+	<select id="selectChkReqMailList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+      	SELECT a.aset_id
+       		 , b.aset_clsf_nm || ' > ' || a.aset_nm as content
+             , a.aset_nm
+             , b.aset_clsf_nm
+             , d.aset_chrg_emp_id1
+             , d.aset_chrg_emp_id2
+             , d.corp_ko_nm 
+             , d.corp_id
+             , d.emp_id
+             , d.emp_nm
+          FROM aset   a
+          		left outer join aset_clsf b 
+          				on ( a.aset_clsf_id = b.aset_clsf_id )
+          		left outer join (	select cd_effv_val, cd_ko_nm
+  									  from comm_cd_detl 
+ 									 where col_en_nm = 'ASET_STUS_SEP_CD')	 c 
+          				on ( a.aset_stus_sep_cd = c.cd_effv_val )
+          		join (	select a.aset_id 
+				             , a.aset_chrg_emp_id1
+				             , a.aset_chrg_emp_id2
+          		             , a.mntc_emp_id
+          		             , b.emp_nm          as mntc_emp_nm
+          		             , b.emp_nm          
+          		             , b.emp_id          
+          		             , c.corp_id
+          		             , c.corp_ko_nm
+          		             , a.ctrt_strt_dt
+          		             , a.ctrt_end_dt
+						  from mntc_hist  a
+							 , emp        b
+						     , corp       c
+						 where 1=1
+						   and a.mntc_emp_id  = b.emp_id 
+						   and b.corp_id      = c.corp_id 
+						   and to_char(now(),'yyyymmdd') between a.ctrt_strt_dt and a.ctrt_end_dt)   d   									     						
+					on ( a.aset_id = d.aset_id )
+         WHERE 1=1
+           AND a.aset_id in <foreach collection="asetIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
+	</select>
+
+	<select id="selectSceduleMailList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT a.vist_plan_dt,
+		       a.chk_req_ctnt,
+		       b.mntc_corp_id,
+		       b.mntc_emp_id,
+		       c.corp_ko_nm
+		FROM chk_req a
+		JOIN chk_req_aset b ON a.chk_req_sno = b.chk_req_sno
+		JOIN corp c ON b.mntc_corp_id = c.corp_id
+		WHERE a.chk_sep_cd = '1'
+		AND TO_DATE(a.vist_plan_dt, 'YYYYMMDD') BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'					     						
+	</select>
+	
+	<select id="selectChkReqMax"  resultType="java.lang.Integer">
+		SELECT COALESCE(MAX(chk_req_sno), 0)
+		FROM chk_req
+	</select>
+
+	<insert id="insertChkReq" parameterType="java.util.HashMap">
+		INSERT INTO chk_req 
+		(
+			   chk_req_sno
+			  ,chk_sep_cd
+			  ,chk_sprt_type_cd
+			  ,vist_plan_dt
+			  ,chk_req_ctnt
+			  ,reg_emp_id
+			  ,reg_dttm
+			  ,mod_emp_id
+			  ,mod_dttm
+		)
+        VALUES
+		(	
+		   	   #{sno}
+		   	 , #{chkSepCd}
+		   	 , #{chkSprtTypeCd}
+        	 , #{vistPlanDt}
+		     , #{chkReqCtnt}
+		   	 , #{userId}
+		   	 , now()
+		   	 , #{userId}
+		   	 , now()
+		)
+	</insert>
+	<insert id="insertChkAsetReq" parameterType="java.util.HashMap">
+	    <foreach collection="asetIds" item="item" separator=";"
+        	 close=";">
+		INSERT INTO chk_req_aset 
+		(
+			   chk_req_sno
+			  ,aset_id
+			  ,apvl_emp_id_1
+			  ,apvl_emp_id_2
+			  ,apvl_prc_sep_cd_1
+			  ,apvl_prc_sep_cd_2
+			  ,reg_emp_id
+			  ,reg_dttm
+			  ,mod_emp_id
+			  ,mod_dttm
+			  ,mntc_corp_id
+			  ,mntc_emp_id
+		)
+        VALUES
+		(	
+		   	   #{sno}
+		   	 , #{item}
+			 , #{asignBuId}
+		   	 , #{asignJungId}
+		   	 , 'W'
+		   	 , 'W'
+		   	 , #{userId}
+		   	 , now()
+		   	 , #{userId}
+		   	 , now()
+		   	 , (select b.corp_id from mntc_hist a, emp b where a.aset_id = #{item} and TO_CHAR(NOW(), 'YYYYMMDD') between a.ctrt_strt_dt and a.ctrt_end_dt and a.mntc_emp_id = b.emp_id)
+		   	 , (select mntc_emp_id from mntc_hist where aset_id = #{item} and TO_CHAR(NOW(), 'YYYYMMDD') between ctrt_strt_dt and ctrt_end_dt)
+		)
+    	</foreach> 
+	</insert>
+
+	<insert id="insertChkAsignBuReq" parameterType="java.util.HashMap">
+		INSERT INTO chk_req_apvl 
+		(
+			   chk_req_sno
+			  ,apvl_prc_seqno
+			  ,apvl_emp_id
+			  ,reg_emp_id
+			  ,reg_dttm
+			  ,mod_emp_id
+			  ,mod_dttm
+		)
+        VALUES
+		(	
+		   	   #{sno}
+		   	 , '1' 
+		   	 , #{asignBuId}
+		   	 , #{userId}
+		   	 , now()
+		   	 , #{userId}
+		   	 , now()
+		)
+	</insert>
+
+	<insert id="insertChkAsignJungReq" parameterType="java.util.HashMap">
+		INSERT INTO chk_req_apvl 
+		(
+			   chk_req_sno
+			  ,apvl_prc_seqno
+			  ,apvl_emp_id
+			  ,reg_emp_id
+			  ,reg_dttm
+			  ,mod_emp_id
+			  ,mod_dttm
+		)
+        VALUES
+		(	
+		   	   #{sno}
+		   	 , '2' 
+		   	 , #{asignJungId}
+		   	 , #{userId}
+		   	 , now()
+		   	 , #{userId}
+		   	 , now()
+		)
+	</insert>
+	
+	<select id="selectChkRsltList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		with
+		t_base as 
+		(
+			select a.chk_req_sno 
+				 , to_char(a.reg_dttm,'yyyy-mm-dd')   as req_dt
+			     , b.reg_emp_id                       as req_emp_id
+			     , b.chk_sep_cd
+			     , b.chk_sprt_type_cd
+			     , a.aset_id                         
+			     , case when a.chk_dt != ''
+			            then substring(a.chk_dt,1,4)||'-'||
+			                 substring(a.chk_dt,5,2)||'-'||
+			                 substring(a.chk_dt,7,2) 
+			       end             as chk_dt
+			     , e.aset_nm
+	             , b.chk_req_ctnt
+			     , a.apvl_emp_id_1
+			     , a.apvl_prc_sep_cd_1
+			     , a.send_ctnt_1
+			     , a.apvl_emp_id_2
+			     , a.apvl_prc_sep_cd_2
+			     , a.send_ctnt_2
+			     , f.mntc_emp_id
+			     , g.emp_nm       as mntc_emp_nm
+			     , g.corp_id
+			     , h.corp_ko_nm   as mntc_corp_ko_nm
+			     , case when trim(b.vist_plan_dt) != ''
+			            then substring(b.vist_plan_dt,1,4)||'-'||
+			                 substring(b.vist_plan_dt,5,2)||'-'||
+			                 substring(b.vist_plan_dt,7,2)
+			       end        as vist_plan_dt
+			     , case when a.cmpl_dt != ''
+			            then substring(a.cmpl_dt,1,4)||'-'||
+			                 substring(a.cmpl_dt,5,2)||'-'||
+			                 substring(a.cmpl_dt,7,2)  
+			       end       as cmpl_dt
+			  from chk_req_aset        a
+			               join chk_req   b
+			                 on ( a.chk_req_sno = b.chk_req_sno )       
+			         left outer join aset   e    
+			                 on ( a.aset_id = e.aset_id  )
+			         left outer join mntc_hist   f
+			                 on ( a.aset_id = f.aset_id and 
+			                      to_char(now(),'yyyymmdd') between f.ctrt_strt_dt and f.ctrt_end_dt )
+			         left outer join emp   g
+			                 on ( f.mntc_emp_id = g.emp_id  )
+			         left outer join corp   h
+			                 on ( g.corp_id = h.corp_id  )	
+			 where 1=1
+<!-- 			   and a.chk_req_sno = 119 -->
+			   and ( a.chk_req_sno, a.aset_id) in ( select c.chk_req_sno, c.aset_id
+			                                          from chk_rslt  c )  
+		)
+		, t_final as 
+		(
+			select b.emp_nm     as req_emp_nm
+		         , c.emp_nm
+	               ||CASE WHEN APVL_PRC_SEP_CD_1 = 'W'
+	               		  THEN  
+				               	<![CDATA[
+				               '<button type="button" id= "apvl_1" class="gridbtn waiting gridbtn-xs">결재대기</button>'
+				               ]]> 
+				          WHEN APVL_PRC_SEP_CD_1 = 'F'
+	               		  THEN 
+				               	<![CDATA[
+				               '<button type="button" id= "apvl_1" class="gridbtn assign gridbtn-xs">결재승인</button>'
+				               ]]>
+				          WHEN APVL_PRC_SEP_CD_1 = 'C'
+	               		  THEN  
+				               	<![CDATA[
+				               '<button type="button" id= "apvl_1" class="gridbtn danger gridbtn-xs">결재반려</button>'
+				               ]]>
+				      END 
+		           ||case when send_ctnt_1 != ''
+					      then 	
+					      		<![CDATA[
+								'<button type="button" id= "notiCntn" class="gridbtn gridbtn-default gridbtn-xs">전달내용</button>'
+							    ]]>
+					      else ''
+					 end          as apvl1_emp_nm
+			     , d.emp_nm          
+	               ||CASE WHEN APVL_PRC_SEP_CD_2 = 'W'
+	               		  THEN  
+				               	<![CDATA[
+				               '<button type="button" id= "apvl_2" class="gridbtn waiting gridbtn-xs">결재대기</button>'
+				               ]]> 
+				          WHEN APVL_PRC_SEP_CD_2 = 'F'
+	               		  THEN  
+				               	<![CDATA[
+				               '<button type="button" id= "apvl_2" class="gridbtn assign gridbtn-xs">결재승인</button>'
+				               ]]>
+				          WHEN APVL_PRC_SEP_CD_2 = 'C'
+	               		  THEN  
+				               	<![CDATA[
+				               '<button type="button" id= "apvl_2" class="gridbtn danger gridbtn-xs">결재반려</button>'
+				               ]]>
+				      END
+		           ||case when send_ctnt_2 != ''
+					      then 	
+					      		<![CDATA[
+								'<button type="button" id= "notiCntn2" class="gridbtn gridbtn-default gridbtn-xs">전달내용</button>'
+							    ]]>
+					      else ''
+					 end       as apvl2_emp_nm
+			     , E.CD_KO_nm   as chk_sep_nm
+			     , f.CD_KO_nm   as chk_sprt_type_nm
+			     , case when a.APVL_PRC_SEP_CD_2 = 'F' 
+			            then '승인완료'
+			            else '결재진행중'
+			       end                    as final_apvl_prc_sep_nm
+			     , a.*
+			  from t_base   a
+			          left outer join emp  b 
+			                  on ( a.req_emp_id = b.emp_id )
+			          left outer join emp  c 
+			                  on ( a.apvl_emp_id_1 = c.emp_id )
+			          left outer join emp  d 
+			                  on ( a.apvl_emp_id_2 = d.emp_id )
+			          left outer join comm_cd_detl   e
+			                  on ( a.chk_sep_cd = E.cd_effv_val      and 
+			                       e.col_en_nm  = 'CHK_SEP_CD' )
+			          left outer join comm_cd_detl   f
+			                  on ( a.chk_sprt_type_cd = f.cd_effv_val      and 
+			                       f.col_en_nm  = 'CHK_SPRT_TYPE_CD' )
+		)
+		select *
+		  from t_final	a		                       
+		 where 1=1
+    	   and ( mntc_emp_id   = CASE WHEN #{loginUserGroup} = 'A01' THEN mntc_emp_id   ELSE #{loginUserId} END or 
+    	         apvl_emp_id_1 = CASE WHEN #{loginUserGroup} = 'A01' THEN apvl_emp_id_1 ELSE #{loginUserId} END or 
+    	         apvl_emp_id_2 = CASE WHEN #{loginUserGroup} = 'A01' THEN apvl_emp_id_2 ELSE #{loginUserId} END or 
+    	         req_emp_id    = CASE WHEN #{loginUserGroup} = 'A01' THEN req_emp_id    ELSE #{loginUserId} END )
+<!-- 		    and chk_req_sno = cast( #{chkReqSno} as numeric ) -->
+   	        <if test="searchStr != null and searchStr != ''">
+		    	<if test="searchType.equals('reqEmpNm')">
+		   	 		AND A.req_emp_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		    	<if test="searchType.equals('asetNm')">
+		   	 		AND A.aset_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		    	<if test="searchType.equals('mntcCorpKoNm')">
+		   	 		AND A.mntc_corp_ko_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		   	 	<if test="searchType.equals('mntcEmpNm')">
+		   	 		AND A.mntc_emp_nm LIKE '%' || #{searchStr} || '%'
+		   	 	</if>
+		   	</if>
+		 order by req_dt desc, chk_req_sno desc, aset_nm 		                       
+	</select>
+	
+	
+
+	<select id="selectChkApvlInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT A.CHK_REQ_SNO        as CHK_REQ_SNO
+		     , A.ASET_ID            as ASET_ID
+		---------------------------------------------------------
+			 , A.APVL_EMP_ID_1      as APVL_EMP_ID_1
+			 , B.EMP_NM             AS APVL_EMP_NM_1
+			 , A.apvl_prc_sep_cd_1  as apvl_prc_sep_cd_1  
+			 , C.cd_ko_nm           as apvl_prc_sep_NM_1
+			 , A.send_ctnt_1        as send_ctnt_1	
+		---------------------------------------------------------
+			 , A.APVL_EMP_ID_2      as APVL_EMP_ID_2
+			 , D.EMP_NM             AS APVL_EMP_NM_2
+			 , A.apvl_prc_sep_cd_2  as apvl_prc_sep_cd_2  
+			 , E.cd_ko_nm           as apvl_prc_sep_NM_2
+			 , A.send_ctnt_2        as send_ctnt_2
+          FROM chk_req_aset A
+          			LEFT OUTER JOIN EMP  B
+          					ON ( A.APVL_EMP_ID_1 = B.EMP_ID)
+			        left outer join comm_cd_detl   C
+			                on ( a.apvl_prc_sep_cd_1 = C.cd_effv_val  and 
+			                     C.col_en_nm  = 'APVL_PRC_SEP_CD' )
+          			LEFT OUTER JOIN EMP  D
+          					ON ( A.APVL_EMP_ID_2 = D.EMP_ID)
+			        left outer join comm_cd_detl   E
+			                on ( a.apvl_prc_sep_cd_2 = E.cd_effv_val  and 
+			                     E.col_en_nm  = 'APVL_PRC_SEP_CD' )
+         WHERE 1=1
+           AND CHK_REQ_SNO    = cast( #{chkReqSno} as numeric )
+           AND ASET_ID        = #{asetId}
+           AND CASE WHEN #{apvlPrcSeqno} = '1'
+                    THEN APVL_EMP_ID_1 
+                    ELSE APVL_EMP_ID_2
+               END  = #{apvlEmpId} 
+	</select>
+
+	<update id="updateChkReqApvl" parameterType="java.util.HashMap" >
+		UPDATE CHK_REQ_ASET
+		   SET APVL_EMP_ID_1     = CASE WHEN #{apvlPrcSeqno} = '1'
+		                                THEN #{apvlEmpId} 
+		                                ELSE APVL_EMP_ID_1
+		                            END
+		     , apvl_prc_sep_cd_1 = CASE WHEN #{apvlPrcSeqno} = '1'
+		                                THEN #{apvlPrcSepCd} 
+		                                ELSE apvl_prc_sep_cd_1
+		                           END
+		     , SEND_CTNT_1       = CASE WHEN #{apvlPrcSeqno} = '1'
+		                                THEN #{sendCtnt} 
+		                                ELSE SEND_CTNT_1
+		                           END
+		     , APVL_EMP_ID_2     = CASE WHEN #{apvlPrcSeqno} = '2'
+		                                THEN #{apvlEmpId} 
+		                                ELSE APVL_EMP_ID_2
+		                           END
+		     , apvl_prc_sep_cd_2 = CASE WHEN #{apvlPrcSeqno} = '2'
+		                                THEN #{apvlPrcSepCd} 
+		                                ELSE apvl_prc_sep_cd_2
+		                           END
+		     , SEND_CTNT_2       = CASE WHEN #{apvlPrcSeqno} = '2'
+		                                THEN #{sendCtnt} 
+		                                ELSE SEND_CTNT_2
+		                           END
+		     , CMPL_DT           = CASE WHEN #{apvlPrcSeqno} = '2' AND 
+		                                     #{apvlPrcSepCd} = 'F'
+		                                THEN to_char(now(),'yyyymmdd')
+		                                ELSE CMPL_DT
+		                           END
+		     , CMPL_YN           = CASE WHEN #{apvlPrcSeqno} = '2' AND 
+		                                     #{apvlPrcSepCd} = 'F'
+		                                THEN 'Y'
+		                           END
+		     , MOD_EMP_ID    = #{modEmpId}
+		     , MOD_DTTM      = NOW()
+		 WHERE 1=1
+           AND CHK_REQ_SNO  = cast( #{chkReqSno} as numeric )
+           AND ASET_ID      = #{asetId}
+           AND CASE WHEN #{apvlPrcSeqno} = '1'
+                    THEN APVL_EMP_ID_1 
+                    ELSE APVL_EMP_ID_2
+               END  = #{apvlEmpId} 
+	</update>
+
+	<delete id="deleteChkReq" parameterType="java.util.HashMap">
+		DELETE FROM CHK_REQ
+		 WHERE CHK_REQ_SNO = cast( #{chkReqSno} as numeric );
+		 
+		DELETE FROM CHK_REQ_ASET
+		 WHERE CHK_REQ_SNO = cast( #{chkReqSno} as numeric );
+	</delete>	
+	
+	
+	<select id="selectChkRsltFormList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	  SELECT A.chk_form_id
+	       , B.chk_form_nm
+	       , A.chk_item_id
+	       , A.chk_item_nm
+	       , A.chk_crtr_desc
+	       , A.use_yn
+	       , c.chk_rslt_desc
+           , ROW_NUMBER() OVER (ORDER BY LPAD(A.chk_form_id, 10, '0'), LPAD(A.chk_item_id, 10, '0')) AS rnum
+	    FROM chk_form_item A
+	    		JOIN chk_form B 
+	    		  ON ( A.chk_form_id = B.chk_form_id )
+	    		LEFT JOIN chk_rslt C 
+	    			   ON ( A.chk_form_id = C.chk_form_id                        and 
+	    			        a.chk_item_id = c.chk_item_id                        and 
+	                        C.chk_req_sno = cast ( #{rsltchkReqSno} as numeric ) and 
+	                        C.aset_id     = #{rsltAsetId} )
+	    WHERE 1=1
+	      and A.chk_form_id = #{chkFormId}
+	      and A.use_yn = 'Y'
+	    ORDER BY LPAD(A.chk_form_id, 10, '0'), LPAD(A.chk_item_id, 10, '0')	
+    </select>
+	
+	<select id="selectChkRsltFormOption" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT chk_form_id
+			 , chk_form_nm
+          FROM chk_form 
+         WHERE 1=1
+	      and use_yn = 'Y'
+		 order by lpad(chk_form_id,10,'0')
+	</select>
+	
+	
+	<insert id="insertChkRslt" parameterType="java.util.HashMap">
+	    <foreach collection="list" item="item" separator=";" close=";">
+	        INSERT INTO chk_rslt
+	        (
+	            chk_form_id,
+	            chk_item_id,
+	            chk_req_sno,
+	            aset_id,
+	            chk_item_nm,
+	            chk_crtr_desc,
+	            chk_rslt_desc,
+	            reg_emp_id,
+	            reg_dttm,
+	            mod_emp_id,
+	            mod_dttm
+	        )
+	        VALUES
+	        (
+	            #{item.chk_form_id},
+	            #{item.chk_item_id},
+	            cast( #{item.chk_req_sno} as numeric ),
+                #{item.aset_id},
+	            #{item.chk_item_nm},
+	            #{item.chk_crtr_desc},
+	            #{item.chk_rslt_desc},
+	            #{item.user_id},
+	            now(),
+	            #{item.user_id},
+	            now()
+	        )
+	    </foreach>
+	</insert>
+	
+	<update id="updateChkRslt" parameterType="java.util.HashMap">
+		  UPDATE chk_req_aset
+		  SET
+		  	chk_dt   = #{chk_dt},
+<!--  		    cmpl_dt  = to_char(now(), 'YYYYMMDD'), -->
+<!--  		    cmplZ_yn = 'Y' -->
+		    mod_emp_id = #{userId},
+		    mod_dttm = now()
+		  WHERE
+		    	chk_req_sno = cast( #{chk_req_sno} as numeric )
+		    AND
+		    	aset_id = #{aset_id}
+	</update>
+	
+	<delete id="deleteChkRslt" parameterType="java.util.HashMap">
+        DELETE FROM chk_rslt
+         WHERE chk_req_sno = cast( #{chk_req_sno} as numeric )
+           AND aset_id = #{aset_id}
+	</delete>
+	
+	
+	<select id="selectRsltReportList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT a.chk_form_id
+             , a.chk_item_nm
+			 , a.chk_crtr_desc
+			 , a.chk_ctnt
+			 , a.chk_rslt_desc
+			 , a.memo_ctnt
+			 , b.cmpl_dt 
+             , ROW_NUMBER() OVER (ORDER BY LPAD(a.chk_form_id, 10, '0'), LPAD(a.chk_item_id, 10, '0')) AS rnum
+          FROM chk_rslt a, chk_req_aset b
+         WHERE 1=1
+           AND a.chk_req_sno = b.chk_req_sno
+           AND a.aset_id = b.aset_id
+   		   AND a.chk_req_sno = cast( #{chk_req_sno} as numeric )
+   		   AND a.aset_id = #{aset_id}
+		 order by
+		       lpad(a.chk_form_id,10,'0'),lpad(a.chk_item_id,10,'0') 
+	</select>
+</mapper>

@@ -1,0 +1,320 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+<link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container">
+
+<header class="header">
+	
+	<button type="button" class="btMenu"><i>좌측메뉴열닫</i></button>
+
+	<h1 class="logo"><a href="main.html"><strong>{{ name_eng }}</strong> {{ name_kor }}</a></h1>
+
+	<nav class="gnb">
+		<ul class="mainMenu">
+			<li>
+				<a href="main.html" class="menu">Dashboard</a>
+				<a href="#" class="btPop" onclick="window.open('main_dashboard.html','','All=no,width=1600px,height=840px,left=0,top=0');">관제용</a>
+			</li>
+			<li>
+				<a href="sub_event_state.html" class="menu">이벤트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_event_state.html" class="menu">이벤트 상황관리</a></li>
+					<li><a href="sub_event_infra.html" class="menu">인프라 긴급점검</a></li>
+					<li><a href="sub_event_voc.html" class="menu">VOC 등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_incident_state.html" class="menu">인시던트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_incident_state.html" class="menu">인시던트 상황관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_manage_consist.html" class="menu">구성/성능관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_manage_consist.html" class="menu">구성정보조회</a></li>
+					<li><a href="sub_manage_performance.html" class="menu">성능정보조회</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_work_exception.html" class="menu">작업관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_work_exception.html" class="menu">예외등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_stats_event.html" class="menu">통계</a>
+				<ul class="subMenu">
+					<li><a href="sub_stats_event.html" class="menu">이벤트 통계</a></li>
+					<li><a href="sub_stats_incident.html" class="menu">인시던트 통계</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_control_member.html" class="menu">관제운영관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_control_member.html" class="menu">사용자 관리</a></li>
+					<li><a href="sub_control_contact.html" class="menu">통합 비상연락망 관리</a></li>
+					<li><a href="sub_control_linkage.html" class="menu">관제연동상태 관리</a></li>
+					<li><a href="sub_control_notice.html" class="menu">공지사항 관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_pod_vm.html" class="menu">VM관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_pod_vm.html" class="menu">[CS] IPC-PROD</a></li>
+				</ul>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="user">
+		<div class="userName"><span class="pic"><!--img src="img/temp_profile.png" alt=""--></span>홍길동</div>
+		<div class="userMenu">
+			<!--
+			<p class="head">마스터 관리자<em>Super Admin</em></p>
+			<a href="" class="menu">나의 프로필</a>
+			<a href="" class="menu">프로필수정</a>
+			-->
+			<a href="login.html" class="menu">로그아웃</a>
+		</div>
+	</div>
+
+</header>
+	
+<section class="section">
+
+	<div class="conHead">
+
+		<ol class="breadcrumb">
+			<li><a href="" class="home">Home</a></li>
+			<li>관제운영관리</li>
+			<li>사용자 관리</li>
+		</ol>
+
+		<div class="headline">
+			<h2 class="pageTitle">사용자 관리</h2>
+		</div>
+
+	</div><!--//conHead-->
+
+	<div class="conBody">
+
+		<div class="search">
+
+			<div class="box">
+				<form>
+					<table class="field">
+						<tbody>
+							<tr>
+								<th>사용권한</th>
+								<td>
+									<select class="select md">
+										<option>전체</option>
+										<option>권한1</option>
+										<option>권한2</option>
+									</select>
+								</td>
+								<th>검색어</th>
+								<td>
+									<select class="select md">
+										<option>사용자ID</option>
+										<option>사용자명</option>
+										<option>소속</option>
+									</select>
+									<input type="text" class="input xxl" value="" placeholder="검색어입력">
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+				<div class="btns">
+					<button type="button" class="bt bg primary">검색</button>
+					<!--button type="button" class="bt bg">초기화</button-->
+					<button type="button" class="btRefresh" title="초기화">초기화</button>
+				</div>
+			</div>
+
+		</div><!--//search-->
+
+		<div class="result">
+
+			<div class="control">
+
+				<span class="count">
+					<select class="select sm">
+						<option>20</option>
+						<option>1,000</option>
+					</select>
+					<i>화면에 표시할 리스트 갯수</i>
+				</span>
+
+				<div class="btns">
+					<button type="button" class="bt bg secondary" id="test-bt-popup1">사용자추가</button>
+				</div>
+
+			</div><!--//control-->
+
+			<div class="grid">
+				<table>
+					<thead>
+						<tr>
+							<th class="range"><span>사용자ID</span></th>
+							<th class="range"><span>사용자명</span></th>
+							<th class="range"><span>소속</span></th>
+							<th class="range"><span>사용권한</span></th>
+							<th class="range"><span>변경</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="n in 10">
+							<td>82253220</td>
+							<td>홍길동</td>
+							<td>KT</td>
+							<td>
+								<select class="select md">
+									<option>권한1</option>
+									<option>권한2</option>
+								</select>
+							</td>
+							<td>
+								<button type="button" class="bt bd primary">수정</button>
+								<button type="button" class="bt bd">삭제</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div><!--//grid-->
+
+			<div class="control">
+
+				<span class="count">현재 페이지 <b>1</b> <i>/</i> 전체 <b>1</b> 페이지</span>
+
+				<div class="pages">
+					<button type="button" class="btPrev end" disabled>처음 페이지</button>
+					<button type="button" class="btPrev" disabled>이전 페이지</button>
+					<a href="" class="pg on">1</a>
+					<a href="" class="pg">2</a>
+					<a href="" class="pg">3</a>
+					<a href="" class="pg">4</a>
+					<a href="" class="pg">5</a>
+					<button type="button" class="btNext">다음 페이지</button>
+					<button type="button" class="btNext end">마지막 페이지</button>
+				</div>
+
+			</div><!--//control-->
+
+		</div><!--//result-->
+
+	</div><!--//pageBody-->
+
+</section>
+
+
+
+
+<!-- [팝업] 사용자추가 -->
+<article class="popup hide" id="test-popup1">
+	<div class="popBox">
+
+		<div class="conHead">
+			<h5 class="popTitle">사용자추가</h5>
+			<button type="button" class="btClose"><i>닫기</i></button>
+		</div>
+
+		<div class="conBody">
+
+			<table class="field">
+				<colgroup>
+					<col width="100px">
+					<col width="*">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>사용자ID</th>
+						<td><input type="text" class="input xl" value=""><button type="button" class="bt bg secondary">중복확인</button></td>
+					</tr>
+					<tr>
+						<th>사용자명</th>
+						<td><input type="text" class="input" value=""></td>
+					</tr>
+					<tr>
+						<th>소속</th>
+						<td><input type="text" class="input" value=""></td>
+					</tr>
+					<tr>
+						<th>사용권한</th>
+						<td>
+							<select class="select">
+								<option>선택</option>
+								<option>권한1</option>
+								<option>권한2</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div><!--//conBody-->
+
+		<div class="conFoot">
+			<div class="btns">
+				<button type="button" class="bt max bd">취소</button>
+				<button type="button" class="bt max bg primary">저장</button>
+			</div>
+		</div>
+
+	</div>
+</article>	
+<!--// [팝업] 사용자추가 -->
+	
+
+
+
+<footer class="footer">ⓒ KT cloud {{ name_eng }}</footer>
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+<script>	
+	var depth1=7
+	var depth2=1
+	var depth3=0
+	var depth4=0
+	
+	/* 팝업테스트 */
+	$('#test-bt-popup1').click(function(){
+		$('#test-popup1').removeClass('hide');
+	});
+	
+</script>

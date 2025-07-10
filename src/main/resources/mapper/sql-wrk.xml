@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.WrkMapper">
+
+	<select id="selectWrkList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+       	 SELECT COUNT(*) OVER() AS total_count
+              , (CASE WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ < ]]> COUNT(*) OVER() THEN 'Y' WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ >= ]]> COUNT(*) OVER() THEN 'N' END) AS next_page_yn
+              , A.change_id						/* 변경ID */
+              , A.affected_item					/* 표준서비스명 */
+              , A.current_phase_name			/* 작업단계 */
+              , A.coordinator_name				/* 변경담당자 */
+              , A.coord_dept_name				/* 담당자부서 */
+              , TO_CHAR(A.disposal_start_name, 'YYYY-MM-DD HH24:MI:SS') AS disposal_start_name		/* 작업시작일시 */
+              , TO_CHAR(A.disposal_end_name, 'YYYY-MM-DD HH24:MI:SS') AS disposal_end_name			/* 작업종료일시 */
+              , A.status_name					/* 작업상태 */
+           FROM itsm_infra_change A
+LEFT OUTER JOIN 	
+		     ON A. = B.           
+          WHERE 1=1
+          <if test = 'keyword != null and keyword != ""'>
+	         	<if test = 'searchType.equals("tamId")'>
+	         		AND B.tam_id LIKE '%'||#{keyword}||'%'
+	         	</if>
+	         	<if test = 'searchType.equals("currentPhaseName")'>
+	         		AND A.current_phase_name LIKE '%'||#{keyword}||'%'
+	         	</if>
+	         	<if test = 'searchType.equals("coordinatorName")'>
+	         		AND A.coordinator_name LIKE '%'||#{keyword}||'%'
+	         	</if>
+	         	<if test = 'searchType.equals("coordDeptName")'>
+	         		AND A.coord_dept_name LIKE '%'||#{keyword}||'%'
+	         	</if>
+	      </if>
+	      <if test = 'startDateTime != null and startDateTime != ""'>
+	   	 	<if test = 'searchType.equals("evtOccu")'>
+	   	 		AND A.disposal_start_name BETWEEN TO_TIMESTAMP(#{startDateTime}, 'YYYY-MM-DD HH24:MI:SS')
+	   	 									  AND TO_TIMESTAMP(#{endDateTime}, 'YYYY-MM-DD HH24:MI:SS')
+	   	 	</if>
+	      </if>
+         ORDER BY A.change_id DESC
+         LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)
+	</select>
+	
+	<select id="detail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		 SELECT 
+		 	  , A.								/* 인프라ID */
+		 	  , A.status_name					/* 상태 */
+		 	  , A.domain_name					/* 도메인 */
+		 	  , A.assign_dept_name				/* 작업그룹 */
+		 	  , A.company_name					/* 회사 */
+		 	  , A.requestor_name				/* 요청자 */
+		 	  , A.requestor_email				/* 요청자이메일 */
+		 	  , A.requestor_dept_name			/* 요청자부서 */
+		 	  , A.reg_user_name					/* 등록자 */
+		 	  , A.reg_time						/* 등록일시 */
+		 	  , A.title							/* 제목 */
+		 	  , A.description					/* 내용 */
+		 	  , A.assignee_name					/* 할당자 */
+		 	  , A.affected_item_name			/* 서비스 */
+		 	  , A.part_name						/* 파트 */
+		 	  , A.assets_name					/* 구성항목 */
+		 	  , A.process_type_cod_name			/* 프로세스구분 */
+		 	  , A.category_name					/* 범주 */
+		 	  , A.current_phase_name			/* 단계 */
+		 	  , A.requested_date				/* 완료일시 */
+		 	  , B.task_type_l1					/* 작업유형1 */
+		 	  , B.task_type_l2					/* 작업유형2 */
+		 	  , B.task_type_l3					/* 작업유형3 */
+		 	  , A.z_cloudyn						/* 클라우드여부 */
+		 	  , A.z_acceptor_name				/* 접수자 */
+		 	  , A.z_accept_date					/* 접수일시 */
+		 	  , A.z_acceptyn					/* 접수여부 */
+		 	  , A.z_chm_division				/* 변경구분 */
+		 	  , A.reason						/* 변경원인 */
+		 	  , A.coordinator_name				/* 변경담당자 */
+		 	  , A.coord_dept_name				/* 변경담당자부서 */
+		 	  , A.plans							/* 변경계획 */
+		 	  , A.severity						/* 서비스중요도 */
+		 	  , A.z_chm_accept_type_l1			/* 요청유형1 */
+		 	  , A.z_chm_accept_type_l2			/* 요청유형2 */
+		 	  , A.z_chm_accept_type_l3			/* 요청유형3 */
+		 	  , A.z_service_downyn				/* 서비스중단여부 */
+		 	  , A.priority_code					/* 우선순위 */
+			  , A.location						/* 센터구분 */
+		 	  , A.z_disposer_name				/* 처리담당자 */
+		 	  , A.z_disposal_team_name			/* 처리담당부서 */
+		 	  , A.z_restoreyn					/* 원복여부 */
+		 	  , A.z_complete_type				/* 변경완료유형 */
+		 	  , A.z_fail_type					/* 변경실패유형 */
+		 	  , A.implementation_start			/* 실제처리시작일시 */
+		 	  , A.implementation_end			/* 실제처리완료일시 */
+		 	  , A.z_close_code					/* 변경종료코드 */
+		 	  , A.z_reviewer_name				/* 검토자 */
+		 	  , A.hour_worked					/* 검토일시 */
+		 	  , A.closing_comments				/* 검토의견 */
+		 	  , A.z_service_normal				/* 서비스정상여부 */
+		 	  , A.z_service_inspector			/* 서비스점검자 */
+		   FROM itsm_infra_change A
+LEFT OUTER JOIN 
+		     ON A.@@ = B.@@ 	    
+		  WHERE 1 = 1 
+		    AND A.@@ = #{@@}
+	</select>
+				
+</mapper>

@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+<link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container">
+
+<header class="header">
+	
+	<button type="button" class="btMenu"><i>좌측메뉴열닫</i></button>
+
+	<h1 class="logo"><a href="main.html"><strong>{{ name_eng }}</strong> {{ name_kor }}</a></h1>
+
+	<nav class="gnb">
+		<ul class="mainMenu">
+			<li>
+				<a href="main.html" class="menu">Dashboard</a>
+				<a href="#" class="btPop" onclick="window.open('main_dashboard.html','','All=no,width=1600px,height=840px,left=0,top=0');">관제용</a>
+			</li>
+			<li>
+				<a href="sub_event_state.html" class="menu">이벤트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_event_state.html" class="menu">이벤트 상황관리</a></li>
+					<li><a href="sub_event_infra.html" class="menu">인프라 긴급점검</a></li>
+					<li><a href="sub_event_voc.html" class="menu">VOC 등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_incident_state.html" class="menu">인시던트관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_incident_state.html" class="menu">인시던트 상황관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_manage_consist.html" class="menu">구성/성능관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_manage_consist.html" class="menu">구성정보조회</a></li>
+					<li><a href="sub_manage_performance.html" class="menu">성능정보조회</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_work_exception.html" class="menu">작업관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_work_exception.html" class="menu">예외등록</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_stats_event.html" class="menu">통계</a>
+				<ul class="subMenu">
+					<li><a href="sub_stats_event.html" class="menu">이벤트 통계</a></li>
+					<li><a href="sub_stats_incident.html" class="menu">인시던트 통계</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_control_member.html" class="menu">관제운영관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_control_member.html" class="menu">사용자 관리</a></li>
+					<li><a href="sub_control_contact.html" class="menu">통합 비상연락망 관리</a></li>
+					<li><a href="sub_control_linkage.html" class="menu">관제연동상태 관리</a></li>
+					<li><a href="sub_control_notice.html" class="menu">공지사항 관리</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="sub_pod_vm.html" class="menu">VM관리</a>
+				<ul class="subMenu">
+					<li><a href="sub_pod_vm.html" class="menu">[CS] IPC-PROD</a></li>
+				</ul>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="user">
+		<div class="userName"><span class="pic"><!--img src="img/temp_profile.png" alt=""--></span>홍길동</div>
+		<div class="userMenu">
+			<!--
+			<p class="head">마스터 관리자<em>Super Admin</em></p>
+			<a href="" class="menu">나의 프로필</a>
+			<a href="" class="menu">프로필수정</a>
+			-->
+			<a href="login.html" class="menu">로그아웃</a>
+		</div>
+	</div>
+
+</header>
+	
+<section class="section mainOld">
+
+	<div class="panel cols">
+
+		<div class="today">
+			<p class="notify">2022-07-26 15:41:36(화요일)<br>현재 <strong>11</strong>건의 인시던트 대응중 입니다.</p>
+			<div class="box cols">
+				<h3 class="mainTitle">현재 처리중 이벤트<strong>49</strong></h3>
+				<div class="box">
+					<h4 class="subTitle">Notice</h4>
+					<a href="sub_control_notice.html" class="btMore">더보기</a>
+					<ul class="latest">
+						<li v-for="n in 4">통합관제모니터링 시스템 오픈<em>2022.07.21</em></li>
+					</ul>
+				</div>
+			</div>
+		</div><!--//today-->
+
+		<div class="panel">
+
+			<div class="panel fix cols">
+
+				<a href="sub_incident_state.html" class="box situation">
+					<h3 class="mainTitle">이상징후</h3>
+					<strong class="warning">5</strong>
+				</a>
+
+				<a href="sub_incident_state.html" class="box situation">
+					<h3 class="mainTitle">장애</h3>
+					<strong class="danger">2</strong>
+				</a>
+
+				<div class="box situation zabbix">
+					<h3 class="mainTitle">수집서버상태</h3>
+					<strong class="normal">정상</strong>
+				</div>
+
+				<div class="box situation working">
+					<h3 class="mainTitle">작업현황</h3>
+					<ul>
+						<li><em>11:30~13:00</em>대전 IDC 2서버실 전원 작업 중</li>
+						<li><em>11:30~13:00</em>천안IDC 3-5 스토리지 증설 작업 중</li>
+						<li><em>11:30~13:00</em>대전 IDC 2서버실 전원 작업 중</li>
+						<li><em>11:30~13:00</em>대전 IDC 2서버실 전원 작업 중</li>
+						<li><em>11:30~13:00</em>천안IDC 3-5 스토리지 증설 작업 중</li>
+						<li><em>11:30~13:00</em>대전 IDC 2서버실 전원 작업 중</li>
+						<!--li class="noData">작업중인 현황이 없습니다.</li-->
+					</ul>
+				</div>
+
+			</div>
+
+			<div class="panel">
+				<div class="box">
+
+					<h3 class="mainTitle">인시던트목록</h3>
+					<div class="grid">
+						<table>
+							<thead>
+								<tr>
+									<th><span>No.</span></th>
+									<th><span>인시던트ID</span></th>
+									<th><span>등급</span></th>
+									<th><span>발생시간</span></th>
+									<th><span>데이터센터</span></th>
+									<th><span>표준서비스명</span></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="n in 10">
+									<td>00</td>
+									<td>I202207300001</td>
+									<td>이상징후</td>
+									<td>2022-00-00 00:00:00</td>
+									<td>천안CDC</td>
+									<td class="tl">코넷프리미엄</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="panel fix">
+				<div class="box">
+
+					<h3 class="mainTitle">일일 발생 현황</h3>
+					<button type="button" class="btMore">더보기</button>
+
+					<div class="graph">
+						<canvas id="chart" height="150"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+
+	</div><!--//panel-->
+
+	<div class="panel fix">
+		<div class="box">
+			<div class="server">
+				<h3 class="mainTitle">서버<br>현황</h3>
+				<ul>
+					<li class="danger">
+						<h4 class="subTitle">천안CDC</h4>
+						<p><b>조치중</b>이벤트 : 48<br>인시던트 : 10</p>
+					</li>
+					<li class="warning">
+						<h4 class="subTitle">목동IDC</h4>
+						<p><b>조치중</b>이벤트 : 0<br>인시던트 : 3</p>
+					</li>
+					<li class="success">
+						<h4 class="subTitle">부산</h4>
+						<p><b>정상운영중</b>이벤트 : 0<br>인시던트 : 0</p>
+					</li>
+					<li>
+						<h4 class="subTitle">목동IDC</h4>
+						<p>연결안됨</p>
+					</li>
+					<li>
+						<h4 class="subTitle">목동IDC2</h4>
+						<p>연결안됨</p>
+					</li>
+					<li>
+						<h4 class="subTitle">남청주</h4>
+						<p>연결안됨</p>
+					</li>
+					<li>
+						<h4 class="subTitle">여의도센터</h4>
+						<p>연결안됨</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div><!--//panel-->
+
+</section>
+
+
+
+<!-- [팝업] 공지사항 상세 -->
+<article class="popup hide" id="test-popup1">
+	<div class="popBox">
+
+		<div class="conHead">
+			<h5 class="popTitle">공지사항 상세</h5>
+			<button type="button" class="btClose"><i>닫기</i></button>
+		</div>
+
+		<div class="conBody">
+
+			<table class="field">
+				<colgroup>
+					<col width="80px">
+					<col width="180px">
+					<col width="80px">
+					<col width="180px">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>제목</th>
+						<td colspan="3">통합관제모니터링 시스템(Ktcloud Jupiter) 오픈</td>
+					</tr>
+					<tr>
+						<th>작성일</th>
+						<td>2022-00-00</td>
+						<th>작성자</th>
+						<td>홍길동</td>
+					</tr>
+					<tr>
+						<th>내용</th>
+						<td colspan="3">통합관제모니터링 시스템(Ktcloud Jupiter) 오픈 하였습니다.<br>통합관제모니터링 시스템(Ktcloud Jupiter) 오픈 하였습니다.통합관제모니터링 <br>시스템(Ktcloud Jupiter) 오픈 하였습니다.<br>통합관제모니터링 시스템(Ktcloud Jupiter) 오픈 하였습니다.통합관제모니터링 시스템(Ktcloud Jupiter) <br>오픈 하였습니다.통합관제모니터링 시스템(Ktcloud Jupiter) <br>오픈 하였습니다.</td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div><!--//conBody-->
+
+		<div class="conFoot">
+			<div class="btns">
+				<a href="" class="bt max bg primary">확인</a>
+			</div>
+		</div>
+
+	</div>
+</article>	
+<!--// [팝업] 공지사항 상세 -->
+
+
+
+	
+<footer class="footer">ⓒ KT cloud {{ name_eng }}</footer>
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+
+<script>
+	var depth1=1
+	var depth2=0
+	var depth3=0
+	var depth4=0
+	
+	/* 팝업테스트 */
+	$('.latest li').click(function(){
+		$('#test-popup1').removeClass('hide');
+	});
+	
+	/* 메인그래프(테스트) */	
+	const ctx = document.getElementById('chart');
+	const chart = new Chart(ctx, {
+		type: 'bar',
+		data: {
+			labels: ["9일(일)","10일(월)","11일(화)","12일(수)","13일(목)","14일(금)","15일(토)","9일(일)","10일(월)","11일(화)","12일(수)","13일(목)","14일(금)","15일(토)","9일(일)","10일(월)","11일(화)","12일(수)","13일(목)","14일(금)","15일(토)","9일(일)","10일(월)","11일(화)","12일(수)","13일(목)","14일(금)","15일(토)"],
+			datasets: [
+				{
+				label: '이벤트',
+				data: [12,19,3,5,2,3,8,5,9,6,3,1,7,10,12,19,3,5,2,3,8,5,9,6,3,1,7,10],
+				borderWidth: 0,
+				backgroundColor: ['#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107','#FFC107'],
+				},{
+				label: '인시던트',
+				data: [5,9,6,3,1,7,10,12,19,3,5,2,3,8,5,9,6,3,1,7,10,12,19,3,5,2,3,8],
+				borderWidth: 0,
+				backgroundColor: ['#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004','#FE0004'],
+				}
+			]
+		},
+		options: {
+			scales: {
+			  x: { stacked: true, },
+			  y: { stacked: true, },
+			}
+		}
+	});
+</script>

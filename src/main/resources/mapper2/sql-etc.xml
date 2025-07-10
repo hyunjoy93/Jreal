@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper2.EtcMapper">
+
+	<select id="selectUserInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT /* com.framework.cmm.mapper2.EtcMapper.selectUserInfo */
+               A.user_id
+             , A.user_password
+             , A.user_group
+             , A.user_name
+             , A.user_depart
+             , A.last_login
+          FROM cmon_user A
+         WHERE 1=1   
+		   AND A.user_id = #{loginId}
+		   AND A.user_password = #{loginPassword}
+	</select>
+	
+</mapper>

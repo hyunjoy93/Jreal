@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.CtlMapper">
+
+	<select id="selectCtlCorpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT /* com.framework.ctl.mapper.CtlMapper.selectCtlCorpList */
+		       CORP_KO_NM, CORP_ID
+		  FROM CORP 
+	</select>
+
+	<select id="selectCtlEmpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+       	WITH
+       	T_BASE AS 
+       	(
+        	SELECT A.emp_id
+	             , A.corp_id
+	             , B.CORP_ko_nm
+	             , A.emp_nm
+	             , A.dept_nm
+	             , A.job_lvl_nm
+	             , A.intp_no
+	             , A.celp_no
+	             , A.auth_grp_cd
+	             , C.CD_KO_NM   AS AUTH_GRP_NM
+	             , A.SCRT_PLDG_REG_YN
+	             , A.EDU_CMPLT_FILE_REG_YN
+	             , <![CDATA[
+	               '<button type="button" class="bt bd gb primary user-update">수정</button> <button type="button" class="bt bd gb user-delete">삭제</button>'
+	               ]]> AS btn_upd_del
+	          FROM emp A
+	                 LEFT OUTER JOIN CORP   B
+	                         ON A.CORP_ID = B.CORP_ID
+	                 LEFT OUTER JOIN COMM_CD_DETL   c
+	                         ON ( A.auth_grp_cd = C.CD_EFFV_VAL AND 
+	                              C.COL_EN_NM   = 'AUTH_GRP_CD' )
+<!-- 	                 left outer join (  select substr(apnd_file_trg_id,3)   as emp_id  -->
+<!-- 										     , max(case when apnd_file_sno = 1 then 'Y' end)   as SCRT_PLDG_REG_YN -->
+<!-- 										     , max(case when apnd_file_sno = 2 then 'Y' end)   as EDU_CMPLT_FILE_REG_YN -->
+<!-- 										  from apnd_file  -->
+<!-- 										 where 1=1 -->
+<!-- 										   and apnd_file_sep_cd = 'E' -->
+<!-- 										 group by  -->
+<!-- 										       substr(apnd_file_trg_id,3) )   D -->
+<!-- 							 on ( a.emp_id = D.emp_id ) -->
+	    )
+	    SELECT *
+	      FROM T_BASE   a
+         WHERE 1=1
+		 	<if test="searchStr != null and searchStr != ''">
+		    	<if test="searchType.equals('searchEmpId')">
+		    	    and a.emp_id LIKE '%' ||#{searchStr}|| '%'
+		   	 	</if>
+		    	<if test="searchType.equals('searchEmpCorpNm')">
+		    	    and a.CORP_ko_nm LIKE '%' ||#{searchStr}|| '%'
+		   	 	</if>
+		   	 	<if test="searchType.equals('searchEmpNm')">
+		    	    and a.emp_nm LIKE '%' ||#{searchStr}|| '%'
+		   	 	</if>
+		   	</if>
+		 ORDER BY a.CORP_ko_nm, a.emp_nm, A.auth_grp_cd
+<!--          LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER) -->
+	</select>
+
+	<update id="updateUserFile" parameterType="java.util.HashMap">
+		UPDATE emp
+		   SET 
+  		 	<if test="SCRT_PLDG_REG_YN != null and SCRT_PLDG_REG_YN != ''">
+		   	   SCRT_PLDG_REG_YN = #{SCRT_PLDG_REG_YN}
+		    </if>
+  		 	<if test="EDU_CMPLT_FILE_REG_YN != null and EDU_CMPLT_FILE_REG_YN != ''">
+		   	   EDU_CMPLT_FILE_REG_YN = #{EDU_CMPLT_FILE_REG_YN}
+		    </if>
+		 WHERE emp_id = #{emp_id}
+	</update>
+
+	<select id="selectExlEmpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+       	WITH
+       	T_BASE AS 
+       	(
+        	SELECT A.emp_id
+	             , A.corp_id
+	             , B.CORP_ko_nm
+	             , A.emp_nm
+	             , A.dept_nm
+	             , A.job_lvl_nm
+	             , A.intp_no
+	             , A.celp_no
+	             , A.auth_grp_cd
+	             , C.CD_KO_NM   AS AUTH_GRP_NM
+	          FROM emp A
+	                 LEFT OUTER JOIN CORP   B
+	                         ON A.CORP_ID = B.CORP_ID
+	                 LEFT OUTER JOIN COMM_CD_DETL   c
+	                         ON ( A.auth_grp_cd = C.CD_EFFV_VAL AND 
+	                              C.COL_EN_NM   = 'AUTH_GRP_CD' )
+	    )
+	    SELECT *
+	      FROM T_BASE   a
+         WHERE 1=1
+		 ORDER BY a.CORP_ko_nm, a.emp_nm, A.auth_grp_cd
+	</select>
+
+
+<!-- 	<select id="selectUserInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT /* com.framework.ctl.mapper.CtlMapper.selectUserInfo */
+               A.user_id
+             , A.pswd
+             , A.user_group
+             , A.user_name
+             , A.user_depart
+             , A.last_login
+          FROM emp A
+         WHERE 1=1   
+		   AND A.user_id = #{loginId}
+		   AND A.pswd = #{loginPassword}
+	</select> -->
+
+	<select id="selectUserInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT A.emp_nm AS user_name
+        	 , A.emp_nm
+             , A.pswd   AS user_pswd
+             , A.emp_id   AS user_id
+             , A.intp_no
+             , A.celp_no
+             , A.corp_id
+             , A.auth_grp_cd AS user_group
+        FROM emp A
+        JOIN CORP   B
+          ON A.CORP_ID = B.CORP_ID
+       WHERE 1=1
+		  AND A.emp_id = #{loginId}
+		  AND A.pswd   = #{loginPassword}
+	</select>
+	
+	<!-- 사용자정보 상세 -->
+	<select id="selectUserDetail" parameterType="String" resultType="java.util.HashMap">
+        SELECT A.emp_nm
+             , A.corp_id
+             , B.CORP_ko_nm
+             , A.dept_nm
+             , A.job_lvl_nm
+             , A.emp_id
+             , A.intp_no
+             , A.celp_no
+             , A.auth_grp_cd
+        FROM emp A
+                 LEFT OUTER JOIN CORP   B
+                         ON A.CORP_ID = B.CORP_ID
+       WHERE 1=1
+		 AND emp_id = #{empId}
+	</select>
+	
+	<insert id="insertUser" parameterType="java.util.HashMap">
+		INSERT INTO emp 
+		(
+			   emp_id
+		   	 , corp_id
+		     , emp_nm
+		     , dept_nm
+		   	 , job_lvl_nm
+		     , pswd
+		   	 , intp_no
+		   	 , celp_no
+		   	 , auth_grp_cd
+		   	 , reg_emp_id
+		   	 , reg_dttm
+		   	 , mod_emp_id
+		   	 , mod_dttm
+		)
+        VALUES
+		(	
+			   #{popEmpId}
+		   	 , #{popCorpId}
+        	 , #{popEmpNm}
+		     , #{popDeptNm}
+		   	 , #{popJobLvlNm}
+			 , 'hKdwzuzRUIRAfKFoz1aFmRGjaGdbHyuo1/+wr4VTKNY='
+		   	 , #{popIntpNo}
+		   	 , #{popCelpNo}
+		   	 , #{popAuthGrpCd}
+		   	 , #{popEmpId}
+		   	 , now()
+		   	 , #{popEmpId}
+		   	 , now()
+		)
+	</insert>
+	
+	<select id="idCheck" parameterType="java.util.HashMap" resultType="int">
+		SELECT COUNT(*) FROM emp A
+		WHERE A.emp_id = #{popEmpId}
+	</select>
+	
+	<update id="updateUser" parameterType="java.util.HashMap">
+		UPDATE emp
+		   SET emp_nm = #{empNm}
+		     , dept_nm = #{deptNm}
+		   	 , job_lvl_nm = #{jobLvlNm}
+		   	 , emp_id = #{empId}
+		   	 , intp_no = #{intpNo}
+		   	 , celp_no = #{celpNo}
+		   	 , corp_id = #{corpId}
+		   	 , auth_grp_cd = #{authGrpCd}
+		   	 , reg_emp_id = #{empId}
+		   	 , reg_dttm = now()
+		   	 , mod_emp_id = #{empId}
+		   	 , mod_dttm = now()
+		 WHERE emp_id = #{empId}
+	</update>
+	
+	<update id="updateUserPw" parameterType="java.util.HashMap">
+		UPDATE emp
+		   SET pswd = #{pswd}
+		 WHERE emp_id = #{empId}
+	</update>
+	
+	
+	<delete id="deleteUser" parameterType="java.util.HashMap">
+		DELETE FROM emp
+		 WHERE emp_id = #{empId} 
+	</delete>
+	
+	<select id="selectSmsUserList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+         SELECT COUNT(*) OVER() AS total_count
+              , (CASE WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ < ]]> COUNT(*) OVER() THEN 'Y' WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ >= ]]> COUNT(*) OVER() THEN 'N' END) AS next_page_yn
+              , A.zabbix_ip
+              , A.user_depart
+              , A.user_id
+              , A.user_name
+              , A.user_phone
+              , A.user_mail
+              , <![CDATA[
+               '<button type="button" class="bt bd gb primary sms-user-update">수정</button> <button type="button" class="bt bd gb sms-user-delete">삭제</button>'
+               ]]> AS sms_user_upd
+           FROM sms_user_contact A   
+		  WHERE 1 = 1    
+	   ORDER BY A.user_id DESC      
+          LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)
+	</select>
+	
+	<insert id="insertSmsUser" parameterType="java.util.HashMap">
+		INSERT INTO sms_user_contact 
+		(
+		       zabbix_ip
+		     , user_depart
+			 , user_id
+			 , user_name
+             , user_phone
+             , user_mail
+		)
+        VALUES
+		(
+        	  #{popSmsZabbixIp}
+        	, #{popSmsUserDepart}  
+        	, #{popSmsUserId}
+        	, #{popSmsUserName}
+        	, #{popSmsUserPhone}
+        	, #{popSmsUserMail}
+		)
+	</insert>
+	
+	<update id="smsUpdateUser" parameterType="java.util.HashMap">
+		UPDATE sms_user_contact
+		   SET zabbix_ip = #{smsUserZabbixIp}
+		     , user_depart = #{smsUserDepart}
+		   	 , user_id = #{smsUserId}
+		   	 , user_name = #{smsUserName}
+		   	 , user_phone = #{smsUserPhone}
+		   	 , user_mail = #{smsUserMail}
+		 WHERE user_id = #{smsUserId}
+	</update>
+	
+	
+	<select id="selectSmsList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+         SELECT COUNT(*) OVER() AS total_count
+              , (CASE WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ < ]]> COUNT(*) OVER() THEN 'Y' WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ >= ]]> COUNT(*) OVER() THEN 'N' END) AS next_page_yn
+              , A.zabbix_ip
+              , A.host_group_name
+              , A.host_name
+              , A.host_ip
+              , A.event_level
+              , A.user_id
+              , A.group_name
+              , <![CDATA[
+               '<button type="button" class="bt bd gb primary sms-update">수정</button> <button type="button" class="bt bd gb sms-delete">삭제</button>'
+               ]]> AS sms_upd_del
+           FROM sms_send_rule A   
+		  WHERE 1 = 1 
+	   ORDER BY A.user_id DESC		            
+          LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)
+	</select>	
+	
+	<insert id="insertSmsRule" parameterType="java.util.HashMap">
+		INSERT INTO sms_send_rule 
+		(
+		       zabbix_ip
+		     , host_group_name
+			 , host_name
+			 , host_ip
+             , event_level
+             , user_id
+             , group_name
+		)
+        VALUES
+		(
+        	  #{smsAddZabbixIp}
+        	, #{smsAddHostGroupName}  
+        	, #{smsAddHostName}
+        	, #{smsAddHostIp}
+        	, CAST(#{smsAddEventLevel} AS INTEGER)
+        	, #{smsAddUserId}
+        	, #{smsAddGroupName}
+		)
+	</insert>
+	
+	<update id="smsUpdate" parameterType="java.util.HashMap">
+		UPDATE sms_send_rule
+		   SET zabbix_ip = #{smsZabbixIp}
+		     , host_group_name = #{smsHostGroupName}
+		   	 , host_name = #{smsHostName}
+		   	 , host_ip = #{smsHostIp}
+		   	 , event_level = CAST(#{smsEventLevel} AS INTEGER)
+		   	 , user_id = #{smsUserId}
+		   	 , group_name = #{smsGroupName}
+		 WHERE user_id = #{smsUserId}
+	</update>
+	
+	<delete id="smsDelete" parameterType="java.util.HashMap">
+		DELETE FROM sms_send_rule
+		WHERE user_id = #{delUserId} 
+	</delete>
+	
+	<delete id="smsUserDelete" parameterType="java.util.HashMap">
+		DELETE FROM sms_user_contact
+		WHERE user_id = #{delUserId} 
+	</delete>
+
+	<insert id="insertExlUser" parameterType="java.util.HashMap">
+			
+	    DELETE FROM EMP_EXL_UPLOAD ;
+	    
+	    <foreach collection="list" item="item">
+	        INSERT INTO EMP_EXL_UPLOAD 
+	        (
+	            emp_id,
+	            emp_nm,
+	            corp_ko_nm,
+	            dept_nm,
+	            job_lvl_nm,
+	            pswd,
+	            intp_no,
+	            celp_no,
+	            auth_grp_nm,
+	            reg_emp_id,
+	            reg_dttm,
+	            mod_emp_id,
+	            mod_dttm
+	        )
+	        VALUES
+	        (   
+	            #{item.emp_id},
+	            #{item.emp_nm},
+	            #{item.corp_nm},
+	            #{item.dept_nm},
+	            #{item.job_lvl_nm},
+	            'hKdwzuzRUIRAfKFoz1aFmRGjaGdbHyuo1/+wr4VTKNY=',
+	            #{item.intp_no},
+	            #{item.celp_no},
+	            #{item.auth_grp_nm},
+	            #{item.mod_emp_id},
+	            now(),
+	            #{item.mod_emp_id},
+	            now()
+	        );
+	    </foreach>
+	    
+	    	delete from emp;
+	    
+	        INSERT INTO emp 
+	        (
+	            emp_id,
+	            emp_nm,
+	            corp_id,
+	            dept_nm,
+	            job_lvl_nm,
+	            pswd,
+	            intp_no,
+	            celp_no,
+	            auth_grp_cd,
+	            reg_emp_id,
+	            reg_dttm,
+	            mod_emp_id,
+	            mod_dttm
+	        )
+	        select  a.emp_id,
+		            a.emp_nm,
+		            b.corp_id,
+		            a.dept_nm,
+		            a.job_lvl_nm,
+		            a.pswd,
+		            a.intp_no,
+		            a.celp_no,
+		            c.cd_effv_val      as  auth_grp_cd,
+		            a.reg_emp_id,
+		            a.reg_dttm,
+		            a.mod_emp_id,
+		            a.mod_dttm
+	          from EMP_EXL_UPLOAD   a  
+	                   left outer join corp   b
+	                           on ( a.corp_ko_nm = b.corp_ko_nm )
+	                   left outer join comm_cd_detl   c
+	                           on ( a.auth_grp_nm = c.cd_ko_nm    and 
+	                                c.col_en_nm   = 'AUTH_GRP_CD' );
+	          			
+	</insert>
+
+	<!-- 공지사항 파일삭제 -->
+	<delete id="deleteEmpFiles" parameterType="java.util.HashMap">
+        DELETE FROM apnd_file
+         WHERE 1=1
+           AND apnd_file_trg_id = #{apnd_file_trg_id}
+           AND apnd_file_sno = #{apnd_file_sno}
+	</delete>
+
+	<!-- 출근 조회 -->
+	<select id="checkCheckIn" parameterType="java.util.HashMap" resultType="int">
+        SELECT count(*) FROM attendance_records
+         WHERE emp_id = #{empId}
+           AND work_date = NOW()::DATE
+	</select>
+
+	<!-- 퇴근 조회 -->
+	<select id="checkCheckOut" parameterType="java.util.HashMap" resultType="int">
+        SELECT count(*) FROM attendance_records
+         WHERE emp_id = #{empId}
+           AND work_date = NOW()::DATE
+           AND clock_out_time is not NULL
+	</select>
+
+	<!-- 출근 실행 -->
+	<insert id="insertCheckIn" parameterType="java.util.HashMap">
+	    INSERT INTO attendance_records (
+	        emp_id,
+	        work_date,
+	        clock_in_time,
+	        reg_dttm,
+	        mod_dttm
+	    ) VALUES (
+	        #{empId},
+	        NOW()::DATE,
+	        NOW(),
+	        NOW(),
+	        NOW()
+	    )
+	    ON CONFLICT (emp_id, work_date) 
+	    DO UPDATE SET
+	        clock_in_time = EXCLUDED.clock_in_time,
+	        mod_dttm = NOW()
+	</insert>
+
+	<!-- 퇴근 실행 -->
+	<insert id="insertCheckOut" parameterType="java.util.HashMap">
+	    INSERT INTO attendance_records (
+	        emp_id,
+	        work_date,
+	        clock_out_time,
+	        reg_dttm,
+	        mod_dttm
+	    ) VALUES (
+	        #{empId},
+	        NOW()::DATE,
+	        NOW(),
+	        NOW(),
+	        NOW()
+	    )
+	    ON CONFLICT (emp_id, work_date) 
+	    DO UPDATE SET
+	        clock_out_time = EXCLUDED.clock_out_time,
+	        mod_dttm = NOW()
+	</insert>
+
+</mapper>

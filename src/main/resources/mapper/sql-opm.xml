@@ -1,0 +1,1235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.OpmMapper">
+
+	
+	<select id="selectAsetClsfList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT /* com.framework.ctl.mapper.OpmMapper.selectAsetClsfList */
+		       aset_clsf_nm, aset_clsf_id
+		  from aset_clsf
+		 where 1=1
+		   and aset_lvl = 2
+	</select>
+
+	<select id="selectCorpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT A.corp_id 	  as corp_id
+             , A.corp_ko_nm   as corp_ko_nm1
+			 , A.corp_ko_nm
+               ||
+               <![CDATA[
+               '<button type="button" id= "corpEmpList" class="gridbtn gridbtn-default gridbtn-xs">업체직원정보</button>'
+               ]]>             AS corp_ko_nm
+			 , A.corp_ko_nm    as tr_corp_ko_nm
+			 , A.corp_en_nm    as corp_en_nm
+			 , A.corp_no
+			 , A.biz_reg_no
+			 , A.addr
+			 , A.rep_telno
+			 , A.rep_nm
+			 , A.web_site_url
+			 , A.mntc_corp_yn
+			 , TO_CHAR(A.reg_dttm, 'YYYY-MM-DD') AS reg_dttm
+             , <![CDATA[
+               '<button type="button" class="bt bd gb primary corp-update">수정</button> <button type="button" class="bt bd gb corp-delete">삭제</button>'
+               ]]> AS btn_upd_del
+          FROM corp A
+         WHERE 1=1
+   	        <if test="searchStr != null and searchStr != ''">
+		    	<if test="searchType.equals('corpKoNm')">
+		   	 		AND A.corp_ko_nm LIKE '%' || #{searchStr} || '%' 
+		   	 	</if>
+		   	 	<if test="searchType.equals('repTelno')">
+		   	 		AND A.rep_telno LIKE '%' || #{searchStr} || '%'
+		   	 	</if>
+		   	</if>
+         ORDER BY cast(A.corp_id as numeric) 
+	</select>
+	
+	
+	<select id="selectCorpInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT a.corp_id
+             , A.corp_ko_nm
+			 , A.corp_en_nm    
+			 , A.corp_no
+			 , A.biz_reg_no
+			 , A.addr
+			 , A.rep_telno
+			 , A.rep_nm
+			 , A.web_site_url
+			 , A.mntc_corp_yn
+          FROM corp A
+         WHERE 1=1
+	       AND A.corp_id = case when #{corpId} = '' then a.corp_id else #{corpId} end
+	       
+	</select>
+	
+	<select id="selectCorpEmpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT a.emp_nm
+             , a.dept_nm
+             , a.job_lvl_nm
+             , a.emp_id
+             , a.intp_no
+             , a.celp_no
+             , a.corp_id
+             , b.corp_ko_nm
+             , a.auth_grp_cd
+          FROM emp    a
+             , corp   b
+         WHERE 1=1
+           and a.corp_id = b.corp_id
+         <if test="corpId != null and corpId != ''">
+			   and a.corp_id = #{corpId}
+         </if>
+         <if test="authGrpCd != null and authGrpCd != ''">
+			   and a.auth_grp_cd = #{authGrpCd}
+         </if>
+         ORDER BY b.corp_ko_nm, a.emp_nm
+	</select>
+
+	<select id="selectCorpAsetList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT a.aset_id
+             , a.aset_nm
+             , a.aset_clsf_id
+             , b.aset_clsf_nm
+             , a.aset_stus_sep_cd
+             , c.cd_ko_nm             as aset_stus_sep_nm
+             , a.scrt_rat_cd
+             , a.muft_corp_nm
+             , a.aset_mdl_nm
+             , a.ip_addr
+             , a.instl_plce
+             , a.prps_desc
+             , a.intd_cost
+             , a.note
+             , a.reg_emp_id
+             , d.mntc_emp_nm
+             , d.corp_ko_nm 
+             , substr(a.intd_dt,1,4)||'-'||
+               substr(a.intd_dt,5,2)||'-'||
+               substr(a.intd_dt,7,2)               as intd_dt 
+             , substr(d.ctrt_strt_dt,1,4)||'-'||
+               substr(d.ctrt_strt_dt,5,2)||'-'||
+               substr(d.ctrt_strt_dt,7,2)          as ctrt_strt_dt
+             , substr(d.ctrt_end_dt,1,4)||'-'||
+               substr(d.ctrt_end_dt,5,2)||'-'||
+               substr(d.ctrt_end_dt,7,2)           as ctrt_end_dt
+             , <![CDATA[
+               '<button type="button" class="bt bd gb primary corp-update">수정</button> <button type="button" class="bt bd gb corp-delete">삭제</button>'
+               ]]> AS btn_upd_del
+          FROM aset   a
+          		left outer join aset_clsf b 
+          				on ( a.aset_clsf_id = b.aset_clsf_id )
+          		left outer join (	select cd_effv_val, cd_ko_nm
+  									  from comm_cd_detl 
+ 									 where col_en_nm = 'ASET_STUS_SEP_CD')	 c 
+          				on ( a.aset_stus_sep_cd = c.cd_effv_val )
+          		join (	select a.aset_id 
+          		             , a.mntc_emp_id
+          		             , b.emp_nm        as mntc_emp_nm
+          		             , c.corp_id
+          		             , c.corp_ko_nm
+          		             , a.ctrt_strt_dt
+          		             , a.ctrt_end_dt
+						  from mntc_hist  a
+							 , emp        b
+						     , corp       c
+					 	where 1=1
+						   and a.mntc_emp_id  = b.emp_id 
+						   and b.corp_id      = c.corp_id 
+						   and to_char(now(),'yyyymmdd') between a.ctrt_strt_dt and a.ctrt_end_dt
+				     )   d   									     						
+   				  on ( a.aset_id = d.aset_id )
+         WHERE 1=1
+		   and d.corp_id = #{corpId}
+		 order by aset_id 
+	</select>
+
+<!--	<select id="selectAsetList" parameterType="java.util.HashMap" resultType="java.util.HashMap">-->
+<!--		with-->
+<!--		t_base as -->
+<!--		(-->
+<!--			SELECT a.aset_id-->
+<!--	             , a.aset_nm-->
+<!--	             , a.aset_clsf_id-->
+<!--	             , b.aset_clsf_nm-->
+<!--	             , a.aset_stus_sep_cd-->
+<!--	             , c.cd_ko_nm             as aset_stus_sep_nm-->
+<!--	             , a.scrt_rat_cd-->
+<!--	             , g.cd_ko_nm             as scrt_rat_nm-->
+<!--	             , a.muft_corp_nm-->
+<!--	             , a.aset_mdl_nm-->
+<!--	             , a.instl_plce-->
+<!--	             , a.prps_desc-->
+<!--	             , a.cpu_spd-->
+<!--	             , a.memory_vol-->
+<!--	             , a.hdd_vol-->
+<!--	             , a.os_ver-->
+<!--	             , a.ip_addr-->
+<!--	             , a.intd_cost-->
+<!--	             , a.note-->
+<!--	             , a.reg_emp_id-->
+<!--	             , d.aset_chrg_emp_id1-->
+<!--	             , d.aset_chrg_emp_nm1-->
+<!--	             , d.aset_chrg_emp_id2-->
+<!--	             , d.aset_chrg_emp_nm2-->
+<!--	             , d.mntc_emp_nm-->
+<!--	             , d.corp_ko_nm -->
+<!--	             , a.intd_dt      as intd_dt2-->
+<!--	             , case when length(intd_dt) = 8-->
+<!--	                    then substr(a.intd_dt,1,4)||'-'||-->
+<!--	                         substr(a.intd_dt,5,2)||'-'||-->
+<!--	                         substr(a.intd_dt,7,2) -->
+<!--	               end                              as intd_dt -->
+<!--	             , case when length(d.ctrt_strt_dt) = 8-->
+<!--	                    then substr(d.ctrt_strt_dt,1,4)||'-'||-->
+<!--	                         substr(d.ctrt_strt_dt,5,2)||'-'||-->
+<!--	                         substr(d.ctrt_strt_dt,7,2)  -->
+<!--	               end                              as ctrt_strt_dt-->
+<!--	             , case when length(d.ctrt_end_dt) = 8-->
+<!--	                    then substr(d.ctrt_end_dt,1,4)||'-'||-->
+<!--	                         substr(d.ctrt_end_dt,5,2)||'-'||-->
+<!--	                         substr(d.ctrt_end_dt,7,2) -->
+<!--	               end                              as ctrt_end_dt-->
+<!--	             , <![CDATA[-->
+<!--	               '<button type="button" class="bt bd gb primary aset-update">수정</button> <button type="button" class="bt bd gb aset-delete">삭제</button> <button type="button" class="bt bd gb aset-copy">복사</button>'-->
+<!--	               ]]> AS btn_upd_del-->
+<!--	          FROM aset   a-->
+<!--	          		left outer join aset_clsf b -->
+<!--	          				on ( a.aset_clsf_id = b.aset_clsf_id )-->
+<!--	          		left outer join (	select cd_effv_val, cd_ko_nm-->
+<!--	  									  from comm_cd_detl -->
+<!--	 									 where col_en_nm = 'ASET_STUS_SEP_CD')	 c -->
+<!--	          				on ( a.aset_stus_sep_cd = c.cd_effv_val )-->
+<!--	          		left outer join (	select a.aset_id -->
+<!--	             							 , a.aset_chrg_emp_id1-->
+<!--	          		                         , b2.emp_nm              as aset_chrg_emp_nm1-->
+<!--	             							 , a.aset_chrg_emp_id2-->
+<!--	          		                         , b3.emp_nm              as aset_chrg_emp_nm2-->
+<!--	          		                         , a.mntc_emp_id-->
+<!--	          		                         , b.emp_nm          as mntc_emp_nm-->
+<!--	          		                         , c.corp_id-->
+<!--	          		                         , c.corp_ko_nm-->
+<!--	          		                         , a.ctrt_strt_dt-->
+<!--	          		                         , a.ctrt_end_dt-->
+<!--	  									  from mntc_hist  a-->
+<!--	     									 , emp        b-->
+<!--	     									 , emp        b2-->
+<!--	     									 , emp        b3-->
+<!--	     								     , corp       c-->
+<!--	 									 where 1=1-->
+<!--	   									   and a.mntc_emp_id       = b.emp_id -->
+<!--	   									   and a.aset_chrg_emp_id1 = b2.emp_id -->
+<!--	   									   and a.aset_chrg_emp_id2 = b3.emp_id -->
+<!--	   									   and b.corp_id           = c.corp_id -->
+<!--	   									   and to_char(now(),'yyyymmdd') between a.ctrt_strt_dt and a.ctrt_end_dt-->
+<!--	   								)   d   									     						-->
+<!--	   						on ( a.aset_id = d.aset_id )-->
+<!-- 					LEFT OUTER JOIN EMP   E -->
+<!-- 					        ON ( A.CHRG_EMP_ID1 = E.EMP_ID ) -->
+<!-- 					LEFT OUTER JOIN EMP   F -->
+<!-- 					        ON ( A.CHRG_EMP_ID2 = F.EMP_ID ) -->
+<!--	          		left outer join (	select cd_effv_val, cd_ko_nm-->
+<!--	  									  from comm_cd_detl -->
+<!--	 									 where col_en_nm = 'SCRT_RAT_CD')	 g-->
+<!--	 						on ( a.scrt_rat_cd = g.cd_effv_val) 	   						-->
+<!--   		)-->
+<!--		select *-->
+<!--		  from t_base -->
+<!--		 WHERE 1=1-->
+<!--   	        <if test="searchStr != null and searchStr != ''">-->
+<!--		    	<if test="searchType.equals('asetClsfNm')">-->
+<!--		   	 		AND aset_clsf_nm LIKE '%' || #{searchStr} || '%'-->
+<!--		   	 	</if>-->
+<!--		   	 	<if test="searchType.equals('asetNm')">-->
+<!--		   	 		AND aset_nm LIKE '%' || #{searchStr} || '%'-->
+<!--		   	 	</if>-->
+<!--		   	 	<if test="searchType.equals('muftCorpNm')">-->
+<!--		   	 		AND muft_corp_nm LIKE '%' || #{searchStr} || '%'-->
+<!--		   	 	</if>-->
+<!--		   	</if>-->
+<!--         ORDER BY aset_nm -->
+<!--	</select>-->
+
+	<select id="selectAsetList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+		    a.aset_id, 
+		    (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT par_aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = a.aset_clsf_id)) AS aset_clsf_id,
+		    b.aset_clsf_nm,
+		    a.aset_nm, 
+		    a.owner_man_cpno, 
+		    a.owner_woman_cpno,
+		    a.owner_cpno, 
+		    (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.building_use AND col_en_nm = 'BUILDING_USE_CD') AS building_use,
+		    (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.trade_type AND col_en_nm = 'TRADE_TYPE_CD') AS trade_type,
+		    a.reconfirm_yn, 
+		    (SELECT emp_nm FROM emp WHERE emp_id = a.confirm_emp_id) AS confirm_emp_id,
+		    TO_CHAR(a.confirm_dttm, 'YYYY.MM.DD') AS confirm_dttm, 
+		    (SELECT emp_nm FROM emp WHERE emp_id = a.reg_emp_id) AS reg_emp_id,
+		    TO_CHAR(a.reg_dttm, 'YYYY.MM.DD') AS reg_dttm, 
+		    (SELECT emp_nm FROM emp WHERE emp_id = a.mod_emp_id) AS mod_emp_id,
+		    TO_CHAR(a.mod_dttm, 'YYYY.MM.DD') AS mod_dttm,
+		    CASE 
+		        WHEN #{userGroup} = 'A01' THEN 
+				<![CDATA[
+		            '<button type="button" class="bt bd gb primary aset-update">수정</button> <button type="button" class="bt bd gb aset-delete">삭제</button> <button type="button" class="bt bd gb aset-confirm">확인</button>'
+		        ]]>
+		        WHEN #{userGroup} != 'A01' AND a.reg_emp_id = #{userId} THEN 
+				<![CDATA[
+		            '<button type="button" class="bt bd gb primary aset-update">수정</button> <button type="button" class="bt bd gb aset-delete">삭제</button>'
+		        ]]>
+		        ELSE 
+		            ''
+		    END AS btn_upd_del
+		FROM aset_real a
+		LEFT OUTER JOIN aset_clsf b ON (a.aset_clsf_id = b.aset_clsf_id)
+		WHERE 1=1
+		    <if test="searchStr != null and searchStr != ''">
+		        <if test="searchType.equals('asetNm')">
+		            AND aset_nm LIKE '%' || #{searchStr} || '%'
+		        </if>
+		        <if test="searchType.equals('buildingUse')">
+		            AND building_use LIKE '%' || #{searchStr} || '%'
+		        </if>
+				<if test="searchType.equals('reconfirmYn')">
+				    <if test="searchStr == ''">
+				        AND (reconfirm_yn IS NULL OR reconfirm_yn = '')
+				    </if>
+				    <if test="searchStr != ''">
+				        AND reconfirm_yn LIKE '%' || #{searchStr} || '%'
+				    </if>
+				</if>
+		    </if>
+		ORDER BY reg_dttm desc, aset_id
+	</select>
+
+	<select id="selectAsetList2" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+		    a.aset_id, 
+		    (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT par_aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = a.aset_clsf_id)) AS aset_clsf_id,
+		    b.aset_clsf_nm,
+		    a.aset_nm, 
+		    a.building_nm, 
+		    a.aset_nm, 
+		    a.owner_man_cpno, 
+		    a.owner_woman_cpno,
+		    a.owner_cpno, 
+		    (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.building_use AND col_en_nm = 'BUILDING_USE_CD') AS building_use,
+		    (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.trade_type AND col_en_nm = 'TRADE_TYPE_CD') AS trade_type,
+		    a.reconfirm_yn, 
+		    (SELECT emp_nm FROM emp WHERE emp_id = a.confirm_emp_id) AS confirm_emp_id,
+		    TO_CHAR(a.confirm_dttm, 'YYYY.MM.DD') AS confirm_dttm, 
+		    (SELECT emp_nm FROM emp WHERE emp_id = a.reg_emp_id) AS reg_emp_id,
+		    TO_CHAR(a.reg_dttm, 'YYYY.MM.DD') AS reg_dttm, 
+		    (SELECT emp_nm FROM emp WHERE emp_id = a.mod_emp_id) AS mod_emp_id,
+		    TO_CHAR(a.mod_dttm, 'YYYY.MM.DD') AS mod_dttm,
+		    CASE 
+		        WHEN #{userGroup} = 'A01' THEN 
+				<![CDATA[
+		            '<button type="button" class="bt bd gb primary aset-update">수정</button> <button type="button" class="bt bd gb aset-delete">삭제</button> <button type="button" class="bt bd gb aset-confirm">확인</button>'
+		        ]]>
+		        WHEN #{userGroup} != 'A01' AND a.reg_emp_id = #{userId} THEN 
+				<![CDATA[
+		            '<button type="button" class="bt bd gb primary aset-update">수정</button> <button type="button" class="bt bd gb aset-delete">삭제</button>'
+		        ]]>
+		        ELSE 
+		            ''
+		    END AS btn_upd_del
+		FROM aset_real2 a
+		LEFT OUTER JOIN aset_clsf b ON (a.aset_clsf_id = b.aset_clsf_id)
+		WHERE 1=1
+		    <if test="searchStr != null and searchStr != ''">
+		        <if test="searchType.equals('asetNm')">
+		            AND aset_nm LIKE '%' || #{searchStr} || '%'
+		        </if>
+		        <if test="searchType.equals('buildingUse')">
+		            AND building_use LIKE '%' || #{searchStr} || '%'
+		        </if>
+				<if test="searchType.equals('reconfirmYn')">
+				    <if test="searchStr == ''">
+				        AND (reconfirm_yn IS NULL OR reconfirm_yn = '')
+				    </if>
+				    <if test="searchStr != ''">
+				        AND reconfirm_yn LIKE '%' || #{searchStr} || '%'
+				    </if>
+				</if>
+		    </if>
+		ORDER BY aset_id
+	</select>
+
+	<select id="selectTaxList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select
+			tax_no,
+			contract_date,
+			balance_due_date,
+			contract_address,
+			contract_manager,
+			category,
+			public_amount,
+			vat,
+			total_amount,
+			issue_type,
+			buyer_name,
+			business_address,
+			business_type,
+			business_field,
+			responsible_person,
+			contact_number,
+			email,
+			TO_CHAR(issue_date,
+			'YYYY.MM.DD') as issue_date,
+			photo_saved,
+			TO_CHAR(vat_transfer_date,
+			'YYYY.MM.DD') as vat_transfer_date,
+			TO_CHAR(reg_dttm,
+			'YYYY.MM.DD') as reg_dttm,
+			<![CDATA[
+           '<button type="button" class="bt bd gb primary aset-update">수정</button> <button type="button" class="bt bd gb aset-delete">삭제</button> <button type="button" class="bt bd gb aset-copy">복사</button>'
+           ]]> AS btn_upd_del
+         from
+			tax_doc
+		order by
+			contract_date
+	</select>
+	
+	<insert id="insertExlItem" parameterType="java.util.HashMap">
+	    <foreach collection="list" item="item">
+	        INSERT INTO corp 
+	        (
+	            corp_id,
+	            corp_ko_nm,
+	            corp_en_nm,
+	            corp_no,
+	            biz_reg_no,
+	            rep_nm,
+	            addr,
+	            rep_telno,
+	            mntc_corp_yn,
+	            reg_emp_id,
+	            reg_dttm,
+	            mod_emp_id,
+	            mod_dttm
+	        )
+	        VALUES
+	        (   
+	            #{item.corp_id},
+	            #{item.corp_ko_nm},
+	            #{item.corp_en_nm},
+	            #{item.corp_no},
+	            #{item.biz_reg_no},
+	            #{item.rep_nm},
+	            #{item.addr},
+	            #{item.rep_telno},
+	            #{item.mntc_corp_yn},
+	            #{item.mod_emp_id},
+	            now(),
+	            #{item.mod_emp_id},
+	            now()
+	        )
+	        ON CONFLICT (corp_id) DO UPDATE
+	        SET
+	            corp_ko_nm   = EXCLUDED.corp_ko_nm,
+	            corp_en_nm   = EXCLUDED.corp_en_nm,
+	            corp_no      = EXCLUDED.corp_no,
+	            biz_reg_no   = EXCLUDED.biz_reg_no,
+	            rep_nm       = EXCLUDED.rep_nm,
+	            addr         = EXCLUDED.addr,
+	            rep_telno    = EXCLUDED.rep_telno,
+	            mntc_corp_yn = EXCLUDED.mntc_corp_yn,
+	            reg_emp_id   = EXCLUDED.reg_emp_id,
+	            reg_dttm     = EXCLUDED.reg_dttm,
+	            mod_emp_id   = EXCLUDED.mod_emp_id,
+	            mod_dttm     = EXCLUDED.mod_dttm;
+	    </foreach>
+	</insert>	
+
+	
+	<insert id="insertAsetExlItem" parameterType="java.util.HashMap">
+		
+	    <foreach collection="list" item="item">	    
+	    	
+			INSERT INTO ASET_REAL 
+			(
+			    aset_id,
+			    aset_clsf_id,
+			    aset_nm,
+			    owner_man_cpno,
+			    owner_woman_cpno,
+			    owner_cpno,
+			    building_use,
+			    trade_type,
+			    reg_emp_id,
+			    reg_dttm,
+			    mod_emp_id,
+			    mod_dttm
+			)
+			VALUES
+			(   
+			    (
+                    SELECT TO_CHAR(COALESCE(MAX(CAST(aset_id AS INTEGER)), 0) + 1, 'FM99999999999999999999')
+			        FROM ASET_REAL
+			    ),
+			    (
+			        SELECT ccd.aset_clsf_id 
+			        FROM aset_clsf ccd 
+			        WHERE ccd.aset_clsf_nm = #{item.aset_clsf_id}
+			    ),
+			    #{item.aset_nm},
+			    #{item.owner_man_cpno},
+			    #{item.owner_woman_cpno},
+			    #{item.owner_cpno},
+			    (
+			        SELECT ccd.cd_effv_val 
+			        FROM comm_cd_detl ccd 
+			        WHERE ccd.col_en_nm = 'BUILDING_USE_CD' 
+			          AND ccd.cd_ko_nm = #{item.building_use}
+			        LIMIT 1
+			    ),
+			    (
+			        SELECT ccd.cd_effv_val 
+			        FROM comm_cd_detl ccd 
+			        WHERE ccd.col_en_nm = 'TRADE_TYPE_CD' 
+			          AND ccd.cd_ko_nm = #{item.trade_type}
+			        LIMIT 1
+			    ),
+			    #{item.reg_emp_id},
+			    now(),
+			    #{item.mod_emp_id},
+			    now()
+			);
+	    </foreach>
+	            
+	</insert>	
+	
+	<insert id="insertCorp" parameterType="java.util.HashMap">
+		INSERT INTO corp 
+		(
+			   corp_id
+		   	 , Corp_Ko_Nm
+		   	 , Corp_En_Nm
+		     , Corp_No
+		     , Biz_Reg_No
+		   	 , Rep_Nm
+		   	 , addr
+		   	 , Rep_Telno
+		   	 , Web_Site_Url
+		   	 , Mntc_Corp_Yn
+		   	 , reg_emp_id
+		   	 , reg_dttm
+		   	 , mod_emp_id
+		   	 , mod_dttm
+		)
+        VALUES
+		(	
+			   ( select cast(max(CAST (corp_id AS INTEGER))+1 as varchar) from corp )
+		   	 , #{popCorpKoNm}
+		   	 , #{popCorpEnNm}
+        	 , #{popCorpNo}
+		     , #{popBizRegNo}
+		   	 , #{popRepNm}
+		   	 , #{popAddr}
+		   	 , #{popRepTelno}
+		   	 , #{popWebSiteUrl}
+		   	 , #{popMntcCorpYn}
+		   	 , #{regEmpId}
+		   	 , now()
+		   	 , #{regEmpId}
+		   	 , now()
+		)
+	</insert>
+
+	
+	<update id="updateCorp" parameterType="java.util.HashMap">
+		UPDATE corp
+		   SET Corp_Ko_Nm   = #{corpKoNm}
+		   	 , Corp_En_Nm   = #{corpEnNm}
+		     , Corp_No      = #{corpNo}
+		     , Biz_Reg_No   = #{bizRegNo}
+		   	 , Rep_Nm       = #{repNm}
+		   	 , addr         = #{addr}
+		   	 , Rep_Telno    = #{repTelno}
+		   	 , Web_Site_Url = #{webSiteUrl}
+		   	 , Mntc_Corp_Yn = #{mntcCorpYn}
+		   	 , mod_emp_id   = #{regEmpId}
+		   	 , mod_dttm     = now()
+		 WHERE CORP_ID = #{corpId}
+	</update>
+	
+	
+	<delete id="deleteCorp" parameterType="java.util.HashMap">
+		DELETE FROM CORP
+		 WHERE CORP_ID = #{corpId} 
+	</delete>
+	
+	
+	
+	<insert id="insertAset" parameterType="java.util.HashMap">
+		INSERT INTO aset_real 
+		(
+		    aset_id,
+		    aset_clsf_id,
+		    aset_nm,
+		    owner_man_cpno,
+		    owner_woman_cpno,
+		    owner_cpno,
+		    building_use,
+		    trade_type,
+		    reconfirm_yn,
+		    confirm_emp_id,
+		    confirm_dttm,
+		    reg_emp_id,
+		    reg_dttm,
+		    mod_emp_id,
+		    mod_dttm
+		)
+		VALUES
+		(
+		    COALESCE((SELECT MAX(CAST(aset_id AS INTEGER)) + 1 FROM aset_real), 1), -- Auto increment logic for aset_id
+		    #{popAsetClsfId},
+		    #{popAsetNm},
+		    #{popOwnerManCpno},
+		    #{popOwnerWomanCpno},
+		    #{popOwnerCpno},
+		    #{popBuildingUse},
+		    #{popTradeType},
+		    #{popReconfirmYn},
+		    #{popConfirmEmpId},
+		    TO_TIMESTAMP(#{popConfirmDttm}, 'YYYYMMDDHH24MISS'), -- Convert popConfirmDttm to timestamp
+		    #{regAddEmpId},
+		    NOW(), -- Current timestamp for reg_dttm
+		    #{regAddEmpId},
+		    NOW()  -- Current timestamp for mod_dttm
+		)
+	</insert>
+
+	
+<!--	<update id="updateAset" parameterType="java.util.HashMap">-->
+<!--		 UPDATE aset-->
+<!--			SET aset_nm          = #{asetNm}          -->
+<!--			  , aset_clsf_id     = #{asetClsfId}      -->
+<!--			  , aset_stus_sep_cd = #{asetStusSepCd}   -->
+<!-- 			  , chrg_emp_id1     = #{chrgEmpId1}       -->
+<!-- 			  , chrg_emp_id2     = #{chrgEmpId2}       -->
+<!--			  , scrt_rat_cd      = #{scrtRatCd}       -->
+<!--			  , muft_corp_nm     = #{muftCorpNm}      -->
+<!--			  , aset_mdl_nm      = #{asetMdlNm}       -->
+<!--			  , cpu_spd          = #{cpuSpd}          -->
+<!--			  , memory_vol       = #{memoryVol}       -->
+<!--			  , hdd_vol          = #{hddVol}          -->
+<!--			  , os_ver           = #{osVer}           -->
+<!--			  , ip_addr          = #{ipAddr}         -->
+<!--			  , instl_plce       = #{instlPlce}       -->
+<!--			  , prps_desc        = #{prpsDesc}        -->
+<!--			  , intd_dt          = #{intdDt}          -->
+<!--			  , intd_cost        = COALESCE(cast( #{intdCost} as numeric ),0)       -->
+<!--			  , note             = #{note}-->
+<!--		   	  , mod_emp_id       = #{regEmpId}-->
+<!--		   	  , mod_dttm         = now()-->
+<!--		  WHERE ASET_ID = #{asetId} -->
+<!--	</update>-->
+	
+	<update id="updateAset" parameterType="java.util.HashMap">
+	    UPDATE aset_real
+	    SET 
+	        aset_nm         = #{popAsetNm},        
+	        aset_clsf_id    = #{popAsetClsfId},    
+	        owner_man_cpno  = #{popOwnerManCpno},  
+	        owner_woman_cpno= #{popOwnerWomanCpno},
+	        owner_cpno      = #{popOwnerCpno},     
+	        building_use    = #{popBuildingUse},   
+	        trade_type      = #{popTradeType},     
+	        reconfirm_yn      = #{popReconfirmYn},     
+	        confirm_dttm    = TO_TIMESTAMP(#{popConfirmDttm}, 'YYYYMMDDHH24MISS'), 
+	        mod_emp_id      = #{regEmpId},       
+	        mod_dttm        = NOW()            
+	    WHERE aset_id = #{asetId}    
+	</update>
+
+	<delete id="deleteAset" parameterType="java.util.HashMap">
+		DELETE FROM ASET_REAL
+		 WHERE ASET_ID = #{asetId}
+		 
+	</delete>	
+	
+	<select id="selectAsetInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+       SELECT 
+	    a.aset_id,
+	    (SELECT aset_clsf_nm 
+	     FROM aset_clsf 
+	     WHERE aset_clsf_id = (SELECT par_aset_clsf_id 
+	                           FROM aset_clsf 
+	                           WHERE aset_clsf_id = a.aset_clsf_id)
+	    ) AS par_aset_clsf_nm,
+	    a.aset_clsf_id,
+	    b.aset_clsf_nm,
+	    a.aset_nm,
+	    a.owner_man_cpno,
+	    a.owner_woman_cpno,
+	    a.owner_cpno,
+	    a.BUILDING_USE,
+	    a.trade_type,
+	    a.reconfirm_yn,
+	    (SELECT emp_nm 
+	     FROM emp 
+	     WHERE emp_id = a.confirm_emp_id
+	    ) AS confirm_emp_nm,
+	    TO_CHAR(a.confirm_dttm, 'YYYY.MM.DD') AS confirm_dttm,
+	    (SELECT emp_nm 
+	     FROM emp 
+	     WHERE emp_id = a.reg_emp_id
+	    ) AS reg_emp_nm,
+	    TO_CHAR(a.reg_dttm, 'YYYY.MM.DD') AS reg_dttm,
+	    (SELECT emp_nm 
+	     FROM emp 
+	     WHERE emp_id = a.mod_emp_id
+	    ) AS mod_emp_nm,
+	    TO_CHAR(a.mod_dttm, 'YYYY.MM.DD') AS mod_dttm
+	FROM aset_real a
+	LEFT OUTER JOIN aset_clsf b 
+	ON a.aset_clsf_id = b.aset_clsf_id
+	WHERE ASET_ID = #{asetId}
+	ORDER BY a.aset_nm
+	</select>
+	
+	<select id="selectMntcList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		with
+		t_base as 
+		(
+			select a.mntc_ctrt_sno
+	             , a.aset_id 
+	             , (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT par_aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = d.aset_clsf_id)) AS aset_clsf_id
+	             , (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = d.aset_clsf_id)) AS aset_clsf_nm
+			     , d.aset_nm
+	             , a.aset_chrg_emp_id1
+	             , a.aset_chrg_emp_id2
+	             , (select emp_nm from emp where emp_id = a.aset_chrg_emp_id1) as aset_chrg_emp_nm1
+	             , (select emp_nm from emp where emp_id = a.aset_chrg_emp_id2) as aset_chrg_emp_nm2
+			     , a.mntc_emp_id 
+			     , substr(a.ctrt_strt_dt ,1,4)||'-'||
+				   substr(a.ctrt_strt_dt ,5,2)||'-'||
+				   substr(a.ctrt_strt_dt ,7,2)           as ctrt_strt_dt
+			     , substr(a.ctrt_end_dt ,1,4)||'-'||
+				   substr(a.ctrt_end_dt ,5,2)||'-'||
+				   substr(a.ctrt_end_dt ,7,2)            as ctrt_end_dt 
+			     , substr(a.ctrt_dt ,1,4)||'-'||
+				   substr(a.ctrt_dt ,5,2)||'-'||
+				   substr(a.ctrt_dt ,7,2)||' '||
+				   substr(a.ctrt_dt ,9,2)||':'||
+				   substr(a.ctrt_dt ,11,2) as ctrt_dt 
+		         , (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.contract_type AND col_en_nm = 'CONTRACT_TYPE') AS contract_type
+			     , a.del_yn
+	             , <![CDATA[
+               		'<button type="button" class="bt bd gb primary mntc-update">수정</button><button type="button" class="bt bd gb mntc-delete">삭제</button>'
+               	   ]]>
+	              AS btn_upd_del
+			  from mntc_hist   a
+			     , aset_real   d
+			 where 1=1
+			   and a.aset_id           = d.aset_id
+		)
+		select *
+		  from t_base   a
+		 where 1=1
+    	<if test="searchType.equals('asetNm')">
+   	 		AND a.aset_nm LIKE '%' || #{searchStr} || '%' 
+   	 	</if>
+   	 	<if test="searchType.equals('corpKoNm')">
+   	 		AND a.corp_ko_nm LIKE '%' || #{searchStr} || '%'
+   	 	</if>
+   	 	<if test="searchType.equals('empNm')">
+   	 		AND a.mntc_emp_nm LIKE '%' || #{searchStr} || '%'
+   	 	</if>
+   	 	<if test="searchType.equals('mntcBaseDt')">
+   	 		AND #{baseDt} between a.ctrt_strt_dt and a.ctrt_end_dt
+   	 	</if>
+		  order by ctrt_dt
+	</select>
+	
+	<select id="selectMntcInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		with
+		t_base as 
+		(
+			select a.mntc_ctrt_sno
+	             , a.aset_id 
+	             , (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT par_aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = d.aset_clsf_id)) AS aset_clsf_id
+	             , (SELECT aset_clsf_nm FROM aset_clsf WHERE aset_clsf_id = (SELECT aset_clsf_id FROM aset_clsf WHERE aset_clsf_id = d.aset_clsf_id)) AS aset_clsf_nm
+			     , d.aset_nm 
+	             , a.aset_chrg_emp_id1
+	             , a.aset_chrg_emp_id2 
+	             , (select dept_nm from emp where emp_id = a.aset_chrg_emp_id1) || ' > ' || (select emp_nm from emp where emp_id = a.aset_chrg_emp_id1) as aset_chrg_emp_nm1
+	             , (select dept_nm from emp where emp_id = a.aset_chrg_emp_id2) || ' > ' || (select emp_nm from emp where emp_id = a.aset_chrg_emp_id2) as aset_chrg_emp_nm2
+	             , substr(a.ctrt_strt_dt ,1,4)||'-'||
+				   substr(a.ctrt_strt_dt ,5,2)||'-'||
+				   substr(a.ctrt_strt_dt ,7,2)           as ctrt_strt_dt
+			     , substr(a.ctrt_end_dt ,1,4)||'-'||
+				   substr(a.ctrt_end_dt ,5,2)||'-'||
+				   substr(a.ctrt_end_dt ,7,2)           as ctrt_end_dt
+			     , ctrt_dt 
+		         , (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.contract_type AND col_en_nm = 'CONTRACT_TYPE') AS contract_type
+			  from mntc_hist   a
+			     , aset_real   d
+			 where 1=1
+			   and a.aset_id           = d.aset_id
+		)
+		select *
+		  from t_base   a
+		 where 1=1
+		   and a.mntc_ctrt_sno = cast ( #{mntcCtrtSno} as numeric )
+	</select>
+	
+	<select id="selectMntcDtInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select distinct 
+		       case when LD_YN = 'Y'  
+<!-- substr(rglr_chk_dt ,7,2) > '25' -->
+                    then '99'
+                    else substr(rglr_chk_dt ,7,2)
+               end                                         as rglr_chk_dt
+          from RGLR_CHK_DT
+		 where 1=1
+		   and mntc_ctrt_sno = cast ( #{mntcCtrtSno} as numeric )
+	</select>	
+	
+	<select id="selectMntcDupChk" parameterType="java.util.HashMap" resultType="int">
+		select count(*)   as dupCnt
+		  from mntc_hist
+		 where 1=1
+		   and aset_id = #{popAsetId}
+		   and ctrt_strt_dt <![CDATA[<=]]> replace(#{popCtrtEndDt},'-','') 
+		   and CTRT_END_DT  <![CDATA[>=]]> replace(#{popCtrtStrtDt},'-','') 
+	</select>	
+	
+	<select id="selectMntcDupChk2" parameterType="java.util.HashMap" resultType="int">
+		select count(*)   as dupCnt
+		  from mntc_hist
+		 where 1=1
+		   and aset_id = #{asetId}
+		   and ctrt_strt_dt <![CDATA[<=]]> replace(#{ctrtEndDt},'-','') 
+		   and CTRT_END_DT  <![CDATA[>=]]> replace(#{ctrtStrtDt},'-','') 
+		   and ctrt_strt_dt != replace(#{asisCtrtStrtDt},'-','')
+		   and CTRT_END_DT  != replace(#{asisCtrtEndDt},'-','')
+	</select>
+	
+<!--	<insert id="insertMntc" parameterType="java.util.HashMap">
+	    <foreach collection="popAsetIdList" item="item2" separator=";"
+        	 close=";">
+			INSERT INTO mntc_hist 
+			(
+				   mntc_ctrt_sno
+			   	 , aset_id
+			   	 , aset_chrg_emp_id1
+			   	 , aset_chrg_emp_id2
+			   	 , mntc_emp_id
+			     , ctrt_strt_dt
+			     , ctrt_end_dt
+			   	 , mntc_ctrt_sep_cd
+			   	 , del_yn
+			   	 , reg_emp_id
+			   	 , reg_dttm
+			   	 , mod_emp_id
+			   	 , mod_dttm
+			)
+	        VALUES
+			(	
+				   #{item2.popMntcCtrtSno}
+			   	 , #{item2.popAsetId}
+			   	 , #{popAsetChrgEmpId1}
+			   	 , #{popAsetChrgEmpId2}
+			   	 , #{popMntcEmpId}
+	        	 , replace(#{popCtrtStrtDt},'-','')
+			     , replace(#{popCtrtEndDt},'-','')
+			   	 , #{popMntcCtrtSepCd}
+			   	 , 'N'
+			   	 , #{regEmpId}
+			   	 , now()
+			   	 , #{regEmpId}
+			   	 , now()
+			);
+			
+			INSERT INTO RGLR_CHK_DT 
+			(
+				   mntc_ctrt_sno
+			   	 , rglr_chk_dt
+		   	 	 , LD_YN
+			   	 , reg_emp_id
+			   	 , reg_dttm
+			   	 , mod_emp_id
+			   	 , mod_dttm
+			)
+			with
+			t_base as 
+			(
+				select a.dt 
+				     , to_char((date_trunc('MONTH', to_date(a.dt,'yyyymmdd')) + INTERVAL '1 MONTH - 1 day')::date,'yyyymmdd')   as last_dt
+				  from cal   a
+			)
+			, t_dt as 
+			(
+				select dt, 'N'  AS LD_YN
+				  from t_base 
+				 where 1=1
+				   and substr(dt,7,2) in <foreach collection="popRglrChkDtList" item="item3" open="(" close=")" separator=",">
+				   							CASE WHEN LENGTH(#{item3}) = 1
+				   							     THEN '0'||#{item3}
+				   							     ELSE #{item3}
+				   							END
+				   						 </foreach>  
+				   and dt        between replace(#{popCtrtStrtDt},'-','') and replace(#{popCtrtEndDt},'-','')
+				 union all 
+				select last_dt, 'Y'  AS LD_YN
+				  from t_base 
+				 where 1=1
+				   and substr(dt,7,2) = '01'
+				   and '99'          in <foreach collection="popRglrChkDtList" item="item4" open="(" close=")" separator=",">#{item4}</foreach> 
+				   and dt       between replace(#{popCtrtStrtDt},'-','') and replace(#{popCtrtEndDt},'-','')
+			)
+			select #{item2.popMntcCtrtSno}   as mntc_ctrt_sno
+			     , dt                                   as rglr_chk_dt
+			     , LD_YN                                AS LD_YN
+			   	 , #{regEmpId}                          as reg_emp_id
+			   	 , now()                                as reg_dttm
+			   	 , #{regEmpId}                          as mod_emp_id
+			   	 , now()                                as mod_dttm
+			  from t_dt
+			 order by 1;
+			 		
+			INSERT INTO chk_req 
+			(
+				   chk_req_sno
+				  ,chk_sep_cd
+				  ,chk_sprt_type_cd
+				  ,mntc_ctrt_sno
+				  ,vist_plan_dt
+				  ,chk_req_ctnt
+				  ,reg_emp_id
+				  ,reg_dttm
+				  ,mod_emp_id
+				  ,mod_dttm
+			)
+			with
+			t_dt as 
+			(
+				select DISTINCT 
+				       mntc_ctrt_sno                        as mntc_ctrt_sno
+				     , rglr_chk_dt                          as rglr_chk_dt
+				     , RANK() OVER (ORDER BY rglr_chk_dt)   AS rownum
+				  from rglr_chk_dt
+				 where 1=1
+				   and mntc_ctrt_sno = #{item2.popMntcCtrtSno}
+			)
+			select ( select coalesce(max(chk_req_sno),0) from chk_req ) + rownum   as chk_req_sno
+			     , '1'                                                             as chk_sep_cd
+			     , 'V'                                                             as chk_sprt_type_cd
+			     , mntc_ctrt_sno                                                   as mntc_ctrt_sno
+			     , rglr_chk_dt                                                     as vist_plan_dt
+			     , '정기점검'                                                         as chk_req_ctnt
+			   	 , #{regEmpId}                                                     as reg_emp_id
+			   	 , now()                                                           as reg_dttm
+			   	 , #{regEmpId}                                                     as mod_emp_id
+			   	 , now()                                                           as mod_dttm
+	  		 from t_dt;
+			
+			INSERT INTO chk_req_aset 
+			(
+				   chk_req_sno
+				  ,aset_id
+				  ,mntc_corp_id
+				  ,mntc_emp_id				  
+				  ,apvl_emp_id_1
+				  ,apvl_emp_id_2
+				  ,reg_emp_id
+				  ,reg_dttm
+				  ,mod_emp_id
+				  ,mod_dttm
+			)
+	        select a.chk_req_sno          as chk_req_sno
+			      , b.aset_id              as aset_id
+			      , c.corp_id              as mntc_corp_id
+			      , b.mntc_emp_id          as mntc_emp_id
+			      , b.aset_chrg_emp_id1    as apvl_emp_id_1
+			      , b.aset_chrg_emp_id2    as apvl_emp_id_2
+			   	  , #{regEmpId}            as reg_emp_id
+			   	  , now()                  as reg_dttm
+			   	  , #{regEmpId}            as mod_emp_id
+			   	  , now()                  as mod_dttm
+			   from chk_req     a
+			      , mntc_hist   b
+		          , emp         c
+			  where 1=1
+			    and a.mntc_ctrt_sno = b.mntc_ctrt_sno
+		        and c.emp_id = b.mntc_emp_id
+			    and a.mntc_ctrt_sno = #{item2.popMntcCtrtSno}
+			    
+	    </foreach>
+		    
+	</insert>-->
+	
+	<insert id="insertMntc" parameterType="java.util.HashMap">
+			INSERT INTO mntc_hist 
+			(
+				mntc_ctrt_sno,
+				aset_id,
+				aset_chrg_emp_id1,
+				aset_chrg_emp_id2,
+				ctrt_strt_dt,
+				ctrt_end_dt,
+				ctrt_dt,
+				contract_type,
+				del_yn,
+				reg_emp_id,
+				reg_dttm,
+				mod_emp_id,
+				mod_dttm
+			)
+	        VALUES
+			(	
+				   #{mntcCtrtSno}
+			   	 , #{popAsetId}
+			   	 , #{popAsetChrgEmpId1}
+			   	 , #{popAsetChrgEmpId2}
+	        	 , replace(#{popCtrtStrtDt},'-','')
+			     , replace(#{popCtrtEndDt},'-','')
+			     , replace(#{popCtrtDt},'-','')||#{popCtrtHour}||#{popCtrtMinute}
+			   	 , #{popMntcCtrtSepCd}
+			   	 , 'N'
+			   	 , #{regEmpId}
+			   	 , now()
+			   	 , #{regEmpId}
+			   	 , now()
+			)
+	</insert>
+	
+<!--	<update id="updateMntc" parameterType="java.util.HashMap">
+				
+		/* 정기점검 - 유지보수계약이력 수정 */
+		 UPDATE mntc_hist
+			SET aset_id           = #{asetId} 
+			  , aset_chrg_emp_id1 = #{asetChrgEmpId1}
+			  , aset_chrg_emp_id2 = #{asetChrgEmpId2}
+			  , mntc_emp_id       = #{mntcEmpId}
+			  , ctrt_strt_dt      = replace(#{ctrtStrtDt},'-','')
+			  , ctrt_end_dt       = replace(#{ctrtEndDt},'-','')
+			  , mntc_ctrt_sep_cd  = #{mntcCtrtSepCd}
+			  , del_yn            = #{delYn}
+		   	  , mod_emp_id        = #{modEmpId}
+		   	  , mod_dttm          = now()
+		  WHERE mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric );
+		  
+		 /* 정기점검 - 정기점검일자 삭제 */
+		 DELETE FROM RGLR_CHK_DT
+		  WHERE mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric );
+		   
+		 /* 정기점검 - 정기점검일자 등록 */
+		INSERT INTO RGLR_CHK_DT 
+		(
+		   mntc_ctrt_sno
+	   	 , rglr_chk_dt
+	   	 , LD_YN
+	   	 , reg_emp_id
+	   	 , reg_dttm
+	   	 , mod_emp_id
+	   	 , mod_dttm
+		)
+		with
+		t_base as 
+		(
+			select a.dt 
+			     , to_char((date_trunc('MONTH', to_date(a.dt,'yyyymmdd')) + INTERVAL '1 MONTH - 1 day')::date,'yyyymmdd')   as last_dt
+			  from cal   a
+		)
+		, t_dt as 
+		(
+ 			select dt 
+ 			  from t_base  
+ 			 where 1=1 
+ 			   and substr(dt,7,2) = '01' 
+ 			   and '01'          in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach>  
+ 			   and dt       between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','') 
+ 			 union all  
+ 			select dt 
+ 			  from t_base  
+ 			 where 1=1 
+ 			   and substr(dt,7,2) = '05' 
+ 			   and '05'          in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach>  
+ 			   and dt       between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','') 
+ 			 union all  
+ 			select dt 
+ 			  from t_base  
+ 			 where 1=1 
+ 			   and substr(dt,7,2) = '10' 
+ 			   and '10'          in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach>  
+ 			   and dt       between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','') 
+ 			 union all  
+ 			select dt 
+ 			  from t_base  
+ 			 where 1=1 
+ 			   and substr(dt,7,2) = '15' 
+ 			   and '15'          in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach>  
+ 			   and dt       between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','') 
+ 			 union all  
+ 			select dt 
+ 			  from t_base  
+ 			 where 1=1 
+ 			   and substr(dt,7,2) = '20' 
+ 			   and '20'          in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach>  
+ 			   and dt       between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','') 
+ 			 union all  
+ 			select dt 
+ 			  from t_base  
+ 			 where 1=1 
+ 			   and substr(dt,7,2) = '25' 
+ 			   and '25'          in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach>  
+ 			   and dt       between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','') 
+			select dt, 'N'   AS LD_YN
+			  from t_base 
+			 where 1=1
+			   and substr(dt,7,2) in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">
+			   							CASE WHEN LENGTH(#{item}) = 1
+			   							     THEN '0'||#{item}
+			   							     ELSE #{item}
+			   							END
+			   						 </foreach>  
+ 			   						 <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach>  
+			   and dt        between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','')
+			 union all 
+			select last_dt, 'Y'   AS LD_YN
+			  from t_base 
+			 where 1=1
+			   and substr(dt,7,2) = '01'
+			   and '99'          in <foreach collection="rglrChkDtList" item="item" open="(" close=")" separator=",">#{item}</foreach> 
+			   and dt       between replace(#{ctrtStrtDt},'-','') and replace(#{ctrtEndDt},'-','')
+		)
+		select cast(#{mntcCtrtSno} as numeric)   	as mntc_ctrt_sno
+		     , dt                  					as rglr_chk_dt
+		     , LD_YN                                AS LD_YN
+		   	 , #{modEmpId}         					as reg_emp_id
+		   	 , now()               					as reg_dttm
+		   	 , #{modEmpId}         					as mod_emp_id
+		   	 , now()               					as mod_dttm
+		  from t_dt
+		 order by 1;		 
+		
+		 
+		delete 
+		  from chk_req
+		 where mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric);		 
+		
+		 		
+		INSERT INTO chk_req 
+		(
+			   chk_req_sno
+			  ,chk_sep_cd
+			  ,chk_sprt_type_cd
+			  ,mntc_ctrt_sno
+			  ,vist_plan_dt
+			  ,chk_req_ctnt
+			  ,reg_emp_id
+			  ,reg_dttm
+			  ,mod_emp_id
+			  ,mod_dttm
+		)
+		with
+		t_dt as 
+		(
+			select DISTINCT 
+			       mntc_ctrt_sno                        as mntc_ctrt_sno
+			     , rglr_chk_dt                          as rglr_chk_dt
+			     , RANK() OVER (ORDER BY rglr_chk_dt)   AS rownum
+			  from rglr_chk_dt
+			 where 1=1
+			   and mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric)
+		)
+		select ( select coalesce(max(chk_req_sno),0) from chk_req ) + rownum   as chk_req_sno
+		     , '1'                                                             as chk_sep_cd
+		     , 'V'                                                             as chk_sprt_type_cd
+		     , mntc_ctrt_sno                                                   as mntc_ctrt_sno
+		     , rglr_chk_dt                                                     as vist_plan_dt
+		     , '정기점검'                                                         as chk_req_ctnt
+		   	 , #{modEmpId}                                                     as reg_emp_id
+		   	 , now()                                                           as reg_dttm
+		   	 , #{modEmpId}                                                     as mod_emp_id
+		   	 , now()                                                           as mod_dttm
+  		 from t_dt; 
+		 
+  		delete 
+  		  from chk_req_aset
+  		 where 1=1
+  		   and chk_req_sno in ( select chk_req_sno 
+  		                          from chk_req 
+  		                         where mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric));
+		
+		INSERT INTO chk_req_aset 
+		(
+			   chk_req_sno
+			  ,aset_id
+			  ,mntc_corp_id
+			  ,mntc_emp_id
+			  ,apvl_emp_id_1
+			  ,apvl_emp_id_2
+			  ,reg_emp_id
+			  ,reg_dttm
+			  ,mod_emp_id
+			  ,mod_dttm
+		)
+         select a.chk_req_sno          as chk_req_sno
+		      , b.aset_id              as aset_id
+		      , c.corp_id              as mntc_corp_id
+		      , b.mntc_emp_id          as mntc_emp_id
+		      , b.aset_chrg_emp_id1    as apvl_emp_id_1
+		      , b.aset_chrg_emp_id2    as apvl_emp_id_2
+		   	 , #{modEmpId}             as reg_emp_id
+		   	 , now()                   as reg_dttm
+		   	 , #{modEmpId}             as mod_emp_id
+		   	 , now()                   as mod_dttm
+		   from chk_req     a
+		      , mntc_hist   b
+		      , emp         c
+		  where 1=1
+		    and a.mntc_ctrt_sno = b.mntc_ctrt_sno
+		    and c.emp_id = b.mntc_emp_id
+		    and a.mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric);
+	</update>-->
+	
+	<update id="updateMntc" parameterType="java.util.HashMap">
+				
+		UPDATE mntc_hist
+		SET 
+		    aset_chrg_emp_id1 = #{asetChrgEmpId1},
+		    aset_chrg_emp_id2 = #{asetChrgEmpId2},
+		    ctrt_strt_dt = replace(#{ctrtStrtDt}, '-', ''),
+		    ctrt_end_dt = replace(#{ctrtEndDt}, '-', ''),
+		    ctrt_dt = replace(#{ctrtDt}, '-', '') || #{ctrtHour} || #{ctrtMinute},
+		    contract_type = #{mntcCtrtSepCd},
+		    del_yn = 'N',
+		    mod_emp_id = #{regEmpId},
+		    mod_dttm = now()
+		WHERE 
+		    mntc_ctrt_sno = #{mntcCtrtSno}
+		    
+	</update>
+
+	<update id="deleteMntc" parameterType="java.util.HashMap">
+
+		delete from mntc_hist
+		 where mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric ) ;
+		
+		delete from RGLR_CHK_DT 
+		 where mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric ) ;
+		
+  		delete from chk_req_aset
+  		 where 1=1
+  		   and chk_req_sno in ( select chk_req_sno 
+  		                          from chk_req 
+  		                         where mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric));
+  		                         		 
+		delete from chk_req
+		 where mntc_ctrt_sno = cast(#{mntcCtrtSno} as numeric);	
+		
+	</update>
+	
+	<select id="checkDplAset" parameterType="java.util.HashMap" resultType="int">
+		select count(*) from aset_real
+		 where aset_clsf_id = (select aset_clsf_id from aset_clsf where aset_clsf_nm = #{aset_clsf_id})
+		   and aset_nm = #{aset_nm}
+	</select>
+				
+</mapper>

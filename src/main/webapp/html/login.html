@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+<title>KT Cloud LUPPITER 통함관제시스템</title>
+	
+<!-- [Favicons] -->
+<link href="img/favicon_cloud.png" rel="icon">
+	
+<!--[CSS]-->
+<link rel="stylesheet" href="css/jquery-ui.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+	
+<!--[JS]-->
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/chart.min.js"></script>
+	
+<!--테스트용-->
+<script src="js/vue.min.js"></script>
+
+</head>
+	
+<body>
+<div id="app" class="container">
+	
+<section class="section login">
+	
+	<h1 class="logo">KT cloud</h1>
+
+	<div class="box">
+		<h2 class="pageTitle"><strong>{{ name_eng }}</strong> {{ name_kor }}</h2>
+		<form>
+			<input type="text" class="input id" placeholder="USER ID(사번)">
+			<input type="password" class="input pw" placeholder="PASSWORD">
+			<span class="check"><input type="checkbox"><label>사번저장</label></span>
+			<a href="main.html" class="bt max bg primary">로그인</a>
+		</form>
+	</div>
+
+</section>
+
+
+
+<footer class="footer">ⓒ KT cloud {{ name_eng }}</footer>
+	
+</div><!--//container-->
+</body>
+</html>
+<script src="js/common.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: { name_eng:'LUPPITER', name_kor:'통합관제시스템' }
+})
+</script>
+<script>
+	var depth1=0
+	var depth2=0
+	var depth3=0
+	var depth4=0
+</script>

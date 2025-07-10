@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.SetMapper">
+	
+	<select id="selectSetAssetClsfList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT a.aset_clsf_id
+			 , a.aset_clsf_nm
+			 , a.par_aset_clsf_id
+			 , b.aset_clsf_nm       as par_aset_clsf_nm
+			 , a.leaf_yn
+			 , a.reg_emp_id
+			 , a.reg_dttm
+			 , a.mod_emp_id
+			 , a.mod_dttm
+			 , a.aset_lvl          
+		 FROM aset_clsf   a
+		         left outer join aset_clsf   b 
+		                 on ( a.par_aset_clsf_id = b.aset_clsf_id )
+	   
+	</select>
+
+	<select id="selectSetChkFormList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT A.chk_form_id
+		     , A.chk_form_nm
+		     , A.prps_desc
+		     , coalesce( ( SELECT count(*) 
+		                     FROM chk_form_item   b
+		                    WHERE b.chk_form_id  = a.chk_form_id
+		                      AND B.USE_YN       = 'Y' ), 0 )   AS chk_item_cnt
+		     , coalesce( ( SELECT cast ( max(chk_item_id) as integer ) 
+		                     FROM chk_form_item   c
+		                    WHERE c.chk_form_id  = a.chk_form_id
+		                      AND C.USE_YN       = 'Y' ), 0 )   AS chk_item_max
+     		 , TO_CHAR(A.REG_DTTM,'YYYY-MM-DD')                           as REG_DT
+		     , A.use_yn
+             , <![CDATA[
+               '<button type="button" class="bt bd gb primary form-update">수정</button>'
+               '<button type="button" class="bt bd gb primary form-delete">삭제</button>' 
+               ]]> AS btn_upd_del
+		  FROM chk_form   a
+		 where 1=1
+<!-- 		   and use_yn = 'Y' -->
+		 	<if test="searchStr != null and searchStr != ''">
+		    	<if test="searchType.equals('searchChkFormNm')">
+		    	    and a.chk_form_nm LIKE '%' ||#{searchStr}|| '%'
+		   	 	</if>
+		   	 	<if test="searchType.equals('searchPrpsDesc')">
+		    	    and a.prps_desc LIKE '%' ||#{searchStr}|| '%'
+		   	 	</if>
+		   	</if>
+		  order by TO_CHAR(A.REG_DTTM,'YYYY-MM-DD') DESC, A.USE_YN  DESC, lpad(chk_form_id,10,'0') desc
+	</select>
+
+	<select id="selectSetChkItemList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT a.chk_form_id as chk_form_id 
+             , b.chk_form_nm as chk_form_nm
+             , a.chk_item_id as chk_item_id
+             , a.chk_item_nm as chk_item_nm
+		     , a.chk_crtr_desc as chk_crtr_desc
+		     , a.use_yn as use_yn
+		     , <![CDATA[
+               '<button type="button" class="bt bd gb primary item-update">수정</button>'
+               '<button type="button" class="bt bd gb primary item-delete">삭제</button>' 
+               ]]> AS btn_upd_del_2 
+		  FROM chk_form_item a, chk_form b
+		 where 1=1
+		   and a.chk_form_id = b.chk_form_id
+<!-- 		   and a.use_yn = 'Y' -->
+		       /* 선택된 chk_form_id 를 조건으로 입력 받음 */
+		   and a.chk_form_id = #{chkFormId}
+		 order by A.USE_YN  DESC , lpad(a.chk_form_id,10,'0'),lpad(a.chk_item_id,10,'0')
+	</select>
+
+	<insert id="insertExlItem" parameterType="java.util.HashMap">
+	    <foreach collection="list" item="item">
+	        INSERT INTO chk_form_item 
+	        (
+	            chk_form_id,
+	            chk_item_id,
+	            chk_item_nm,
+	            chk_crtr_desc,
+	            use_yn,
+	            reg_emp_id,
+	            reg_dttm,
+	            mod_emp_id,
+	            mod_dttm
+	        )
+	        VALUES
+	        (   
+	            #{item.chk_form_id},
+	            #{item.chk_item_id},
+	            #{item.chk_item_nm},
+	            #{item.chk_crtr_desc},
+	            #{item.use_yn},
+	            #{item.mod_emp_id},
+	            now(),
+	            #{item.mod_emp_id},
+	            now()
+	        )
+	        ON CONFLICT (chk_form_id, chk_item_id) DO UPDATE
+	        SET
+	            chk_item_nm = EXCLUDED.chk_item_nm,
+	            chk_crtr_desc = EXCLUDED.chk_crtr_desc,
+	            use_yn = EXCLUDED.use_yn,
+	            reg_emp_id = EXCLUDED.reg_emp_id,
+	            reg_dttm = EXCLUDED.reg_dttm,
+	            mod_emp_id = EXCLUDED.mod_emp_id,
+	            mod_dttm = EXCLUDED.mod_dttm;
+	    </foreach>
+	</insert>
+
+	<select id="selectChkFormInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT A.chk_form_id
+             , A.chk_form_nm
+             , A.prps_desc
+             , A.use_yn
+          FROM chk_form A
+         WHERE 1=1
+		   AND A.chk_form_id = #{chkFormId}
+	</select>
+
+	<select id="selectChkItemInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT A.chk_form_id
+			 , b.chk_form_nm
+             , A.chk_item_id
+             , A.chk_item_nm
+             , A.chk_crtr_desc
+             , A.use_yn
+          FROM chk_form_item A
+             , chk_form      b
+         WHERE 1=1
+           and a.chk_form_id = b.chk_form_id
+		   AND A.chk_form_id = #{chkFormId}
+		   AND A.chk_item_id = #{chkItemId}
+		 order by
+		       lpad(a.chk_form_id,10,'0'),lpad(a.chk_item_id,10,'0') 
+	</select>
+
+	<select id="selectSetCommCdList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select col_en_nm
+             , col_ko_nm
+             , col_desc
+  		  from comm_cd   a
+ 		 where 1=1
+		 	<if test="searchStr != null and searchStr != ''">
+		    	<if test="searchType.equals('cdColEnNm')">
+		    	    and a.col_en_nm LIKE '%' ||#{searchStr}|| '%'
+		   	 	</if>
+		   	 	<if test="searchType.equals('cdColKoNm')">
+		    	    and a.col_ko_nm LIKE '%' ||#{searchStr}|| '%'
+		   	 	</if>
+		   	</if>
+ 	     order by col_en_nm
+	</select>
+	
+	<select id="selectSetCommCdDtlList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+   
+		select a.col_en_nm, b.col_ko_nm, a.cd_effv_val, a.cd_ko_nm   as cd_desc
+		  from comm_cd_detl   a
+		     , comm_cd        b
+		 where 1=1
+		   AND A.USE_YN    = 'Y'
+		   and a.col_en_nm = b.col_en_nm
+		   and a.col_en_nm = #{colEnNm}
+		 /* 검색어 조건문 */
+		 order by col_en_nm, cd_effv_val
+   
+	</select>
+	
+	<insert id="insertChkForm" parameterType="java.util.HashMap">
+		INSERT INTO CHK_FORM 
+		(
+			   CHK_FORM_ID
+		   	 , CHK_FORM_NM
+		   	 , PRPS_DESC
+		     , USE_YN
+		   	 , reg_emp_id
+		   	 , reg_dttm
+		   	 , mod_emp_id
+		   	 , mod_dttm
+		)
+        VALUES
+		(	
+			   COALESCE((select cast(max(CAST (CHK_FORM_ID AS INTEGER))+1 as varchar) 
+		                   from CHK_FORM_ITEM ),'1') 
+		   	 , #{popChkFormNm}
+		   	 , #{popPrpsDesc}
+        	 , #{popUseYn}
+		   	 , #{regEmpId}
+		   	 , now()
+		   	 , #{regEmpId}
+		   	 , now()
+		)
+	</insert>
+	
+	
+	
+	<insert id="insertChkItem" parameterType="java.util.HashMap">
+		INSERT INTO CHK_FORM_ITEM 
+		(
+			   CHK_FORM_ID
+		   	 , CHK_ITEM_ID
+		   	 , CHK_ITEM_NM
+		   	 , CHK_CRTR_DESC
+		   	 , USE_YN
+		   	 , reg_emp_id
+		   	 , reg_dttm
+		   	 , mod_emp_id
+		   	 , mod_dttm
+		)
+        VALUES
+		(	
+			   #{popChkFormId}
+			 , COALESCE((select cast(max(CAST (CHK_ITEM_ID AS INTEGER))+1 as varchar) 
+		                   from CHK_FORM_ITEM 
+		   	              where CHK_FORM_ID = #{popChkFormId}),'1') 
+<!-- 		   	 , ( select cast(max(CAST (CHK_ITEM_ID AS INTEGER))+1 as varchar)  -->
+<!-- 		   	       from CHK_FORM_ITEM  -->
+<!-- 		   	      where CHK_FORM_ID = #{popChkFormId} ) -->
+		   	 , #{popChkItemNm}
+		   	 , #{popChkCrtrDesc}
+		   	 , #{popItemUseYn}
+		   	 , #{regItemEmpId}
+		   	 , now()
+		   	 , #{regItemEmpId}
+		   	 , now()
+		)
+	</insert>
+
+	
+	<update id="updateChkForm" parameterType="java.util.HashMap">
+		UPDATE CHK_FORM
+		   SET CHK_FORM_NM  = #{chkFormNm}
+		   	 , PRPS_DESC    = #{prpsDesc}
+		   	 , USE_YN       = #{useYn}
+		   	 , reg_emp_id   = #{regEmpId}
+		   	 , reg_dttm     = now()
+		   	 , mod_emp_id   = #{regEmpId}
+		   	 , mod_dttm     = now()
+		 WHERE CHK_FORM_ID = #{chkFormId}
+	</update>
+	
+	<update id="updateChkItem" parameterType="java.util.HashMap">
+		UPDATE CHK_FORM_ITEM
+		   SET CHK_ITEM_NM   = #{chkItemNm}
+		   	 , CHK_CRTR_DESC = #{chkCrtrDesc}
+		   	 , USE_YN        = #{itemUseYn}
+		   	 , reg_emp_id    = #{itemRegEmpId}
+		   	 , reg_dttm      = now()
+		   	 , mod_emp_id    = #{itemRegEmpId}
+		   	 , mod_dttm      = now()
+		 WHERE CHK_FORM_ID = #{chkItemFormId}
+		   AND CHK_ITEM_ID = #{chkItemId}
+	</update>
+	
+	
+	<delete id="deleteChkForm" parameterType="java.util.HashMap">
+		DELETE 
+		  FROM CHK_FORM
+		 WHERE CHK_FORM_ID = #{delChkFormId} 
+	</delete>
+	
+	<delete id="deleteChkItem" parameterType="java.util.HashMap">
+		delete
+		  from CHK_FORM_ITEM
+		 WHERE 1=1
+		   AND CHK_FORM_ID = #{delChkFormId} 
+		   AND CHK_ITEM_ID = #{delChkItemId} 
+	</delete>
+	
+	<insert id="insertAsetClsf" parameterType="java.util.HashMap">
+		INSERT INTO ASET_CLSF 
+		(
+		   ASET_CLSF_ID
+		 , ASET_CLSF_NM
+		 , PAR_ASET_CLSF_ID
+		 , ASET_LVL
+		 , LEAF_YN
+		 , reg_emp_id
+		 , reg_dttm
+		 , mod_emp_id
+		 , mod_dttm
+		)
+		VALUES
+		(	
+		   COALESCE((SELECT MAX(CAST(ASET_CLSF_ID AS INTEGER)) + 1 FROM ASET_CLSF), 1)::varchar
+		 , #{asetClsfNm}
+		 , #{parAsetClsfId}
+		 , CAST(#{asetLvl} AS NUMERIC)
+		 , #{leafYn}
+		 , #{regEmpId}
+		 , NOW()
+		 , #{regEmpId}
+		 , NOW()
+		)
+	</insert>	
+	
+	<update id="updateAsetClsf" parameterType="java.util.HashMap">
+		update ASET_CLSF 
+		   set ASET_CLSF_NM = #{updAsetClsfNm}
+		   	 , mod_emp_id   = #{regEmpId}
+		   	 , mod_dttm     = now()
+		 where 1=1
+		   and ASET_CLSF_ID = #{befAsetClsfId}
+	</update>	
+	
+	<delete id="deleteAsetClsf" parameterType="java.util.HashMap">
+		delete
+		  from ASET_CLSF 
+		 where 1=1
+		   and ASET_CLSF_ID = #{asetClsfId};
+		   
+		delete
+		  from ASET_CLSF 
+		 where 1=1
+		   and PAR_ASET_CLSF_ID = #{asetClsfId}   
+		   
+		
+	</delete>		
+				
+</mapper>

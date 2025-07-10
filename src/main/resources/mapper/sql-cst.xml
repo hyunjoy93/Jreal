@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.cmm.mapper.CstMapper">
+
+	<select id="selectCstList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT COUNT(*) OVER() AS total_count
+             , (CASE WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ < ]]> COUNT(*) OVER() THEN 'Y' WHEN CAST(#{pageNo}AS INTEGER) * CAST(#{pageSize}AS INTEGER) <![CDATA[ >= ]]> COUNT(*) OVER() THEN 'N' END) AS next_page_yn
+             , mkate_id
+             , mkate_proc_id
+             , mkate_nm
+             , mkate_type
+             , TO_CHAR(occu_time, 'YYYY-MM-DD HH24:MI') AS mkate_occu_time
+          FROM cmon_mkate A
+         WHERE 1=1
+           <if test="occuTime != null and occuTime != '' ">
+           AND TO_CHAR(A.occu_time, 'YYYYMMDD') >= #{occuTime}
+		   </if>         
+         ORDER BY A.occu_time DESC
+         LIMIT CAST(#{pageSize} AS INTEGER) OFFSET (CAST(#{pageNo} AS INTEGER) - 1) * CAST(#{pageSize} AS INTEGER)
+	</select>
+				
+</mapper>
