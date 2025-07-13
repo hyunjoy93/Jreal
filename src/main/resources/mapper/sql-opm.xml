@@ -716,6 +716,8 @@
 				   substr(a.ctrt_dt ,7,2)||' '||
 				   substr(a.ctrt_dt ,9,2)||':'||
 				   substr(a.ctrt_dt ,11,2) as ctrt_dt 
+			     , a.renter_name 
+			     , a.renter_cpno 
 		         , (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.contract_type AND col_en_nm = 'CONTRACT_TYPE') AS contract_type
 			     , a.del_yn
 	             , <![CDATA[
@@ -765,6 +767,8 @@
 				   substr(a.ctrt_end_dt ,5,2)||'-'||
 				   substr(a.ctrt_end_dt ,7,2)           as ctrt_end_dt
 			     , ctrt_dt 
+			     , renter_name 
+			     , renter_cpno 
 		         , (SELECT cd_ko_nm FROM comm_cd_detl WHERE cd_effv_val = a.contract_type AND col_en_nm = 'CONTRACT_TYPE') AS contract_type
 			  from mntc_hist   a
 			     , aset_real   d
@@ -973,6 +977,8 @@
 				ctrt_strt_dt,
 				ctrt_end_dt,
 				ctrt_dt,
+				renter_name,
+				renter_cpno,
 				contract_type,
 				del_yn,
 				reg_emp_id,
@@ -989,6 +995,8 @@
 	        	 , replace(#{popCtrtStrtDt},'-','')
 			     , replace(#{popCtrtEndDt},'-','')
 			     , replace(#{popCtrtDt},'-','')||#{popCtrtHour}||#{popCtrtMinute}
+			   	 , #{popRenterName}
+			   	 , #{popRenterCpno}
 			   	 , #{popMntcCtrtSepCd}
 			   	 , 'N'
 			   	 , #{regEmpId}
@@ -1198,6 +1206,8 @@
 		    ctrt_strt_dt = replace(#{ctrtStrtDt}, '-', ''),
 		    ctrt_end_dt = replace(#{ctrtEndDt}, '-', ''),
 		    ctrt_dt = replace(#{ctrtDt}, '-', '') || #{ctrtHour} || #{ctrtMinute},
+		    renter_name = #{renterName},
+		    renter_cpno = #{renterCpno},
 		    contract_type = #{mntcCtrtSepCd},
 		    del_yn = 'N',
 		    mod_emp_id = #{regEmpId},

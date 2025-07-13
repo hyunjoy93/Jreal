@@ -250,7 +250,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>정보보안서약서</th>
+						<th>프로필이미지</th>
 						<td id="fileInitY1">
 							<form id="empFiles1" action="api/ctl/fileUpload" method="post" enctype="multipart/form-data" target="empFiles">
 						    	<p><input type="file" class="custom-file-input" id="secSignFile" name="uploadFileMulti"></p>
@@ -260,17 +260,6 @@
 						    <p><a download class="row" id="downFileUp1" style="color:blue;"></a><button class="fiClose" style="float: right;" id="fileInit1"><i>파일초기화</i></button></p>
 						</td>
 					</tr>	
-					<tr>
-						<th>정보보안이수</th>
-						<td id="fileInitY2">
-							<form id="empFiles2" action="api/ctl/fileUpload" method="post" enctype="multipart/form-data" target="empFiles">
-						    	<p><input type="file" class="custom-file-input" id="secEduFile" name="uploadFileMulti"></p>
-						    </form>
-						</td>
-						<td id="fileInitN2">
-						    <p><a download class="row" id="downFileUp2" style="color:blue;"></a><button class="fiClose" style="float: right;" id="fileInit2"><i>파일초기화</i></button></p>
-						</td>
-					</tr>
 				</tbody>
 			</table>
 		</div><!--//conBody-->
@@ -465,17 +454,12 @@ $(function(){  // === $(document).ready
 		});
 		
 		let form1 = new FormData($("#empFiles1")[0]);
-		let form2 = new FormData($("#empFiles2")[0]);
 		
 		// form1에서 파일 필드의 값을 가져옴
 		let file1 = form1.files;
-		// form2에서 파일 필드의 값을 가져옴
-		let file2 = form2.files;
 		
 		form1.append("fileType", "sec");
-		form2.append("fileType", "edu");
 		form1.append("empId", $("#empId").val());
-		form2.append("empId", $("#empId").val());
 		
 	    let apiUrl = "/api/ctl/fileUpload";
 		
@@ -493,21 +477,6 @@ $(function(){  // === $(document).ready
 // 			},
 //             error: function(xhr, status, error) {
 //             	alert("사용자 보안서약서 등록에 실패하였습니다.");
-//             }
-		});
-		$.ajax({
-			url : apiUrl,
-			type : "POST",
-			data : form2,
-			dataType: "json",
-			processData: false,
-			contentType: false,
-			enctype : 'multipart/form-data',
-// 			success: function(result) {
-// 				alert("사용자 보안교육이수 확인파일 등록에 성공하였습니다.");
-// 			},
-//             error: function(xhr, status, error) {
-//             	alert("사용자 보안교육이수 확인파일 등록에 실패하였습니다.");
 //             }
 		});
 	});
@@ -940,8 +909,7 @@ function fnInitGrid(){
         , {header:'사내번호', name:'intp_no', sortable:true, align:'center'}		    
         , {header:'휴대폰번호', name:'celp_no', sortable:true, align:'center'}		    
         , {header:'사용자권한', name:'auth_grp_nm', sortable:true, align:'center'}		    
-        , {header:'보안서약서등록여부', name:'scrt_pldg_reg_yn', sortable:true, align:'center'}			    
-        , {header:'교육이수파일등록여부', name:'edu_cmplt_file_reg_yn', sortable:true, align:'center'}			    
+        , {header:'프로필이미지등록여부', name:'scrt_pldg_reg_yn', sortable:true, align:'center'}			    
         , {header:'auth_grp_cd', name:'auth_grp_cd', sortable:true, align:'center', hidden:true}		    
 		, {header:'변경', name:'btn_upd_del', align:'center', width:160}
 	];
@@ -1009,11 +977,6 @@ function fnList(slcPageNo){
 			$('#downFileUp1').removeClass('downFiles');
 			$('#downFileUp1').prop('href', '');
 			
-			$('#downFileUp2').text('');
-			$('#downFileUp2').prop('name', '');
-			$('#downFileUp2').removeClass('downFiles');
-			$('#downFileUp2').prop('href', '');
-			
 			if(data.EmpFile1.length < 1) {
 				$('#fileInitN1').hide();
 				$('#fileInitY1').show();
@@ -1031,24 +994,6 @@ function fnList(slcPageNo){
 				$('#downFileUp1').prop('download', data.EmpFile1[0].apnd_file_nm);
 			}
 			
-			if(data.EmpFile2.length < 1) {
-				$('#fileInitN2').hide();
-				$('#fileInitY2').show();
-			} else {
-				$('#fileInitN2').show();
-				$('#fileInitY2').hide();
-				var fileName2 = data.EmpFile2[0].apnd_file_nm.split('^');
-				$('#downFileUp2').text(fileName2[1]);
-				
-				$('#downFileUp2').prop('name', data.EmpFile2[0].apnd_file_trg_id + '-' + data.EmpFile2[0].apnd_file_sno)
-				$('#downFileUp2').addClass('downFiles');
-				
-				var filePath2 = '../../uploadFiles/E/edu/' + data.EmpFile2[0].apnd_file_nm;
-				
-				$('#downFileUp2').prop('href', filePath2);
-				$('#downFileUp2').prop('download', data.EmpFile2[0].apnd_file_nm);
-
-			}
  		} else {
  			alert("사용자 상세내역 조회에 실패했습니다.");
  		}

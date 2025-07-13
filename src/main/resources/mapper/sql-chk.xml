@@ -293,19 +293,80 @@
            AND a.aset_id in <foreach collection="asetIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
 	</select>
 
-	<select id="selectSceduleMailList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		SELECT a.vist_plan_dt,
-		       a.chk_req_ctnt,
-		       b.mntc_corp_id,
-		       b.mntc_emp_id,
-		       c.corp_ko_nm
-		FROM chk_req a
-		JOIN chk_req_aset b ON a.chk_req_sno = b.chk_req_sno
-		JOIN corp c ON b.mntc_corp_id = c.corp_id
-		WHERE a.chk_sep_cd = '1'
-		AND TO_DATE(a.vist_plan_dt, 'YYYYMMDD') BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'					     						
-	</select>
+<!-- 	<select id="selectSceduleMailList" parameterType="java.util.HashMap" resultType="java.util.HashMap"> -->
+<!-- 		SELECT a.vist_plan_dt, -->
+<!-- 		       a.chk_req_ctnt, -->
+<!-- 		       b.mntc_corp_id, -->
+<!-- 		       b.mntc_emp_id, -->
+<!-- 		       c.corp_ko_nm -->
+<!-- 		FROM chk_req a -->
+<!-- 		JOIN chk_req_aset b ON a.chk_req_sno = b.chk_req_sno -->
+<!-- 		JOIN corp c ON b.mntc_corp_id = c.corp_id -->
+<!-- 		WHERE a.chk_sep_cd = '1' -->
+<!-- 		AND TO_DATE(a.vist_plan_dt, 'YYYYMMDD') BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'					     						 -->
+<!-- 	</select> -->
 	
+	<select id="selectSceduleMailList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		WITH t_base AS (
+		    SELECT 
+		          a.mntc_ctrt_sno
+		        , a.aset_id 
+		        , (
+		            SELECT aset_clsf_nm 
+		              FROM aset_clsf 
+		             WHERE aset_clsf_id = (
+		                    SELECT par_aset_clsf_id 
+		                      FROM aset_clsf 
+		                     WHERE aset_clsf_id = d.aset_clsf_id
+		                )
+		          ) AS aset_clsf_id
+		        , (
+		            SELECT aset_clsf_nm 
+		              FROM aset_clsf 
+		             WHERE aset_clsf_id = (
+		                    SELECT aset_clsf_id 
+		                      FROM aset_clsf 
+		                     WHERE aset_clsf_id = d.aset_clsf_id
+		                )
+		          ) AS aset_clsf_nm
+		        , d.aset_nm
+		        , a.aset_chrg_emp_id1
+		        , a.aset_chrg_emp_id2
+		        , (SELECT emp_nm FROM emp WHERE emp_id = a.aset_chrg_emp_id1) AS aset_chrg_emp_nm1
+		        , (SELECT emp_nm FROM emp WHERE emp_id = a.aset_chrg_emp_id2) AS aset_chrg_emp_nm2
+		        , a.mntc_emp_id 
+		        , TO_DATE(a.ctrt_strt_dt, 'YYYYMMDD') AS ctrt_strt_dt
+		        , TO_DATE(a.ctrt_end_dt, 'YYYYMMDD') AS ctrt_end_dt
+			    , substr(a.ctrt_dt ,1,4)||'-'||
+				  substr(a.ctrt_dt ,5,2)||'-'||
+				  substr(a.ctrt_dt ,7,2)||' '||
+				  substr(a.ctrt_dt ,9,2)||':'||
+				  substr(a.ctrt_dt ,11,2) as ctrt_dt 
+		        , a.renter_name 
+		        , a.renter_cpno 
+		        , (
+		            SELECT cd_ko_nm 
+		              FROM comm_cd_detl 
+		             WHERE cd_effv_val = a.contract_type 
+		               AND col_en_nm = 'CONTRACT_TYPE'
+		          ) AS contract_type
+		        , a.del_yn
+		    FROM mntc_hist a
+		    JOIN aset_real d ON a.aset_id = d.aset_id
+		)
+		SELECT *
+		  FROM t_base a
+		 WHERE 1 = 1
+		   AND a.aset_nm LIKE '%' || '' || '%'
+		   -- 방문 예정일 필터는 제거 (필요시 다시 추가)
+		   -- AND TO_DATE(a.vist_plan_dt, 'YYYYMMDD') BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
+		   AND (
+		         DATE_TRUNC('day', ctrt_end_dt) = DATE_TRUNC('day', CURRENT_DATE + INTERVAL '1 month')
+		      OR DATE_TRUNC('day', ctrt_end_dt) = DATE_TRUNC('day', CURRENT_DATE + INTERVAL '2 months')
+		      OR DATE_TRUNC('day', ctrt_end_dt) = DATE_TRUNC('day', CURRENT_DATE + INTERVAL '3 months')
+		       )
+		ORDER BY ctrt_dt
+	</select>
 	<select id="selectChkReqMax"  resultType="java.lang.Integer">
 		SELECT COALESCE(MAX(chk_req_sno), 0)
 		FROM chk_req

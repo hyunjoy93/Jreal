@@ -207,7 +207,7 @@ $(function(){  // === $(document).ready
 function fnInit(){
 	
 	// 메뉴 초기화
-	fnInitGnbLnb(5, 3, 5, 3);
+	fnInitGnbLnb(4, 2, 4, 2);
 	
 	// 그리드 초기화
 	fnInitGrid();

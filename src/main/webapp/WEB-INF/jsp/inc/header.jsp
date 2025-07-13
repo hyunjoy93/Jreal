@@ -122,6 +122,7 @@ var navTrue = false;
 				<a href="<c:url value='/view/spt/subTodoList' />" class="menu">업무관리</a>
 				<ul class="subMenu">
 					<li><a href="javascript:fnPostSend('<c:url value='/view/spt/subTodoList' />'  , {viewType:'00'})" class="menu">나의업무현황</a></li>
+					<li><a href="javascript:fnPostSend('<c:url value='/view/spt/subOrgList' />'  , {viewType:'00'})" class="menu">조직도</a></li>
 				</ul>
 			</li>
 		</ul>

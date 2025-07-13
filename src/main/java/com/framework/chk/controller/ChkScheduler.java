@@ -38,7 +38,7 @@ public class ChkScheduler {
 	private ChkService chkService;
 	
 	@SuppressWarnings("unchecked")
-	@Scheduled(cron = "0 35 14 * * *")
+	@Scheduled(cron = "0 13 16 * * *")
 	public void test2() throws Exception {
 	    List<Map<String, Object>> ddd2 = chkService.selectSceduleMailList();
 
@@ -50,82 +50,117 @@ public class ChkScheduler {
 	    Date today = new Date();
 
 	    // 프로퍼티 파일 경로
-	    String propertiesFilePath = "C:\\dev\\E-Manager\\src\\main\\resources\\application.properties";
+	    String propertiesFilePath = "sw/Jreal/src/main/resources/application.properties";
 
 	    // 프로퍼티 파일에서 email 값을 가져옴
 	    String username = readEmailIdFromProperties(propertiesFilePath);
 	    String password = readEmailPwFromProperties(propertiesFilePath);
 	    String host = readEmailHostFromProperties(propertiesFilePath);
+	    
+	    for (Map<String, Object> row : ddd2) {
+	        String to1 = (String) row.get("aset_chrg_emp_id1");
+	        String to2 = (String) row.get("aset_chrg_emp_id2");
+		    String subject = "만료 예정 계약 안내";
+		    
+		    // HTML 내용 작성 (예시 데이터 포함)
+		    String body = "<html>"
+		    	    + "<body style='font-family: Arial, sans-serif;'>"
+		    	    + "<h2>만료 예정 계약 안내</h2>"
+		    	    + "<p>아래 계약 만료 예정 매물입니다. 확인해주세요.</p>"
+		    	    + "<br/>"
+		    	    + "<table border='1' style='border-collapse: collapse; width: 100%;'>"
+		    	    + "    <thead style='background-color: #f2f2f2;'>"
+		    	    + "        <tr>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>행정구분</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>행정동</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>소재지(지번)</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>계약담당자(정)</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>계약담당자(부)</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>계약일시</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>임차인명</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>임차인연락처</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>계약시작일자</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>계약종료일자</th>"
+		    	    + "            <th style='padding: 8px; text-align: center;'>거래유형</th>"
+		    	    + "        </tr>"
+		    	    + "    </thead>"
+		    	    + "    <tbody>"
+		    	    + "        <tr>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("aset_clsf_id") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("aset_clsf_nm") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("aset_nm") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("aset_chrg_emp_nm1") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("aset_chrg_emp_nm2") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("ctrt_dt") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("renter_name") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("renter_cpno") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (Date) row.get("ctrt_strt_dt") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (Date) row.get("ctrt_end_dt") + "</td>"
+		    	    + "            <td style='padding: 8px; text-align: center;'>" + (String) row.get("contract_type") + "</td>"
+		    	    + "        </tr>"
+		    	    + "    </tbody>"
+		    	    + "</table>"
+		    	    + "<br/>"
+		    	    + "<p>감사합니다.<br><strong></strong></p>"
+		    	    + "<hr>"
+		    	    + "<footer style='margin-top: 20px; font-size: 0.9em; color: #555;'>"
+		    	    + "<p><strong>(주)부동산중개법인 제이</strong><br>"
+		    	    + "본점: 경기도 수원시 팔달구 갓매산로25, 2F<br>"
+		    	    + "분사무소 권선점 :경기도 수원시 권선구 세지로112번길 27,1F<br>"
+		    	    + "전화 : 031-223-2482<br>"
+		    	    + "팩스 : 031-223-2481<br>"
+		    	    + "이메일: j_y0324@naver.com</p>"
+		    	    + "<p style='color: #888;'>본 메일은 발신 전용입니다. 문의사항은 j_y0324@naver.com로 연락주세요.</p>"
+		    	    + "</footer>"
+		    	    + "</body>"
+		    	    + "</html>";
+		    
+		    Properties props = new Properties();
+		    props.put("mail.smtp.auth", "true");
+		    props.put("mail.smtp.starttls.enable", "true");
+		    props.put("mail.smtp.host", host);
+		    props.put("mail.smtp.port", "587");
+		    props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-	    String to = "j_y0324@naver.com";
-	    String subject = "만료 예정 계약 안내";
+		    Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+		        protected PasswordAuthentication getPasswordAuthentication() {
+		            return new PasswordAuthentication(username, password);
+		        }
+		    });
 
-	    // HTML 내용 작성 (예시 데이터 포함)
-	    String body = "<html>"
-	            + "<body style='font-family: Arial, sans-serif;'>"
-	            + "<h2 style='color: #4CAF50;'>만료 예정 계약 안내</h2>"
-	            + "<p>아래 계약 만료 예정 매물입니다. 확인해주세요.</p>"
-	            + "<table border='1' style='border-collapse: collapse; width: 100%;'>"
-	            + "    <thead style='background-color: #f2f2f2;'>"
-	            + "        <tr>"
-	            + "            <th style='padding: 8px; text-align: left;'>계약번호</th>"
-	            + "            <th style='padding: 8px; text-align: left;'>계약자명</th>"
-	            + "            <th style='padding: 8px; text-align: left;'>만료일</th>"
-	            + "        </tr>"
-	            + "    </thead>"
-	            + "    <tbody>"
-	            + "        <tr>"
-	            + "            <td style='padding: 8px;'>CN12345</td>"
-	            + "            <td style='padding: 8px;'>홍길동</td>"
-	            + "            <td style='padding: 8px;'>2024년 01월 15일</td>"
-	            + "        </tr>"
-	            + "        <tr>"
-	            + "            <td style='padding: 8px;'>CN67890</td>"
-	            + "            <td style='padding: 8px;'>김철수</td>"
-	            + "            <td style='padding: 8px;'>2024년 02월 28일</td>"
-	            + "        </tr>"
-	            + "    </tbody>"
-	            + "</table>"
-	            + "<p>감사합니다.<br><strong>CatchTable 팀</strong></p>"
-	            + "<hr>"
-	            + "<footer style='margin-top: 20px; font-size: 0.9em; color: #555;'>"
-	            + "<p><strong>CatchTable</strong><br>"
-	            + "주소: 서울특별시 강남구 테헤란로 123<br>"
-	            + "전화: 02-1234-5678<br>"
-	            + "이메일: support@catchtable.com</p>"
-	            + "<p style='color: #888;'>본 메일은 발신 전용입니다. 문의사항은 고객센터로 연락주세요.</p>"
-	            + "</footer>"
-	            + "</body>"
-	            + "</html>";
+		    try {
+		        // 이메일 메시지 생성
+		        Message message = new MimeMessage(session);
+		        message.setFrom(new InternetAddress(username));
+		        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to1));
+		        message.setSubject(subject);
+		        message.setContent(body, "text/html; charset=utf-8");
 
-	    Properties props = new Properties();
-	    props.put("mail.smtp.auth", "true");
-	    props.put("mail.smtp.starttls.enable", "true");
-	    props.put("mail.smtp.host", host);
-	    props.put("mail.smtp.port", "587");
-	    props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+		        // 이메일 전송
+		        Transport.send(message);
+		        
+		        // 이메일 메시지 생성
+		        Message message2 = new MimeMessage(session);
+		        message2.setFrom(new InternetAddress(username));
+		        message2.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to2));
+		        message2.setSubject(subject);
+		        message2.setContent(body, "text/html; charset=utf-8");
 
-	    Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-	        protected PasswordAuthentication getPasswordAuthentication() {
-	            return new PasswordAuthentication(username, password);
-	        }
-	    });
+		        // 이메일 전송
+		        Transport.send(message2);
+		        
 
-	    try {
-	        // 이메일 메시지 생성
-	        Message message = new MimeMessage(session);
-	        message.setFrom(new InternetAddress(username));
-	        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-	        message.setSubject(subject);
-	        message.setContent(body, "text/html; charset=utf-8");
-
-	        // 이메일 전송
-	        Transport.send(message);
-
-	        System.out.println("Email sent successfully.");
-	    } catch (MessagingException e) {
-	        e.printStackTrace(); // 예외를 출력하여 문제 확인
+		        System.out.println("Email sent successfully.");
+		    } catch (MessagingException e) {
+		        e.printStackTrace(); // 예외를 출력하여 문제 확인
+		    }
 	    }
+	    
+	    
+
+
+
+
 	}
 
 	

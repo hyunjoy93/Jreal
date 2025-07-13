@@ -113,7 +113,8 @@
 					<colgroup>
 						<col width="100px">
 						<col width="270px">
-						<col width="280px">
+						<col width="100px">
+						<col width="300px">
 					</colgroup>
 					<tbody>
 						<p style="font-size: 14px; font-weight:600; margin-bottom: 5px;">⊙ 계약상세</p>
@@ -172,6 +173,14 @@
 						    <td><input id="popCtrtDt" type="text" class="input date" placeholder="계약일자" readonly>   <!-- 날짜 --> </td>
 						</tr>
 						<tr>
+						    <th>임차인<span style="color: red">*</span></th>
+						    <!-- 날짜 선택 input -->
+						    <td><input id="popRenterName" type="text" class="input" placeholder="임차인명">   <!-- 임차인명 --> </td>
+							<th>연락처<span style="color: red">*</span></th>
+							<!-- 날짜 선택 input -->
+							<td><input id="popRenterCpno" type="text" class="input" placeholder="임차인연락처">   <!-- 임차인연락처 --> </td>
+						</tr>
+						<tr>
 							<th>계약시간<span style="color: red">*</span></th>
 						    <!-- 시간 선택 select box -->
 						    <td>
@@ -205,7 +214,7 @@
 						            <option value="24">24</option>
 						        </select> 시
 						    </td>
-
+							<td></td>
 						    <!-- 분 선택 select box -->
 						    <td>
 						        <select id="popCtrtMinute" class="select md">
@@ -316,6 +325,14 @@
 					    <th>계약일<span style="color: red">*</span></th>
 					    <!-- 날짜 선택 input -->
 					    <td><input id="ctrtDt" type="text" class="input date" placeholder="계약일자" readonly>   <!-- 날짜 --> </td>
+					</tr>
+					<tr>
+					    <th>임차인<span style="color: red">*</span></th>
+					    <!-- 날짜 선택 input -->
+					    <td><input id="renterName" type="text" class="input" placeholder="임차인명">   <!-- 임차인명 --> </td>
+						<th>연락처<span style="color: red">*</span></th>
+						<!-- 날짜 선택 input -->
+						<td><input id="renterCpno" type="text" class="input" placeholder="임차인연락처">   <!-- 임차인연락처 --> </td>
 					</tr>
 					<tr>
 						<th>계약시간<span style="color: red">*</span></th>
@@ -644,6 +661,8 @@ $(function(){  // === $(document).ready
 			  , popCtrtHour      : $("#popCtrtHour").val()
 			  , popCtrtMinute    : $("#popCtrtMinute").val()
 			  , popMntcCtrtSepCd : $("#popMntcCtrtSepCd").val()
+			  , popRenterName    : $("#popRenterName").val()
+			  , popRenterCpno    : $("#popRenterCpno").val()
 			  , regEmpId         : loginUserId
 			  , popAsetId : asetId
 		}				
@@ -654,7 +673,7 @@ $(function(){  // === $(document).ready
 			
 			if ( data.dupCnt > 0 ){
 
-				alert("계약일자가 겹치는 자산입니다. 확인 바랍니다.");
+				alert("계약일자가 겹치는 매물입니다. 확인 바랍니다.");
 			
 			} else {
 				
@@ -719,6 +738,8 @@ $(function(){  // === $(document).ready
 			  , ctrtStrtDt    : $("#ctrtStrtDt").val().replaceAll('-', '')
 			  , ctrtEndDt     : $("#ctrtEndDt").val().replaceAll('-', '')
 			  , ctrtDt        : $("#ctrtDt").val().replaceAll('-', '')
+			  , renterName    : $("#renterName").val()
+			  , renterCpno    : $("#renterCpno").val()
 			  , mntcCtrtSepCd : $("#mntcCtrtSepCd").val()
 			  , ctrtHour      : $("#ctrtHour").val()
 			  , ctrtMinute    : $("#ctrtMinute").val()
@@ -1072,10 +1093,10 @@ function fnPopNullCheck(){
 		return false;
 	}
 	if ($("#popAsetChrgEmpNm1").val() == "" || $("#popAsetChrgEmpNm1").val() == null || $("#popAsetChrgEmpNm1").val() == undefined) {
-		alert("자산담당자(정)명을 입력해주세요.");
+		alert("계약담당자(정)명을 입력해주세요.");
 		return false;
 	} else if ($("#popAsetChrgEmpNm2").val() == "" || $("#popAsetChrgEmpNm2").val() == null || $("#popAsetChrgEmpNm2").val() == undefined) {
-		alert("자산담당자(부)명을 입력해주세요.");
+		alert("계약담당자(부)명을 입력해주세요.");
 		return false;
 	}	else if ($("#popCtrtStrtDt").val() == "" || $("#popCtrtStrtDt").val() == null || $("#popCtrtStrtDt").val() == undefined) {
 		alert("계약시작일자를 입력해주세요.");
@@ -1143,7 +1164,7 @@ var consParamsData;
 function fnInit(){
 	
 	// 메뉴 초기화
-	fnInitGnbLnb(2, 4, 2, 4);
+	fnInitGnbLnb(2, 5, 2, 5);
 	
 	// 그리드 초기화
 	fnInitGrid();
@@ -1538,6 +1559,8 @@ function fnInitGrid(){
 			, {header:'계약담당자ID2', name:'aset_chrg_emp_id2', align:'center	', sortable: true, hidden: true}
 			, {header:'계약담당자(부)', name:'aset_chrg_emp_nm2', align:'center'}
 			, {header:'계약일시', name:'ctrt_dt', align:'center', sortable: true}
+			, {header:'임차인명', name:'renter_name', align:'center', sortable: true}
+			, {header:'임차인연락처', name:'renter_cpno', align:'center', sortable: true}
 			, {header:'계약시작일자', name:'ctrt_strt_dt', align:'center', sortable: true}
 			, {header:'계약종료일자', name:'ctrt_end_dt', align:'center', sortable: true}   
 			, {header:'계약구분코드', name:'mntc_ctrt_sep_cd', align:'center', hidden: true} 
@@ -1607,6 +1630,8 @@ function fnPopupData(mntcCtrtSno){
 			$('#ctrtStrtDt').val(data.info.ctrt_strt_dt);
 			$('#ctrtEndDt').val(data.info.ctrt_end_dt);
 			$('#ctrtDt').val(ctrtDt.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3"));
+			$('#renterName').val(data.info.renter_name);
+			$('#renterCpno').val(data.info.renter_cpno);
 			$('#ctrtHour').val(ctrtHour);
 			$('#ctrtMinute').val(ctrtMinute);
 			$('#regEmpId').val(loginUserId);

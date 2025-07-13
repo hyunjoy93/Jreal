@@ -3527,6 +3527,7 @@ canvas {
 	border-radius: 4px;
 	background-color: #fff;
 	padding: 16px;
+	overflow: auto;
 }
 
 .conBody.cols {

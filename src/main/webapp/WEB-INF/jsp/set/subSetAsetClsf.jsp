@@ -333,7 +333,7 @@ $(function(){  // === $(document).ready
 function fnInit(){
 	
 	// 메뉴 초기화
-	fnInitGnbLnb(5, 1, 5, 1);
+	fnInitGnbLnb(4, 1, 4, 1);
 	
 	//공통
 	fnCommon();

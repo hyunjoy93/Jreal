@@ -52,7 +52,23 @@ public class SptController extends WebControllerHelper {
 		
 		return mav;
 	}
-
+	/**
+	 * 업무관리 > 조직도
+	 * 
+	 * @return string
+	 * @exception Exception
+	 */
+	@RequestMapping("/view/spt/subOrgList")
+	public ModelAndView subOrgList(ModelAndView mav, @RequestParam Map<String, Object> map, HttpServletRequest request) throws Exception{
+		
+		// 초기화
+		super.setInit(mav, map, request);
+		
+		// 화면VIEW		
+		super.setViewName(mav, map, "spt/subOrgList");
+		
+		return mav;
+	}
 	/**
 	 * Support > FAQ
 	 * 

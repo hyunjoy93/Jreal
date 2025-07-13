@@ -1,0 +1,222 @@
+INSERT INTO public.agent_message
+(occu_time, target_ip, target_level, target_item, target_value, target_contents, send_agent, create_time, host_group_name, sms_msg, trigger_id, proxy_name, zbx_available, ipmi_available, snmp_available, jmx_available)
+VALUES('', '', '', '', '', '', '', '', '', '', 0, '', 0, 0, 0, 0);
+INSERT INTO public.apnd_file
+(apnd_file_sep_cd, apnd_file_trg_id, apnd_file_sno, apnd_file_path, apnd_file_nm, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', 0, '', '', '', '', '', '');
+INSERT INTO public.aset
+(aset_id, aset_nm, aset_clsf_id, aset_stus_sep_cd, scrt_rat_cd, muft_corp_nm, aset_mdl_nm, cpu_spd, memory_vol, hdd_vol, os_ver, ip_addr, instl_plce, prps_desc, intd_dt, intd_cost, note, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '');
+INSERT INTO public.aset_0624
+(aset_id, aset_nm, aset_clsf_id, aset_stus_sep_cd, chrg_emp_id1, chrg_emp_id2, scrt_rat_cd, muft_corp_nm, aset_mdl_nm, cpu_spd, memory_vol, hdd_vol, os_ver, ip_addr, instl_plce, prps_desc, intd_dt, intd_cost, note, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '');
+INSERT INTO public.aset_0707
+(aset_id, aset_nm, aset_clsf_id, aset_stus_sep_cd, scrt_rat_cd, muft_corp_nm, aset_mdl_nm, cpu_spd, memory_vol, hdd_vol, os_ver, ip_addr, instl_plce, prps_desc, intd_dt, intd_cost, note, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '');
+INSERT INTO public.aset_0802
+(aset_id, aset_nm, aset_clsf_id, aset_stus_sep_cd, scrt_rat_cd, muft_corp_nm, aset_mdl_nm, cpu_spd, memory_vol, hdd_vol, os_ver, ip_addr, instl_plce, prps_desc, intd_dt, intd_cost, note, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '');
+INSERT INTO public.aset_bak
+(aset_id, aset_nm, aset_clsf_cd, aset_stus_sep_cd, apvl_emp_id1, apvl_emp_id2, scrt_rat_cd, muft_corp_nm, aset_mdl_nm, ip_addr, instl_plce, prps_desc, intd_dt, intd_cost, note, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm, mtnc_corp_nm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '', '');
+INSERT INTO public.aset_chg_hist
+(aset_id, aset_info_chg_dt, asetinfo_chg_time, aset_nm, aset_clsf_id, aset_stus_sep_cd, chrg_emp_id1, chrg_emp_id2, scrt_rat_cd, aset_mdl_nm, muft_corp_nm, cpu_spd, memory_vol, hdd_vol, os_ver, ip_addr, instl_plce, prps_desc, intd_dt, intd_cost, note, rglr_chk_prd_sep_cd, rglr_chk_dd, chk_sprt_type_cd, chk_form_id, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '');
+INSERT INTO public.aset_clsf
+(aset_clsf_id, aset_clsf_nm, par_aset_clsf_id, aset_lvl, leaf_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', 0, '', '', '', '', '');
+INSERT INTO public.aset_clsf_0521
+(aset_clsf_id, aset_clsf_nm, par_aset_clsf_id, leaf_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm, aset_lvl)
+VALUES('', '', '', '', '', '', '', '', '');
+INSERT INTO public.aset_exl_upload
+(aset_id, aset_nm, aset_clsf_nm, aset_stus_sep_nm, scrt_rat_cd, muft_corp_nm, aset_mdl_nm, cpu_spd, memory_vol, hdd_vol, os_ver, ip_addr, instl_plce, prps_desc, intd_dt, intd_cost, note, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '');
+INSERT INTO public.aset_real
+(aset_id, aset_clsf_id, aset_nm, owner_man_cpno, owner_woman_cpno, owner_cpno, building_use, trade_type, reconfirm_yn, confirm_emp_id, confirm_dttm, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.aset_real2
+(aset_id, aset_clsf_id, aset_nm, building_nm, owner_man_cpno, owner_woman_cpno, owner_cpno, building_use, trade_type, reconfirm_yn, confirm_emp_id, confirm_dttm, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.attendance_records
+(emp_id, work_date, clock_in_time, clock_out_time, reg_dttm, mod_dttm)
+VALUES('', '', '', '', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO public.auto_inventory
+(seq, "zone", loc_nm, datacenter_nm, rack_location, equip_position, own_dept_nm, center_nm, equnr, host_nm, mgmt_ip, ipmi_ip, std_cd, std_nm, e_std_cd, e_std_nm, svc_usage, platform, platfoem_ver, os, os_ver, "usage", hw_yn, csw_yn, os_yn)
+VALUES(0, '', '', '', '', 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.bbs
+(bbm_id, bbs_sep_cd, bbm_titl, bbm_ctnt, bbm_trg_cd, par_bbm_id, bbm_lvl, leaf_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', 0, '', '', '', '', '');
+INSERT INTO public.bbs_repl
+(bbs_repl_id, bbs_txn_id, repl_sbst, cret_dt, cretr_id, amd_dt, amdr_id)
+VALUES(0, 0, '', '', '', '', '');
+INSERT INTO public.bbs_txn
+(bbs_txn_id, parent_id, pstng_type_cd, pstng_title_nm, pstng_sbst, use_yn, view_cnt, ctgry_type_cd, ans_cmplt_yn, pop_show_yn, pop_show_st_dt, pop_show_fns_dt, cret_dt, cretr_id, amd_dt, amdr_id, answer, ans_id, ans_dt)
+VALUES(0, 0, '', '', '', '', 0, '', '', 'N'::character varying, '', '', '', '', '', '', '', '', '');
+INSERT INTO public.cal
+(dt, yyyy, mm, dd, hldt_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '');
+INSERT INTO public.cal_20230529
+(dt, yyyy, mm, dd, hldt_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_form
+(chk_form_id, chk_form_nm, prps_desc, use_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '');
+INSERT INTO public.chk_form_item
+(chk_form_id, chk_item_id, chk_item_nm, chk_crtr_desc, use_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_req
+(chk_req_sno, chk_sep_cd, chk_sprt_type_cd, mntc_ctrt_sno, vist_plan_dt, chk_req_ctnt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', 0, '', '', '', '', '', '');
+INSERT INTO public.chk_req_0703
+(chk_req_sno, chk_sep_cd, chk_sprt_type_cd, mntc_ctrt_sno, vist_plan_dt, chk_req_ctnt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', 0, '', '', '', '', '', '');
+INSERT INTO public.chk_req_20230521
+(chk_req_sno, aset_id, chk_dt, hdcp_ctnt, prc_rslt_sep_cd, uniq_item, chk_sprt_type_cd, chk_sep_cd, apnd_file_path, apnd_file_nm, cmpl_yn, cmpl_cnfm_emp_id, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_req_20230618
+(chk_req_sno, chk_sep_cd, chk_sprt_type_cd, vist_plan_dt, chk_req_ctnt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_req_apvl_20230513
+(chk_req_sno, apvl_prc_seqno, apvl_emp_id, apvl_prc_sep_cd, send_ctnt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, 0, '', '', '', '', '', '', '');
+INSERT INTO public.chk_req_aset
+(chk_req_sno, aset_id, mntc_corp_id, mntc_emp_id, apvl_emp_id_1, apvl_prc_sep_cd_1, send_ctnt_1, apvl_emp_id_2, apvl_prc_sep_cd_2, send_ctnt_2, chk_dt, prc_rslt_sep_cd, uniq_item, apnd_file_path, apnd_file_nm, cmpl_dt, cmpl_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_req_aset_0802
+(chk_req_sno, aset_id, apvl_emp_id_1, apvl_prc_sep_cd_1, send_ctnt_1, apvl_emp_id_2, apvl_prc_sep_cd_2, send_ctnt_2, chk_dt, prc_rslt_sep_cd, uniq_item, apnd_file_path, apnd_file_nm, cmpl_dt, cmpl_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm, mntc_corp_id, mntc_emp_id)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_req_aset_20230513
+(chk_req_sno, aset_id, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '');
+INSERT INTO public.chk_req_aset_20230529
+(chk_req_sno, aset_id, apvl_emp_id_1, apvl_prc_sep_cd_1, send_ctnt_1, apvl_emp_id_2, apvl_prc_sep_cd_2, send_ctnt_2, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_req_bak
+(chk_req_sno, chk_sprt_type_cd, chk_sep_cd, chk_req_ctnt, vist_plan_dt, vist_goal_ctnt, prc_cmpl_dt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_rslt
+(chk_req_sno, aset_id, chk_form_id, chk_item_id, chk_item_nm, chk_crtr_desc, chk_ctnt, chk_rslt_desc, memo_ctnt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_rslt_0626
+(chk_form_id, chk_item_id, chk_req_sno, aset_id, chk_item_nm, chk_crtr_desc, chk_ctnt, chk_rslt_desc, memo_ctnt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', 0, '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.chk_rslt_20230529
+(chk_req_sno, aset_id, chk_dt, hdcp_ctnt, prc_rslt_sep_cd, uniq_item, chk_sprt_type_cd, chk_sep_cd, apnd_file_path, apnd_file_nm, cmpl_dt, cmpl_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.cmon_daily_chart
+(chart_date, event_count, incident_count)
+VALUES('', 0, 0);
+INSERT INTO public.cmon_event_exception
+(start_time, end_time, type_nm, container_nm, datacenter_nm, stdnm, estdnm, "content", charge_depart, charge_person, phone, regist_person, regist_time)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.cmon_event_info
+(event_id, occu_time, target_ip, target_item, target_value, target_contents, send_agent, create_time, event_level, last_occu_time, event_occu_count, equ_barcode, device_ip, mgmt_ip, ipmi_ip, physical_address, hostname, equip_label, model, manuf_nm, container_nm, datacenter_nm, rack_location, equip_position, stdnm, estdnm, type_nm, own_dept_nm, warr_st_dt, hwoprusrcd, event_state, event_step1_user, event_step1_state, event_step1_start, event_step1_end, event_step1_contents, event_step2_user, event_step2_state, event_step2_start, event_step2_end, event_step2_contents, event_service_impact, event_tech_voc, event_result_type, event_result_user, event_result_time, incident_id, exception_flag, zabbix_state, gubun, trigger_id, host_group_gubun)
+VALUES('', '', '', '', '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, ''::character varying, '', 0, '');
+INSERT INTO public.cmon_idc_list
+(idc_name)
+VALUES('');
+INSERT INTO public.cmon_incident_info
+(incident_id, event_id, event_time, type_nm, container_nm, datacenter_nm, stdnm, estdnm, incident_level, incident_state, incident_contents, incident_start_time, incident_end_time, captain, incident_chief, restore_chief, restore_team, incident_service_impact, incident_tech_voc, itsm_incident_id, incident_result_type, incident_result_user)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.cmon_notice
+(idx, regist_time, regist_person, title, "content")
+VALUES(0, '', '', '', '');
+INSERT INTO public.cmon_user
+(user_id, user_password, user_group, user_name, user_depart, last_login)
+VALUES('', '', '', '', '', '');
+INSERT INTO public.comm_cd
+(col_en_nm, col_ko_nm, col_desc, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '');
+INSERT INTO public.comm_cd_bak
+(col_id, col_nm, col_desc, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '');
+INSERT INTO public.comm_cd_detl
+(col_en_nm, cd_effv_val, cd_ko_nm, cd_en_nm, cd_desc, sort_ord, use_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.comm_cd_detl_bak
+(col_id, cd_id, cd_ko_nm, cd_en_nm, cd_desc, sort_ord, use_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.corp
+(corp_id, corp_ko_nm, corp_en_nm, corp_no, biz_reg_no, rep_nm, addr, rep_telno, web_site_url, mntc_corp_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.corp_bak
+(corp_id, corp_nm, corp_no, biz_reg_no, addr, rep_telno, web_site_url, mntc_corp_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.dept
+(dept_id, corp_id, dept_cd, dept_nm, par_dept_id, leaf_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.emp
+(emp_id, corp_id, emp_nm, dept_nm, job_lvl_nm, pswd, intp_no, celp_no, auth_grp_cd, scrt_pldg_reg_yn, edu_cmplt_file_reg_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm, m)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.emp_0629
+(emp_id, corp_id, emp_nm, dept_nm, job_lvl_nm, pswd, intp_no, celp_no, rep_yn, auth_grp_cd, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.emp_0707
+(emp_id, corp_id, emp_nm, dept_nm, job_lvl_nm, pswd, intp_no, celp_no, auth_grp_cd, scrt_pldg_reg_yn, edu_cmplt_file_reg_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm, m)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.emp_20230513
+(emp_id, corp_id, emp_nm, dept_nm, job_lvl_nm, pswd, intp_no, celp_no, rep_yn, auth_grp_cd, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.emp_bak
+(emp_id, user_password, corp_id, dept_id, emp_no, emp_nm, job_lvl_cd, intp_no, celp_no, email_addr, rep_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.emp_exl_upload
+(emp_id, corp_ko_nm, emp_nm, dept_nm, job_lvl_nm, pswd, intp_no, celp_no, rep_yn, auth_grp_nm, scrt_pldg_reg_yn, edu_cmplt_file_reg_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.event_received_message
+(datetime, target_ip, target_item, target_value, target_content, send_agent, proc_datetime)
+VALUES('', '', '', '', '', '', '');
+INSERT INTO public.login_hist
+(emp_id, conn_dttm, conn_ip_addr, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '');
+INSERT INTO public.mntc_hist
+(mntc_ctrt_sno, aset_id, aset_chrg_emp_id1, aset_chrg_emp_id2, mntc_emp_id, ctrt_strt_dt, ctrt_end_dt, contract_type, del_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm, ctrt_dt)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.mntc_hist_0624
+(mntc_ctrt_sno, aset_id, emp_id, ctrt_strt_dt, ctrt_end_dt, mntc_ctrt_sep_cd, del_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.mntc_hist_0703
+(mntc_ctrt_sno, aset_id, aset_chrg_emp_id1, aset_chrg_emp_id2, mntc_emp_id, ctrt_strt_dt, ctrt_end_dt, mntc_ctrt_sep_cd, del_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO public.mntc_hist_bak
+(aset_id, emp_id, ctrt_strt_dt, ctrt_end_dt, mntc_ctrt_sep_cd, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '');
+INSERT INTO public.pswd_chg_hist
+(emp_id, pswd_chg_dttm, crnt_pswd, bef_pswd, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '');
+INSERT INTO public.rglr_chk
+(aset_id, chk_sprt_type_cd, rglr_chk_prd_sep_cd, rglr_chk_dd, chk_form_id, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES('', '', '', '', '', '', '', '', '');
+INSERT INTO public.rglr_chk_dt
+(mntc_ctrt_sno, rglr_chk_dt, ld_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '');
+INSERT INTO public.rglr_chk_dt_0717
+(mntc_ctrt_sno, rglr_chk_dt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '');
+INSERT INTO public.rglr_chk_dt_0718
+(mntc_ctrt_sno, rglr_chk_dt, ld_yn, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '', '');
+INSERT INTO public.rglr_chk_dt_bak
+(mntc_ctrt_sno, rglr_chk_dt, reg_emp_id, reg_dttm, mod_emp_id, mod_dttm)
+VALUES(0, '', '', '', '', '');
+INSERT INTO public.sms_group
+(zabbix_ip, group_name)
+VALUES('', '');
+INSERT INTO public.sms_send_log
+(zabbix_ip, send_time, host_group_name, host_name, host_ip, event_level, user_id, group_name)
+VALUES('', '', '', '', '', 0, '', '');
+INSERT INTO public.sms_send_message
+(host_group_name, host_name, severity, target_ip, sms_msg, trigger_id, send_agent)
+VALUES('', '', 0, '', '', 0, '');
+INSERT INTO public.sms_send_rule
+(idx, zabbix_ip, host_group_name, host_name, host_ip, event_level, user_id, group_name)
+VALUES(0, '', '', '', '', '', '', '');
+INSERT INTO public.sms_user_contact
+(zabbix_ip, user_id, user_name, user_depart, user_phone, user_mail)
+VALUES('', '', '', '', '', '');
+INSERT INTO public.sms_user_relation
+(zabbix_ip, group_name, user_id)
+VALUES('', '', '');
+INSERT INTO public.tax_doc
+(tax_no, contract_date, balance_due_date, contract_address, contract_manager, category, public_amount, vat, total_amount, issue_type, buyer_name, business_address, business_type, business_field, responsible_person, contact_number, email, issue_date, photo_saved, vat_transfer_date, reg_dttm, reg_emp_id, mod_dttm, mod_emp_id)
+VALUES(0, '', '', '', '', '', 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');

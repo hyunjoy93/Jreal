@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.framework</groupId>
-	<artifactId>E</artifactId>
-	<version>Manager</version>
+	<artifactId>J</artifactId>
+	<version>real</version>
 	<packaging>war</packaging>
 	<name>project</name>
 	<description>Project for Spring Boot</description>

@@ -567,7 +567,7 @@ $(function(){
 function fnInit(){
 	
 	// InitGnbLnb
-	fnInitGnbLnb(6, 1, 6, 1);
+	fnInitGnbLnb(5, 1, 5, 1);
 	
 	// 초기화(그리드)
 	fnInitGrid();
