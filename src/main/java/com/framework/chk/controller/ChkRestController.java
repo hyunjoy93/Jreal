@@ -158,7 +158,7 @@ public class ChkRestController extends WebControllerHelper{
 			//점검양식 옵션 list
 			super.setList(map, request, "selectChkRsltFormOption", chkService.selectChkRsltFormOption(map));
 			
-			map.put("apnd_file_trg_id", "C_" + map.get("rsltchkReqSno") + "^" + map.get("rsltAsetId"));
+			map.put("apnd_file_trg_id", "C_" + map.get("rsltchkReqSno")  + map.get("rsltAsetId"));
 			
 			//점검결과등록 파일
 			super.setList(map, request, "ChkRsltFiles", sptService.selectNoticeFiles(map));
@@ -548,7 +548,7 @@ public class ChkRestController extends WebControllerHelper{
 			//점검현황 list
 			super.setList(map, request, "chkRstlReportList", chkService.selectRsltReportList(map));
 			
-			map.put("apnd_file_trg_id", "C_" + map.get("chk_req_sno") + "^" + map.get("aset_id"));
+			map.put("apnd_file_trg_id", "C_" + map.get("chk_req_sno")  + map.get("aset_id"));
 			
 			//점검결과등록 파일
 			super.setList(map, request, "ChkRsltFiles", sptService.selectNoticeFiles(map));
@@ -625,7 +625,7 @@ public class ChkRestController extends WebControllerHelper{
 			}
 			
 			Map<String, Object> delParam = new HashMap<>();
-			delParam.put("apnd_file_trg_id", "C_" + chk_req_sno + "^" + aset_id);
+			delParam.put("apnd_file_trg_id", "C_" + chk_req_sno  + aset_id);
 			delParam.put("apnd_file_sno", 1);
 			
 			sptService.deleteFiles(delParam);
@@ -635,7 +635,7 @@ public class ChkRestController extends WebControllerHelper{
 			
 			// 3. 파일 이름이 중복되지 않도록 파일 이름 변경 : 서버에 저장할 이름
 			
-			String savedFileName =  getCurrentDateTime() + "^" + originalFileName;
+			String savedFileName =  getCurrentDateTime()  + originalFileName;
 			
 			// 4. 파일 생성
 			File newFile = new File(uploadPath + savedFileName);
@@ -648,7 +648,7 @@ public class ChkRestController extends WebControllerHelper{
 			Map<String, Object> fileMap = new HashMap<String, Object>();
 			
 			fileMap.put("apnd_file_sep_cd", "C");
-			fileMap.put("apnd_file_trg_id", "C_" + chk_req_sno + "^" + aset_id);
+			fileMap.put("apnd_file_trg_id", "C_" + chk_req_sno  + aset_id);
 			fileMap.put("apnd_file_sno", 1);
 			fileMap.put("apnd_file_path", uploadPath);
 			fileMap.put("apnd_file_nm", savedFileName);

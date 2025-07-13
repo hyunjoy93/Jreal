@@ -983,8 +983,8 @@ function fnList(slcPageNo){
 			} else {
 				$('#fileInitN1').show();
 				$('#fileInitY1').hide();
-				var fileName1 = data.EmpFile1[0].apnd_file_nm.split('^');
-				$('#downFileUp1').text(fileName1[1]);
+				var fileName1 = data.EmpFile1[0].apnd_file_nm;
+				$('#downFileUp1').text(fileName1);
 				
 				$('#downFileUp1').prop('name', data.EmpFile1[0].apnd_file_trg_id + '-' + data.EmpFile1[0].apnd_file_sno)
 				$('#downFileUp1').addClass('downFiles');

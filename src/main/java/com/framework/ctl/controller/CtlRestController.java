@@ -687,11 +687,11 @@ public class CtlRestController extends WebControllerHelper {
 		if(!files.isEmpty()) {
 			if("sec".equals(map.get("fileType"))) {
 				uploadPath = "/sw/Jreal/src/main/webapp/uploadFiles/E/sec/";
-				savedFileName = getCurrentDateTime() + "^" + map.get("empId") + "-" + "sec.";
+				savedFileName = getCurrentDateTime()  + map.get("empId") + "-" + "sec.";
 				apnd_file_sno = 1;
 			} else {
 				uploadPath = "/sw/Jreal/src/main/webapp/uploadFiles/E/edu/";
-				savedFileName = getCurrentDateTime() + "^" + map.get("empId") + "-" + "edu.";
+				savedFileName = getCurrentDateTime()  + map.get("empId") + "-" + "edu.";
 				apnd_file_sno = 2;
 			}
 			
