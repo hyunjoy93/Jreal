@@ -262,7 +262,7 @@ public class ChkRestController extends WebControllerHelper{
 		}
 		
         // 프로퍼티 파일 경로
-        String propertiesFilePath = "sw/Jreal/src/main/resources/application.properties";
+        String propertiesFilePath = "/sw/Jreal/src/main/resources/application.properties";
 
         // 프로퍼티 파일에서 email 값을 가져옴
         String username = readEmailIdFromProperties(propertiesFilePath);
@@ -609,7 +609,7 @@ public class ChkRestController extends WebControllerHelper{
 	    String aset_id = map.get("aset_id").toString();
 		
 		// 1. 파일 저장 경로 설정 : 실제 서비스되는 위치(프로젝트 외부에 저장)
-		String uploadPath = "sw/Jreal/src/main/webapp/uploadFiles/C/";
+		String uploadPath = "/sw/Jreal/src/main/webapp/uploadFiles/C/";
 		// 마지막에 / 있어야함
 		
 		// 여러 개의 파일 이름 저장할 리스트 생성

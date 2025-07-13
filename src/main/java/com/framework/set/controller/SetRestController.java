@@ -469,7 +469,7 @@ public class SetRestController extends WebControllerHelper{
     @RequestMapping(value = "/api/set/excelDownload", method = RequestMethod.POST)
     public ResponseEntity<byte[]> downloadEmpListExcel(@RequestParam Map<String, Object> map) throws Exception {
         try {
-            String filePath = "sw/Jreal/src/main/resources/attach/chkFormItem.xlsx";
+            String filePath = "/sw/Jreal/src/main/resources/attach/chkFormItem.xlsx";
 
             // 엑셀 파일 읽기
             FileInputStream fileInputStream = new FileInputStream(filePath);

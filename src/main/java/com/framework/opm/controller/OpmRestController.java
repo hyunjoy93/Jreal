@@ -615,7 +615,7 @@ public class OpmRestController extends WebControllerHelper{
     @RequestMapping(value = "/api/opm/excelDownload", method = RequestMethod.POST)
     public ResponseEntity<byte[]> downloadCorpListExcel(@RequestParam Map<String, Object> map) throws Exception {
         try {
-            String filePath = "sw/Jreal/src/main/resources/attach/corp.xlsx";
+            String filePath = "/sw/Jreal/src/main/resources/attach/corp.xlsx";
 
             // 엑셀 파일 읽기
             FileInputStream fileInputStream = new FileInputStream(filePath);
@@ -675,7 +675,7 @@ public class OpmRestController extends WebControllerHelper{
     @RequestMapping(value = "/api/aset/excelDownload", method = RequestMethod.POST)
     public ResponseEntity<byte[]> downloadEmpListExcel(@RequestParam Map<String, Object> map) throws Exception {
         try {
-            String filePath = "sw/Jreal/src/main/resources/attach/aset.xlsx";
+            String filePath = "/sw/Jreal/src/main/resources/attach/aset.xlsx";
 
             // 엑셀 파일 읽기
             FileInputStream fileInputStream = new FileInputStream(filePath);
@@ -752,7 +752,7 @@ public class OpmRestController extends WebControllerHelper{
     @RequestMapping(value = "/api/aset/excelDownload2", method = RequestMethod.POST)
     public ResponseEntity<byte[]> downloadEmpListExcel2(@RequestParam Map<String, Object> map) throws Exception {
     	try {
-    		String filePath = "sw/Jreal/src/main/resources/attach/aset2.xlsx";
+    		String filePath = "/sw/Jreal/src/main/resources/attach/aset2.xlsx";
     		
     		// 엑셀 파일 읽기
     		FileInputStream fileInputStream = new FileInputStream(filePath);

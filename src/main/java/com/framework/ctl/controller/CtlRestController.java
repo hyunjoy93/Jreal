@@ -506,7 +506,7 @@ public class CtlRestController extends WebControllerHelper {
     @RequestMapping(value = "/api/ctl/excelDownload", method = RequestMethod.POST)
     public ResponseEntity<byte[]> downloadEmpListExcel(@RequestParam Map<String, Object> map) throws Exception {
         try {
-            String filePath = "sw/Jreal/src/main/resources/attach/emp.xlsx";
+            String filePath = "/sw/Jreal/src/main/resources/attach/emp.xlsx";
 
             // 엑셀 파일 읽기
             FileInputStream fileInputStream = new FileInputStream(filePath);
@@ -686,11 +686,11 @@ public class CtlRestController extends WebControllerHelper {
 		// 1. 파일 저장 경로 설정 : 실제 서비스되는 위치(프로젝트 외부에 저장)
 		if(!files.isEmpty()) {
 			if("sec".equals(map.get("fileType"))) {
-				uploadPath = "sw/Jreal/src/main/webapp/uploadFiles/E/sec/";
+				uploadPath = "/sw/Jreal/src/main/webapp/uploadFiles/E/sec/";
 				savedFileName = getCurrentDateTime() + "^" + map.get("empId") + "-" + "sec.";
 				apnd_file_sno = 1;
 			} else {
-				uploadPath = "sw/Jreal/src/main/webapp/uploadFiles/E/edu/";
+				uploadPath = "/sw/Jreal/src/main/webapp/uploadFiles/E/edu/";
 				savedFileName = getCurrentDateTime() + "^" + map.get("empId") + "-" + "edu.";
 				apnd_file_sno = 2;
 			}

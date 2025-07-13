@@ -50,7 +50,7 @@ public class ChkScheduler {
 	    Date today = new Date();
 
 	    // 프로퍼티 파일 경로
-	    String propertiesFilePath = "sw/Jreal/src/main/resources/application.properties";
+	    String propertiesFilePath = "/sw/Jreal/src/main/resources/application.properties";
 
 	    // 프로퍼티 파일에서 email 값을 가져옴
 	    String username = readEmailIdFromProperties(propertiesFilePath);

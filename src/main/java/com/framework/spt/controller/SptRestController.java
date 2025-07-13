@@ -234,7 +234,7 @@ public class SptRestController extends WebControllerHelper{
 		}
 		
 		// 1. 파일 저장 경로 설정 : 실제 서비스되는 위치(프로젝트 외부에 저장)
-		String uploadPath = "sw/Jreal/src/main/webapp/uploadFiles/N/";
+		String uploadPath = "/sw/Jreal/src/main/webapp/uploadFiles/N/";
 		// 마지막에 / 있어야함
 		
 		// 여러 개의 파일 이름 저장할 리스트 생성
@@ -323,7 +323,7 @@ public class SptRestController extends WebControllerHelper{
 		}
 		
 		// 1. 파일 저장 경로 설정 : 실제 서비스되는 위치(프로젝트 외부에 저장)
-		String uploadPath = "sw/Jreal/src/main/webapp/uploadFiles/N/";
+		String uploadPath = "/sw/Jreal/src/main/webapp/uploadFiles/N/";
 		// 마지막에 / 있어야함
 		
 		// 여러 개의 파일 이름 저장할 리스트 생성
