@@ -988,9 +988,8 @@ function fnList(slcPageNo){
 				
 				$('#downFileUp1').prop('name', data.EmpFile1[0].apnd_file_trg_id + '-' + data.EmpFile1[0].apnd_file_sno)
 				$('#downFileUp1').addClass('downFiles');
-				var filePath1 = '../../uploadFiles/E/sec/' + data.EmpFile1[0].apnd_file_nm;
 				
-				$('#downFileUp1').prop('href', filePath1);
+				$('#downFileUp1').prop('href', '/download?fileName=' + encodeURIComponent(fileName1));
 				$('#downFileUp1').prop('download', data.EmpFile1[0].apnd_file_nm);
 			}
 			

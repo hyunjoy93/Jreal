@@ -3,7 +3,12 @@ package com.framework.ctl.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,11 +32,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -828,5 +836,32 @@ public class CtlRestController extends WebControllerHelper {
 				currentLocale);
 		return formatter.format(today);
 	}
+	
+    private final String BASE_PATH = "/sw/Jreal/src/main/webapp/uploadFiles/E/sec/";
+
+	@GetMapping("/download")
+	public ResponseEntity<UrlResource> download(@RequestParam String fileName) throws IOException {
+		// 파일 경로 지정
+        Path filePath = Paths.get(BASE_PATH + fileName).normalize();
+        UrlResource resource = new UrlResource(filePath.toUri());
+
+        // 파일이 없으면 404
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 파일명 한글 및 특수문자 인코딩
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+                                           .replaceAll("\\+", "%20");
+
+        // 파일을 HTTP 응답으로 반환
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + encodedFileName + "\"")
+                .body(resource);
+    }
+	
+	
 }
 	
